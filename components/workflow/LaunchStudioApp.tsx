@@ -159,8 +159,10 @@ function LaunchStudioInner() {
     setNodes((prev) => [...prev, newNode]);
   };
 
+  const lastRunAt = timeline[timeline.length - 1]?.at;
+
   return (
-    <div className="h-screen bg-zinc-950 text-zinc-100">
+    <div className="app-shell h-[100dvh] bg-zinc-950 text-zinc-100">
       <WorkflowToolbar
         workflowName={workflowName}
         onWorkflowNameChange={setWorkflowName}
@@ -176,7 +178,7 @@ function LaunchStudioInner() {
         canExport={canExport}
       />
 
-      <div className="grid h-[calc(100vh-64px)] grid-cols-12 gap-3 p-3">
+      <div className="grid h-[calc(100dvh-64px-env(safe-area-inset-top)-env(safe-area-inset-bottom))] grid-cols-12 gap-3 p-3">
         <div className="col-span-8 flex flex-col gap-3">
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
             <h2 className="text-sm font-semibold">AI Launch Studio</h2>
@@ -225,7 +227,14 @@ function LaunchStudioInner() {
         </div>
 
         <div className="col-span-4 flex flex-col gap-3">
-          <NodeInspector node={selectedNode} />
+          <NodeInspector
+            node={selectedNode}
+            projectType={brief.projectType}
+            dryRun
+            compliancePassed={compliancePassed}
+            canExport={canExport}
+            lastRunAt={lastRunAt}
+          />
           <ExecutionTimeline events={timeline} />
           {showJson ? <JsonPreview data={generated} blocked={!canExport} onExport={handleExport} /> : null}
           <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">

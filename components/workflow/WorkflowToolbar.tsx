@@ -93,7 +93,7 @@ export function WorkflowToolbar({
           onClick={onRun}
           disabled={isRunning}
         >
-          <span className="inline-flex items-center gap-2"> <Play className="h-4 w-4" /> {isRunning ? "Running" : "Run"}</span>
+          <span className="inline-flex items-center gap-2"> <Play className="h-4 w-4" /> {isRunning ? "Running..." : "Run Workflow"}</span>
         </button>
       </div>
     </div>
