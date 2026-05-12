@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
-import { neon } from "@neondatabase/serverless";
+import { getDb } from "@/lib/db";
 
-const sql = neon(process.env.DATABASE_URL!);
+function asRows(result: unknown): Record<string, unknown>[] {
+  return Array.isArray(result) ? (result as Record<string, unknown>[]) : [];
+}
 
 export async function GET(
   request: Request,
@@ -9,9 +11,11 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const workflows = await sql`
+    const sql = getDb();
+    const workflowsRaw = await sql`
       SELECT * FROM workflows WHERE id = ${id}
     `;
+    const workflows = asRows(workflowsRaw);
 
     if (workflows.length === 0) {
       return NextResponse.json({ error: "Workflow not found" }, { status: 404 });
@@ -32,7 +36,8 @@ export async function PUT(
     const { id } = await params;
     const { name, description, nodes, edges } = await request.json();
 
-    const result = await sql`
+    const sql = getDb();
+    const resultRaw = await sql`
       UPDATE workflows
       SET 
         name = COALESCE(${name}, name),
@@ -43,6 +48,7 @@ export async function PUT(
       WHERE id = ${id}
       RETURNING id, name, description, created_at, updated_at
     `;
+    const result = asRows(resultRaw);
 
     if (result.length === 0) {
       return NextResponse.json({ error: "Workflow not found" }, { status: 404 });
@@ -61,6 +67,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    const sql = getDb();
     await sql`DELETE FROM workflows WHERE id = ${id}`;
     return NextResponse.json({ success: true });
   } catch (error) {

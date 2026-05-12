@@ -1,5 +1,5 @@
-import { WorkflowEditor } from "@/components/workflow/workflow-editor";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <WorkflowEditor />;
+  redirect("/launch-studio");
 }
