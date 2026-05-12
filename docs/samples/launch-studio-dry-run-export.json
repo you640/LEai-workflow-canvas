@@ -1,0 +1,103 @@
+{
+  "dryRun": true,
+  "project": {
+    "name": "LE Raising Community Pilot",
+    "type": "support-campaign",
+    "goal": "Vytvoriť dôveryhodnú landing page pre crowdfunding kampaň v dry-run režime bez reálneho zápisu do WordPressu.",
+    "audience": "Lokálni podnikatelia, menšie komunity, neziskové iniciatívy a ľudia, ktorí chcú transparentne podporiť dobrý projekt.",
+    "description": "Projekt testuje crowdfundingový workflow pre WordPress import. Výstup musí byť transparentný, bez gambling mechaník, bez garantovaných výhier, bez falošných backerov a bez fake urgency. Kampaň má pôsobiť dôveryhodne, komunitne a profesionálne.",
+    "tone": "Premium, transparentný, dôveryhodný, moderný, nie agresívne predajný.",
+    "contactEmail": "test@example.com"
+  },
+  "strategy": {
+    "positioning": "LE Raising Community Pilot ako praktický support-campaign projekt pre rýchly launch.",
+    "valueProposition": "Jasná ponuka, čitateľné sekcie a konkrétny krok pre návštevníka.",
+    "primaryCTA": "Spustiť plán",
+    "secondaryCTA": "Pozrieť možnosti"
+  },
+  "page": {
+    "headline": "Od nápadu po hotový web za 24 hodín pre LE Raising Community Pilot",
+    "subheadline": "Vyber smer, doplň brief a AI Launch Studio pripraví štruktúru aj texty pripravené na spustenie.",
+    "sections": [
+      {
+        "id": "hero",
+        "title": "Hero",
+        "body": "Krátke vysvetlenie hodnoty a hlavný CTA krok.",
+        "cta": "Spustiť plán"
+      },
+      {
+        "id": "benefits",
+        "title": "Benefits",
+        "body": "Hlavné prínosy pre cieľovú skupinu v stručných bodoch."
+      },
+      {
+        "id": "how-it-works",
+        "title": "How it works",
+        "body": "Tri až štyri kroky od briefu po spustenie."
+      },
+      {
+        "id": "offer",
+        "title": "Offer",
+        "body": "Balíky alebo varianty ponuky podľa typu projektu."
+      },
+      {
+        "id": "faq",
+        "title": "FAQ",
+        "body": "Najčastejšie otázky a jasné odpovede."
+      },
+      {
+        "id": "contact",
+        "title": "Contact",
+        "body": "Kontaktný alebo brief formulár pre ďalší krok.",
+        "cta": "Odoslať brief"
+      }
+    ]
+  },
+  "seo": {
+    "title": "LE Raising Community Pilot | Web do 24h by Rubberduck",
+    "description": "Od nápadu po hotový web za 24 hodín. Štruktúra, texty a výstup pripravený na spustenie.",
+    "ogTitle": "LE Raising Community Pilot — AI Launch Studio",
+    "ogDescription": "Rýchly launch webu cez vizuálny workflow s pripraveným výstupom."
+  },
+  "template": {
+    "preset": "support-campaign",
+    "accentColor": "#22c55e"
+  },
+  "faq": [
+    {
+      "question": "Ako rýchlo vieme spustiť stránku?",
+      "answer": "Základný výstup je pripravený na spustenie v krátkom čase po schválení briefu."
+    },
+    {
+      "question": "Je výstup vhodný pre mobil?",
+      "answer": "Áno, štruktúra je navrhnutá mobile-first a pripravená na responzívny render."
+    }
+  ],
+  "launchPack": {
+    "checklist": [
+      "Potvrdiť headline a hlavné CTA",
+      "Skontrolovať obsah sekcií a FAQ",
+      "Overiť kontaktné údaje a termín",
+      "Spustiť finálny export JSON"
+    ],
+    "nextSteps": [
+      "Doplniť finálne brand assety",
+      "Prejsť QA audit",
+      "Schváliť publikáciu"
+    ]
+  },
+  "supportCampaign": {
+    "mode": "donation",
+    "targetAmount": 10000,
+    "currency": "EUR",
+    "rewards": [
+      {
+        "title": "Supporter",
+        "description": "Poďakovanie pre supporters a backers.",
+        "minimumAmount": 25,
+        "isDigital": true,
+        "requiresShipping": false
+      }
+    ]
+  }
+}
