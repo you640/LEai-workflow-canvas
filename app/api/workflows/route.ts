@@ -1,39 +1,38 @@
 import { NextResponse } from "next/server";
-import { neon } from "@neondatabase/serverless";
+import { createDefaultWorkflow } from "@/lib/workflow/default-workflow";
+import { getWorkflow, listWorkflows, saveWorkflow } from "@/lib/workflow/store";
+import type { WorkflowDefinition } from "@/types/workflow";
+import { safeError } from "@/lib/safe-error";
 
-const sql = neon(process.env.DATABASE_URL!);
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const workflowId = searchParams.get("workflowId");
 
-export async function GET() {
-  try {
-    const workflows = await sql`
-      SELECT id, name, description, created_at, updated_at
-      FROM workflows
-      ORDER BY updated_at DESC
-    `;
-    return NextResponse.json({ workflows });
-  } catch (error) {
-    console.error("Error fetching workflows:", error);
-    return NextResponse.json({ error: "Failed to fetch workflows" }, { status: 500 });
+  if (workflowId) {
+    const workflow = getWorkflow(workflowId);
+    if (!workflow) return safeError(404, "workflow_not_found", "Workflow not found.");
+    return NextResponse.json({ workflow, workflows: [] });
   }
+
+  return NextResponse.json({ workflows: listWorkflows() });
 }
 
 export async function POST(request: Request) {
   try {
-    const { name, description, nodes, edges } = await request.json();
+    const body = await request.json().catch(() => ({}));
+    const base = createDefaultWorkflow();
+    const workflow: WorkflowDefinition = {
+      ...base,
+      id: body.id ?? base.id,
+      name: body.name ?? "Web do 24h Generator",
+      nodes: Array.isArray(body.nodes) && body.nodes.length > 0 ? body.nodes : base.nodes,
+      edges: Array.isArray(body.edges) && body.edges.length > 0 ? body.edges : base.edges,
+      updatedAt: new Date().toISOString(),
+    };
 
-    if (!name) {
-      return NextResponse.json({ error: "Name is required" }, { status: 400 });
-    }
-
-    const result = await sql`
-      INSERT INTO workflows (name, description, nodes, edges)
-      VALUES (${name}, ${description || null}, ${JSON.stringify(nodes)}, ${JSON.stringify(edges)})
-      RETURNING id, name, description, created_at, updated_at
-    `;
-
-    return NextResponse.json({ workflow: result[0] });
-  } catch (error) {
-    console.error("Error creating workflow:", error);
-    return NextResponse.json({ error: "Failed to create workflow" }, { status: 500 });
+    saveWorkflow(workflow);
+    return NextResponse.json({ workflow });
+  } catch {
+    return safeError(500, "workflow_create_failed", "Failed to create workflow.");
   }
 }

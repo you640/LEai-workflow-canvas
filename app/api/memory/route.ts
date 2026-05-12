@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
-import { neon } from "@neondatabase/serverless";
+import { getDb } from "@/lib/db";
 
-const sql = neon(process.env.DATABASE_URL!);
+function asRows(result: unknown): Record<string, unknown>[] {
+  return Array.isArray(result) ? (result as Record<string, unknown>[]) : [];
+}
 
 export async function GET(request: Request) {
   try {
@@ -13,10 +15,12 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "workflowId and key are required" }, { status: 400 });
     }
 
-    const results = await sql`
+    const sql = getDb();
+    const resultsRaw = await sql`
       SELECT value, data_type FROM workflow_memory
       WHERE workflow_id = ${workflowId} AND key = ${key}
     `;
+    const results = asRows(resultsRaw);
 
     if (results.length === 0) {
       return NextResponse.json({ value: null });
@@ -37,6 +41,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "workflowId and key are required" }, { status: 400 });
     }
 
+    const sql = getDb();
     await sql`
       INSERT INTO workflow_memory (workflow_id, key, value, data_type)
       VALUES (${workflowId}, ${key}, ${value}, ${dataType || "text"})
