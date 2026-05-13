@@ -1,4 +1,5 @@
 import { generateText } from "ai";
+import { createMistral } from "@ai-sdk/mistral";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -14,13 +15,27 @@ export async function POST(request: Request) {
       openai: `openai/${model || "gpt-4o"}`,
       google: `google/${model || "gemini-2.0-flash"}`,
       xai: `xai/${model || "grok-3"}`,
-      mistral: `mistral/${model || "mistral-medium"}`,
     };
 
-    const modelString = modelMap[provider] || "openai/gpt-4o";
+    const mistralKey = process.env.MISTRAL_API_KEY || process.env.MISTRAL_API_KEY_BACKUP;
+    const mistral = mistralKey ? createMistral({ apiKey: mistralKey }) : null;
+
+    let selectedModel;
+    if (provider === "mistral") {
+      if (!mistral) {
+        return NextResponse.json({ error: "Mistral API key is not configured" }, { status: 500 });
+      }
+      selectedModel = mistral(model || "mistral-small");
+    } else {
+      selectedModel = modelMap[provider] || "openai/gpt-4o";
+    }
+
+    if (!selectedModel) {
+      return NextResponse.json({ error: "Mistral API key is not configured" }, { status: 500 });
+    }
 
     const { text } = await generateText({
-      model: modelString,
+      model: selectedModel,
       prompt,
       system: systemPrompt || undefined,
       temperature: temperature ?? 0.7,
