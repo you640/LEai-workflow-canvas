@@ -231,14 +231,27 @@ function LaunchStudioInner() {
       return;
     }
 
+    const shortContext = [brief.goal, brief.targetAudience, brief.preferredTone]
+      .filter(Boolean)
+      .map((v) => v.trim())
+      .filter((v) => v.length > 0)
+      .join(" | ");
+
+    const fallback = [
+      `Vytvor profesionálny výstup pre projekt „${brief.projectName.trim()}“.`,
+      `Typ projektu: ${brief.projectType}.`,
+      `Cieľ: ${brief.goal || "doplní sa po konzultácii"}.`,
+      `Cieľová skupina: ${brief.targetAudience || "doplní sa po konzultácii"}.`,
+      `Preferovaný tón: ${brief.preferredTone || "jasný, profesionálny, dôveryhodný"}.`,
+      "Výstup musí obsahovať: hodnotový headline, stručný subheadline, sekcie (hero, benefits, process, offer, trust, faq, contact), CTA smer, SEO námety a FAQ.",
+      "Použi overiteľné tvrdenia, žiadne placeholdery, žiadne fake metriky a žiadne nereálne sľuby.",
+    ].join(" ");
+
+    // Always provide immediate deterministic value to avoid empty Description state.
+    setBrief((prev) => ({ ...prev, description: fallback }));
+    setImportMessage("Draft prompt bol vložený. Doladzujem AI verziu...");
     setIsGeneratingPrompt(true);
-    setImportMessage("");
     try {
-      const shortContext = [brief.goal, brief.targetAudience, brief.preferredTone]
-        .filter(Boolean)
-        .map((v) => v.trim())
-        .filter((v) => v.length > 0)
-        .join(" | ");
 
       const generationPrompt = [
         "Vygeneruj jeden kvalitný production-ready prompt v slovenčine do poľa 'Popis' pre AI Launch Studio.",
@@ -267,16 +280,6 @@ function LaunchStudioInner() {
       const data = await res.json();
 
       if (!res.ok || !data?.text) {
-        const fallback = [
-          `Vytvor profesionálny výstup pre projekt „${brief.projectName.trim()}“.`,
-          `Typ projektu: ${brief.projectType}.`,
-          `Cieľ: ${brief.goal || "doplní sa po konzultácii"}.`,
-          `Cieľová skupina: ${brief.targetAudience || "doplní sa po konzultácii"}.`,
-          `Preferovaný tón: ${brief.preferredTone || "jasný, profesionálny, dôveryhodný"}.`,
-          "Výstup musí obsahovať: hodnotový headline, stručný subheadline, sekcie (hero, benefits, process, offer, trust, faq, contact), CTA smer, SEO námety a FAQ.",
-          "Použi overiteľné tvrdenia, žiadne placeholdery, žiadne fake metriky a žiadne nereálne sľuby.",
-        ].join(" ");
-        setBrief((prev) => ({ ...prev, description: fallback }));
         setImportMessage("AI prompt fallback bol použitý.");
         return;
       }
