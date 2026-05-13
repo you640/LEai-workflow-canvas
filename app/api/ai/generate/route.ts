@@ -17,25 +17,33 @@ export async function POST(request: Request) {
       xai: `xai/${model || "grok-3"}`,
     };
 
-    const mistralKey = process.env.MISTRAL_API_KEY || process.env.MISTRAL_API_KEY_BACKUP;
-    const mistral = mistralKey ? createMistral({ apiKey: mistralKey }) : null;
-
-    let selectedModel;
     if (provider === "mistral") {
-      if (!mistral) {
+      const keys = [process.env.MISTRAL_API_KEY, process.env.MISTRAL_API_KEY_BACKUP].filter(Boolean) as string[];
+      if (keys.length === 0) {
         return NextResponse.json({ error: "Mistral API key is not configured" }, { status: 500 });
       }
-      selectedModel = mistral(model || "mistral-small");
-    } else {
-      selectedModel = modelMap[provider] || "openai/gpt-4o";
-    }
 
-    if (!selectedModel) {
-      return NextResponse.json({ error: "Mistral API key is not configured" }, { status: 500 });
+      let lastError: unknown = null;
+      for (const apiKey of keys) {
+        try {
+          const mistral = createMistral({ apiKey });
+          const { text } = await generateText({
+            model: mistral(model || "mistral-small"),
+            prompt,
+            system: systemPrompt || undefined,
+            temperature: temperature ?? 0.7,
+          });
+          return NextResponse.json({ text });
+        } catch (error) {
+          lastError = error;
+        }
+      }
+
+      throw lastError ?? new Error("Mistral request failed");
     }
 
     const { text } = await generateText({
-      model: selectedModel,
+      model: modelMap[provider] || "openai/gpt-4o",
       prompt,
       system: systemPrompt || undefined,
       temperature: temperature ?? 0.7,

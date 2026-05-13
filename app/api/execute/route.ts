@@ -38,20 +38,33 @@ async function generateAIText(data: AITextNodeData, input: string): Promise<stri
     google: `google/${data.model || "gemini-2.0-flash"}`,
     xai: `xai/${data.model || "grok-3"}`,
   };
-  const mistralKey = process.env.MISTRAL_API_KEY || process.env.MISTRAL_API_KEY_BACKUP;
-  const mistral = mistralKey ? createMistral({ apiKey: mistralKey }) : null;
 
   const prompt = data.prompt.replace(/\{\{input\}\}/g, input);
-  let selectedModel;
+
   if (data.provider === "mistral") {
-    if (!mistral) throw new Error("Mistral API key is not configured");
-    selectedModel = mistral(data.model || "mistral-small");
-  } else {
-    selectedModel = modelMap[data.provider] || "openai/gpt-4o";
+    const keys = [process.env.MISTRAL_API_KEY, process.env.MISTRAL_API_KEY_BACKUP].filter(Boolean) as string[];
+    if (keys.length === 0) throw new Error("Mistral API key is not configured");
+
+    let lastError: unknown = null;
+    for (const apiKey of keys) {
+      try {
+        const mistral = createMistral({ apiKey });
+        const { text } = await generateText({
+          model: mistral(data.model || "mistral-small"),
+          prompt,
+          system: data.systemPrompt || undefined,
+          temperature: data.temperature ?? 0.7,
+        });
+        return text;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+    throw lastError ?? new Error("Mistral request failed");
   }
 
   const { text } = await generateText({
-    model: selectedModel,
+    model: modelMap[data.provider] || "openai/gpt-4o",
     prompt,
     system: data.systemPrompt || undefined,
     temperature: data.temperature ?? 0.7,
