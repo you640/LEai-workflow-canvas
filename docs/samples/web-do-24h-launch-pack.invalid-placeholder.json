@@ -1,0 +1,57 @@
+{
+  "dryRun": true,
+  "project": {
+    "name": "support-campaign",
+    "type": "support-campaign",
+    "goal": "Launch",
+    "audience": "SMB",
+    "description": "Placeholder demo",
+    "tone": "generic",
+    "contactEmail": "hello@example.com"
+  },
+  "strategy": {
+    "positioning": "Generic positioning",
+    "valueProposition": "Generic value",
+    "primaryCTA": "Generate",
+    "secondaryCTA": "More"
+  },
+  "page": {
+    "headline": "support-campaign",
+    "subheadline": "Tu bude text",
+    "sections": [
+      {
+        "id": "hero",
+        "title": "Hero",
+        "body": "Krátke vysvetlenie hodnoty...",
+        "bullets": ["Placeholder"],
+        "cta": "Generate"
+      }
+    ]
+  },
+  "seo": {
+    "title": "",
+    "description": "",
+    "ogTitle": "x",
+    "ogDescription": "x"
+  },
+  "faq": [
+    { "question": "Q", "answer": "A" }
+  ],
+  "compliance": {
+    "passed": true,
+    "violations": []
+  },
+  "technicalRecommendations": [],
+  "securityRecommendations": [],
+  "antiPatterns": [],
+  "wordpressImportNotes": [],
+  "launchPack": {
+    "checklist": ["x"],
+    "nextSteps": ["y"]
+  },
+  "supportCampaign": {
+    "targetAmount": 10000
+  },
+  "productionWrite": false,
+  "wordpressPostId": null
+}

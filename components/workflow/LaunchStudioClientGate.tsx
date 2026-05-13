@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { LaunchStudioApp } from "@/components/workflow/LaunchStudioApp";
+import { useI18n } from "@/lib/i18n/client";
 
 export function LaunchStudioClientGate() {
   const [mounted, setMounted] = useState(false);
+  const { translate } = useI18n();
 
   useEffect(() => {
     setMounted(true);
@@ -12,8 +14,8 @@ export function LaunchStudioClientGate() {
 
   if (!mounted) {
     return (
-      <div className="app-shell flex h-[100dvh] items-center justify-center bg-zinc-950 text-zinc-200">
-        Launch Studio is loading...
+      <div className="app-shell launch-studio-shell flex items-center justify-center bg-zinc-950 text-zinc-200">
+        {translate("app.loading")}
       </div>
     );
   }

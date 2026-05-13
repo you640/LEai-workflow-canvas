@@ -17,9 +17,9 @@ function makeSupportCampaignPayload(project: ProjectLaunch) {
     campaign: {
       title: project.project.name,
       slug: project.project.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
-      type: project.supportCampaign?.mode ?? "donation",
-      goalAmount: project.supportCampaign?.targetAmount,
-      currency: project.supportCampaign?.currency ?? "EUR",
+      ...(project.supportCampaign?.mode ? { type: project.supportCampaign.mode } : {}),
+      ...(project.supportCampaign?.targetAmount != null ? { goalAmount: project.supportCampaign.targetAmount } : {}),
+      ...(project.supportCampaign?.currency ? { currency: project.supportCampaign.currency } : {}),
       content: project.project.description,
     },
     rewards: (project.supportCampaign?.rewards ?? []).map((r) => ({
@@ -38,7 +38,7 @@ function makeSupportCampaignPayload(project: ProjectLaunch) {
 }
 
 export async function importProjectToWordPress(project: ProjectLaunch, compliancePassed: boolean): Promise<ImportResult> {
-  const payloadPreview = makeSupportCampaignPayload(project) ?? { project: project.project, template: project.template };
+  const payloadPreview = makeSupportCampaignPayload(project) ?? { project: project.project };
 
   const realEnabled = process.env.ENABLE_REAL_WP_IMPORT === "true";
   const isSupport = project.project.type === "support-campaign";

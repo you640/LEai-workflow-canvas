@@ -39,7 +39,7 @@ interface Props {
 
 export function LaunchCanvas({ nodes, edges, onNodesChange, onEdgesChange, onNodeClick }: Props) {
   const themedEdges = useMemo(
-    () => edges.map((e) => ({ ...e, animated: true, style: { stroke: "#3f3f46", strokeWidth: 2 } })),
+    () => edges.map((e) => ({ ...e, animated: false, style: { stroke: "#52525b", strokeWidth: 2 } })),
     [edges]
   );
 

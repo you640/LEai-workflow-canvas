@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "title": "Web do 24h by Rubberduck — AI Launch Studio",
+    "description": "Od nápadu po hotový web za 24 hodín. Vyber typ projektu a Rubberduck Launch Studio pripraví štruktúru, texty a výstup pripravený na spustenie."
+  },
+  "common": {
+    "language": "Jazyk",
+    "english": "EN",
+    "slovak": "SK",
+    "save": "Uložiť",
+    "load": "Načítať",
+    "run": "Spustiť workflow",
+    "running": "Spúšťa sa...",
+    "addNode": "Pridať uzol",
+    "resetWorkflow": "Reset workflow",
+    "codeJsonView": "Kód/JSON náhľad",
+    "exportJson": "Export JSON",
+    "themeToggle": "Prepnutie témy"
+  },
+  "app": {
+    "brandTop": "Web do 24h",
+    "brandName": "Rubberduck Launch Studio",
+    "badge": "Launch Studio",
+    "dryRunMode": "Dry-run režim",
+    "headline": "AI Launch Studio",
+    "subheadline": "Od briefu po štruktúru webu cez vizuálny workflow.",
+    "workflowName": "Web do 24h Generator",
+    "loading": "Launch Studio sa načítava...",
+    "workflowNameLabel": "Názov workflow",
+    "projectType": "Typ projektu",
+    "projectName": "Názov projektu",
+    "targetAudience": "Cieľová skupina",
+    "goal": "Cieľ",
+    "description": "Popis",
+    "preferredTone": "Preferovaný tón",
+    "contactEmail": "Kontaktný e-mail",
+    "prepareWpImport": "Pripraviť WordPress import (Dry-run)",
+    "realImportDisabled": "Reálny import je štandardne vypnutý.",
+    "complianceViolations": "Compliance porušenia",
+    "validationErrors": "Validačné chyby",
+    "importResponseReceived": "Import odpoveď prijatá.",
+    "workflowSaved": "Workflow uložený.",
+    "workflowLoaded": "Workflow načítaný.",
+    "workflowRunFailed": "Spustenie workflow zlyhalo."
+    ,"customStepLabel": "Vlastný krok"
+    ,"customStepDescription": "Vlastný plánovací uzol."
+  },
+  "projectTypes": {
+    "business": "Business landing page",
+    "saas": "SaaS landing page",
+    "booking": "Booking page",
+    "product-launch": "Product launch page",
+    "support-campaign": "Support Campaign",
+    "personal-brand": "Personal brand page"
+  },
+  "inspector": {
+    "launchSummary": "Súhrn spustenia",
+    "projectType": "Typ projektu",
+    "dryRunStatus": "Stav dry-run",
+    "active": "Aktívny",
+    "disabled": "Vypnutý",
+    "complianceStatus": "Compliance stav",
+    "passed": "Prešiel",
+    "pendingFailed": "Čaká / zlyhal",
+    "lastRun": "Posledný beh",
+    "notRunYet": "Ešte nespustené",
+    "exportReadiness": "Pripravenosť exportu",
+    "ready": "Pripravený",
+    "blocked": "Blokovaný",
+    "status": "Stav",
+    "summary": "Súhrn",
+    "nodeId": "ID uzla"
+  },
+  "timeline": {
+    "title": "Log vykonania",
+    "empty": "Zatiaľ neprebehol žiadny beh."
+  },
+  "jsonPreview": {
+    "title": "JSON náhľad",
+    "metaboxNotice": "Náhľad content-first WordPress metabox payloadu (source of truth: meta.numbers).",
+    "dryRunNotice": "Len dry-run. Launch Studio generuje dáta, WordPress ich ukladá a renderuje.",
+    "empty": "Spusť workflow pre generovanie štruktúrovaného JSON.",
+    "blocked": "Export blokovaný kvôli compliance."
+  },
+  "status": {
+    "idle": "Nečinný",
+    "running": "Beží",
+    "success": "Hotovo",
+    "warning": "Upozornenie",
+    "failed": "Zlyhal"
+  },
+  "api": {
+    "briefRequired": "Launch brief je povinný.",
+    "projectInvalid": "Project payload je neplatný.",
+    "generatedProjectInvalid": "Vygenerovaný project payload je neplatný.",
+    "projectGenerationFailed": "Generovanie projektu zlyhalo.",
+    "projectImportFailed": "Import projektu zlyhal.",
+    "workflowNotFound": "Workflow nebol nájdený.",
+    "workflowExecutionFailed": "Vykonanie workflow zlyhalo.",
+    "importBlockedCompliance": "Import bol zablokovaný, pretože compliance kontrola zlyhala."
+  },
+  "runner": {
+    "nodeStarted": "Uzol spustený",
+    "complianceBlocked": "Compliance zablokovala beh",
+    "skippedCompliance": "Preskočené kvôli compliance zlyhaniu",
+    "previewGenerated": "Preview JSON vygenerovaný",
+    "completed": "Dokončené",
+    "executionFailed": "Vykonanie zlyhalo",
+    "skippedNodeFailure": "Preskočené kvôli zlyhaniu uzla"
+  },
+  "mock": {
+    "defaultProjectName": "Web do 24h Projekt",
+    "defaultAudience": "Majitelia menších a stredných firiem",
+    "defaultGoal": "Spustiť moderný web pripravený na klientov",
+    "defaultDescription": "Prehľadný web s jasnou ponukou a CTA.",
+    "defaultTone": "jasný, profesionálny, priamy"
+  },
+  "nodes": {
+    "project-type": { "label": "Typ projektu", "description": "Vyber jeden zo šiestich typov projektu." },
+    "launch-brief": { "label": "Launch Brief", "description": "Vyplň vstupný brief." },
+    "scope-guard": { "label": "Scope Guard", "description": "Over rozsah požiadavky a bezpečnosť." },
+    "strategy-agent": { "label": "Strategy Agent", "description": "Vytvor positioning a CTA stratégiu." },
+    "copy-agent": { "label": "Copy Agent", "description": "Vygeneruj headline, subheadline, CTA a FAQ návrh." },
+    "structure-agent": { "label": "Structure Agent", "description": "Vygeneruj architektúru sekcií stránky." },
+    "template-selector": { "label": "Template Selector", "description": "Vyber preset podľa typu projektu." },
+    "seo-agent": { "label": "SEO Agent", "description": "Vygeneruj metadata balík." },
+    "preview-builder": { "label": "Preview Builder", "description": "Zostav JSON náhľad výsledku." },
+    "wordpress-adapter": { "label": "WordPress Adapter", "description": "Priprav server-side import payload." },
+    "qa-audit": { "label": "QA Audit", "description": "Over povinné polia a wording." },
+    "launch-pack": { "label": "Launch Pack", "description": "Priprav checklist a ďalšie kroky." }
+  }
+}

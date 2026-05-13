@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
     "typecheck": "tsc --noEmit",
-    "check:schemas": "node scripts/check-schemas.mjs"
+    "check:schemas": "node scripts/check-schemas.mjs",
+    "test": "node scripts/test-launch-studio.mjs",
+    "validate:fixture": "node scripts/validate-launch-studio-fixture.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

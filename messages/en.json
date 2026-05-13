@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "title": "Web do 24h by Rubberduck — AI Launch Studio",
+    "description": "From idea to a ready website in 24 hours. Pick a project type and Rubberduck Launch Studio prepares structure, copy, and launch-ready output."
+  },
+  "common": {
+    "language": "Language",
+    "english": "EN",
+    "slovak": "SK",
+    "save": "Save",
+    "load": "Load",
+    "run": "Run Workflow",
+    "running": "Running...",
+    "addNode": "Add node",
+    "resetWorkflow": "Reset workflow",
+    "codeJsonView": "Code/JSON view",
+    "exportJson": "Export JSON",
+    "themeToggle": "Theme toggle"
+  },
+  "app": {
+    "brandTop": "Web do 24h",
+    "brandName": "Rubberduck Launch Studio",
+    "badge": "Launch Studio",
+    "dryRunMode": "Dry-run mode",
+    "headline": "AI Launch Studio",
+    "subheadline": "From brief to website structure via a visual workflow.",
+    "workflowName": "Web do 24h Generator",
+    "loading": "Launch Studio is loading...",
+    "workflowNameLabel": "Workflow name",
+    "projectType": "Project Type",
+    "projectName": "Project Name",
+    "targetAudience": "Target Audience",
+    "goal": "Goal",
+    "description": "Description",
+    "preferredTone": "Preferred Tone",
+    "contactEmail": "Contact Email",
+    "prepareWpImport": "Prepare WordPress Import (Dry-run)",
+    "realImportDisabled": "Real import is disabled by default.",
+    "complianceViolations": "Compliance violations",
+    "validationErrors": "Validation errors",
+    "importResponseReceived": "Import response received.",
+    "workflowSaved": "Workflow saved.",
+    "workflowLoaded": "Workflow loaded.",
+    "workflowRunFailed": "Workflow run failed."
+    ,"customStepLabel": "Custom Step"
+    ,"customStepDescription": "Custom planning node."
+  },
+  "projectTypes": {
+    "business": "Business landing page",
+    "saas": "SaaS landing page",
+    "booking": "Booking page",
+    "product-launch": "Product launch page",
+    "support-campaign": "Support Campaign",
+    "personal-brand": "Personal brand page"
+  },
+  "inspector": {
+    "launchSummary": "Launch Summary",
+    "projectType": "Project type",
+    "dryRunStatus": "Dry-run status",
+    "active": "Active",
+    "disabled": "Disabled",
+    "complianceStatus": "Compliance status",
+    "passed": "Passed",
+    "pendingFailed": "Pending / Failed",
+    "lastRun": "Last run",
+    "notRunYet": "Not run yet",
+    "exportReadiness": "Export readiness",
+    "ready": "Ready",
+    "blocked": "Blocked",
+    "status": "Status",
+    "summary": "Summary",
+    "nodeId": "Node ID"
+  },
+  "timeline": {
+    "title": "Execution Log",
+    "empty": "No runs yet."
+  },
+  "jsonPreview": {
+    "title": "JSON Preview",
+    "metaboxNotice": "Content-first WordPress metabox payload preview (source of truth: meta.numbers).",
+    "dryRunNotice": "Dry-run only. Launch Studio generates data, WordPress stores and renders it.",
+    "empty": "Run workflow to generate structured JSON.",
+    "blocked": "Export blocked by compliance."
+  },
+  "status": {
+    "idle": "Idle",
+    "running": "Running",
+    "success": "Success",
+    "warning": "Warning",
+    "failed": "Failed"
+  },
+  "api": {
+    "briefRequired": "Launch brief is required.",
+    "projectInvalid": "Project payload is invalid.",
+    "generatedProjectInvalid": "Generated project payload is invalid.",
+    "projectGenerationFailed": "Project generation failed.",
+    "projectImportFailed": "Project import failed.",
+    "workflowNotFound": "Workflow not found.",
+    "workflowExecutionFailed": "Workflow execution failed.",
+    "importBlockedCompliance": "Import blocked because compliance scan failed."
+  },
+  "runner": {
+    "nodeStarted": "Node started",
+    "complianceBlocked": "Compliance blocked",
+    "skippedCompliance": "Skipped due to compliance failure",
+    "previewGenerated": "Preview JSON generated",
+    "completed": "Completed",
+    "executionFailed": "Execution failed",
+    "skippedNodeFailure": "Skipped due to node failure"
+  },
+  "mock": {
+    "defaultProjectName": "Web do 24h Project",
+    "defaultAudience": "Owners of small and medium businesses",
+    "defaultGoal": "Launch a modern website ready for clients",
+    "defaultDescription": "A clear website with a clear offer and CTA.",
+    "defaultTone": "clear, professional, direct"
+  },
+  "nodes": {
+    "project-type": { "label": "Project Type", "description": "Choose one of six project types." },
+    "launch-brief": { "label": "Launch Brief", "description": "Fill launch brief input." },
+    "scope-guard": { "label": "Scope Guard", "description": "Validate request scope and safety." },
+    "strategy-agent": { "label": "Strategy Agent", "description": "Generate positioning and CTA strategy." },
+    "copy-agent": { "label": "Copy Agent", "description": "Generate headline, subheadline, CTA, FAQ draft." },
+    "structure-agent": { "label": "Structure Agent", "description": "Generate section architecture." },
+    "template-selector": { "label": "Template Selector", "description": "Pick preset by project type." },
+    "seo-agent": { "label": "SEO Agent", "description": "Generate metadata package." },
+    "preview-builder": { "label": "Preview Builder", "description": "Assemble launch preview JSON." },
+    "wordpress-adapter": { "label": "WordPress Adapter", "description": "Prepare server-side import payload." },
+    "qa-audit": { "label": "QA Audit", "description": "Validate required fields and wording." },
+    "launch-pack": { "label": "Launch Pack", "description": "Produce checklist and next steps." }
+  }
+}

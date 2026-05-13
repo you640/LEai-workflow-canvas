@@ -1,0 +1,163 @@
+{
+  "dryRun": true,
+  "project": {
+    "name": "Web do 24h — rýchly štart moderného firemného webu",
+    "type": "support-campaign",
+    "goal": "Vytvoriť kvalitnú landing page a štruktúru kampane pre službu Web do 24h.",
+    "audience": "Majitelia malých a stredných firiem, lokálni podnikatelia, salóny, ambulancie, služby a startupy.",
+    "description": "Profesionálny výstup pre službu Web do 24h so zameraním na dôveru, jasnú ponuku a konverzie.",
+    "tone": "Jasný, profesionálny, priamy, dôveryhodný.",
+    "contactEmail": "hello@example.com"
+  },
+  "strategy": {
+    "positioning": "Web do 24h je služba pre firmy, ktoré potrebujú rýchlo spustiť kvalitný web bez chaosu.",
+    "valueProposition": "Krátky proces, čitateľný obsah a technicky pripravený výstup pre okamžitý launch.",
+    "primaryCTA": "Spustiť plán",
+    "secondaryCTA": "Pozrieť možnosti"
+  },
+  "page": {
+    "headline": "Od nápadu po hotový web za 24 hodín",
+    "subheadline": "Vyplň brief a získaj štruktúru stránky, obsah a CTA pripravené na nasadenie.",
+    "sections": [
+      {
+        "id": "hero",
+        "title": "Web pripravený na klientov do 24 hodín",
+        "body": "Služba Web do 24h pomáha firmám rýchlo spustiť moderný web s jasnou ponukou, dôverou a konkrétnym ďalším krokom.",
+        "bullets": [
+          "Rýchly štart bez chaosu",
+          "Moderný responzívny dizajn",
+          "Obsah orientovaný na konverzie"
+        ],
+        "cta": "Spustiť plán"
+      },
+      {
+        "id": "benefits",
+        "title": "Reálne prínosy pre firmu",
+        "body": "Výstup zjednocuje štruktúru, texty a SEO základ, aby návštevník okamžite pochopil hodnotu služby a vedel spraviť kontakt.",
+        "bullets": [
+          "Jasná ponuka",
+          "Silnejšia dôvera",
+          "Vyššia pripravenosť na dopyty"
+        ],
+        "cta": null
+      },
+      {
+        "id": "process",
+        "title": "Proces krok za krokom",
+        "body": "Najprv sa zosumarizuje brief, potom vznikne štruktúra sekcií a finálny copy balík, ktorý tím okamžite použije pri implementácii.",
+        "bullets": [
+          "Brief a validácia",
+          "Stratégia a texty",
+          "QA a handoff"
+        ],
+        "cta": "Pozrieť možnosti"
+      },
+      {
+        "id": "offer",
+        "title": "Čo obsahuje výstup",
+        "body": "Dostaneš headline, subheadline, sekcie, FAQ, SEO metadata a exportný JSON, ktorý je pripravený na bezpečný import preview.",
+        "bullets": [
+          "Kompletná landing štruktúra",
+          "Pripravené CTA",
+          "Import-ready JSON"
+        ],
+        "cta": null
+      },
+      {
+        "id": "trust",
+        "title": "Dôvera bez umelých sľubov",
+        "body": "Obsah sa drží overiteľných tvrdení a transparentného procesu. Nepoužívajú sa fake referencie ani manipulatívny tlak.",
+        "bullets": [
+          "Bez fake metrík",
+          "Bez garantovaných výsledkov",
+          "Transparentná komunikácia"
+        ],
+        "cta": null
+      },
+      {
+        "id": "faq",
+        "title": "Časté otázky",
+        "body": "FAQ sekcia vysvetľuje rozsah, termíny, odovzdanie a ďalšie kroky po schválení briefu.",
+        "bullets": [
+          "Jasný rozsah",
+          "Zrozumiteľné termíny",
+          "Praktické odpovede"
+        ],
+        "cta": null
+      },
+      {
+        "id": "contact",
+        "title": "Kontakt a ďalší krok",
+        "body": "Po odoslaní briefu dostane klient jasný plán realizácie a priority pre spustenie webu.",
+        "bullets": [
+          "Jednoznačný CTA krok",
+          "Rýchla spätná väzba",
+          "Handoff pripravený na realizáciu"
+        ],
+        "cta": "Odoslať brief"
+      }
+    ]
+  },
+  "seo": {
+    "title": "Web do 24h | Moderný firemný web bez chaosu",
+    "description": "Spusti moderný web pripravený na klientov do 24 hodín. Štruktúra, copy, SEO základ a bezpečný dry-run import preview.",
+    "ogTitle": "Web do 24h — AI Launch Studio",
+    "ogDescription": "Rýchly a transparentný launch webu pre malé a stredné firmy."
+  },
+  "faq": [
+    {
+      "question": "Ako rýchlo vieme začať?",
+      "answer": "Po potvrdení briefu sa pripraví návrh štruktúry a obsah bez dlhého čakania."
+    },
+    {
+      "question": "Je výstup pripravený pre WordPress?",
+      "answer": "Áno, výstup je pripravený ako dry-run payload pre import preview."
+    },
+    {
+      "question": "Čo je súčasťou dodania?",
+      "answer": "Headline, sekcie, CTA logika, FAQ, SEO metadata a technické odporúčania."
+    },
+    {
+      "question": "Ako riešite dôveryhodnosť obsahu?",
+      "answer": "Používame overiteľné tvrdenia, bez fake referencií a bez zavádzajúcich sľubov."
+    }
+  ],
+  "compliance": {
+    "passed": true,
+    "violations": []
+  },
+  "technicalRecommendations": [
+    "Použiť Zod validáciu pred exportom.",
+    "Udržať deterministic generovanie pre QA.",
+    "Držať mapovanie formulár -> brief -> JSON bez implicitných polí."
+  ],
+  "securityRecommendations": [
+    "Neukladať citlivé tokeny v localStorage.",
+    "V dry-run režime držať productionWrite=false.",
+    "Import route ponechať za server-side guardom."
+  ],
+  "antiPatterns": [
+    "Nevkladať placeholder texty.",
+    "Nevymýšľať fake metriky.",
+    "Neobchádzať validáciu pri exporte."
+  ],
+  "wordpressImportNotes": [
+    "Import tlačidlo vytvára iba payload preview.",
+    "wordpressPostId ostáva null v dry-run režime.",
+    "Pri zlyhaní compliance export/import ostáva blokovaný."
+  ],
+  "launchPack": {
+    "checklist": [
+      "Overiť kvalitu headline a CTA.",
+      "Skontrolovať 7 povinných sekcií.",
+      "Spustiť contract validáciu pred exportom."
+    ],
+    "nextSteps": [
+      "Potvrdiť brief s klientom.",
+      "Pripraviť implementáciu sekcií.",
+      "Ponechať ENABLE_REAL_WP_IMPORT=false."
+    ]
+  },
+  "productionWrite": false,
+  "wordpressPostId": null
+}
