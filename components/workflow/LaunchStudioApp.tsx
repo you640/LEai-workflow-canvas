@@ -74,6 +74,7 @@ function LaunchStudioInner() {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [importMessage, setImportMessage] = useState<string>("");
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
 
   const selectedNode: WorkflowNode | null = useMemo(
     () => nodes.find((n) => n.id === selectedNodeId) ?? null,
@@ -224,6 +225,71 @@ function LaunchStudioInner() {
     setImportMessage(data?.message ?? translate("app.importResponseReceived"));
   };
 
+  const handleMagicPrompt = useCallback(async () => {
+    if (!brief.projectName.trim()) {
+      setImportMessage("Doplň názov projektu a krátky kontext, potom skús kúzelnú paličku.");
+      return;
+    }
+
+    setIsGeneratingPrompt(true);
+    setImportMessage("");
+    try {
+      const shortContext = [brief.goal, brief.targetAudience, brief.preferredTone]
+        .filter(Boolean)
+        .map((v) => v.trim())
+        .filter((v) => v.length > 0)
+        .join(" | ");
+
+      const generationPrompt = [
+        "Vygeneruj jeden kvalitný production-ready prompt v slovenčine do poľa 'Popis' pre AI Launch Studio.",
+        `Názov projektu: ${brief.projectName.trim()}`,
+        `Typ projektu: ${brief.projectType}`,
+        `Krátky kontext: ${shortContext || "nie je zadaný"}`,
+        "",
+        "Požiadavky:",
+        "- výsledok má byť konkrétny, profesionálny a použiteľný pre web launch brief",
+        "- bez placeholderov, bez lorem ipsum, bez fake tvrdení",
+        "- bez investičnej/garantovanej terminológie",
+        "- zahrň: cieľ, publikum, tone of voice, štruktúru sekcií, CTA smer",
+        "- výstup vráť ako čistý text bez markdownu a bez úvodzoviek",
+      ].join("\\n");
+
+      const res = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider: "mistral",
+          model: "mistral-small",
+          temperature: 0.6,
+          prompt: generationPrompt,
+        }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data?.text) {
+        const fallback = [
+          `Vytvor profesionálny výstup pre projekt „${brief.projectName.trim()}“.`,
+          `Typ projektu: ${brief.projectType}.`,
+          `Cieľ: ${brief.goal || "doplní sa po konzultácii"}.`,
+          `Cieľová skupina: ${brief.targetAudience || "doplní sa po konzultácii"}.`,
+          `Preferovaný tón: ${brief.preferredTone || "jasný, profesionálny, dôveryhodný"}.`,
+          "Výstup musí obsahovať: hodnotový headline, stručný subheadline, sekcie (hero, benefits, process, offer, trust, faq, contact), CTA smer, SEO námety a FAQ.",
+          "Použi overiteľné tvrdenia, žiadne placeholdery, žiadne fake metriky a žiadne nereálne sľuby.",
+        ].join(" ");
+        setBrief((prev) => ({ ...prev, description: fallback }));
+        setImportMessage("AI prompt fallback bol použitý.");
+        return;
+      }
+
+      setBrief((prev) => ({ ...prev, description: String(data.text).trim() }));
+      setImportMessage("Kúzelná palička doplnila Popis.");
+    } catch {
+      setImportMessage("Generovanie promptu zlyhalo.");
+    } finally {
+      setIsGeneratingPrompt(false);
+    }
+  }, [brief]);
+
   const handleAddNode = useCallback(() => {
     const last = nodes[nodes.length - 1];
     const newNode: WorkflowNode = {
@@ -256,10 +322,12 @@ function LaunchStudioInner() {
         onReset={handleReset}
         onAddNode={handleAddNode}
         onToggleJson={() => setShowJson((v) => !v)}
+        onMagicPrompt={handleMagicPrompt}
         onExport={handleExport}
         isRunning={isRunning}
         dryRun={false}
         canExport={canExport}
+        isGeneratingPrompt={isGeneratingPrompt}
       />
 
       <div className="grid h-[calc(100dvh-64px-env(safe-area-inset-top)-env(safe-area-inset-bottom))] grid-cols-12 gap-3 overflow-hidden p-3">

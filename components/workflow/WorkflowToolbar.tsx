@@ -1,7 +1,6 @@
 "use client";
 
-import { Moon, Sun, Play, Save, FolderOpen, RotateCcw, Code2, Plus, Download } from "lucide-react";
-import { useTheme } from "next-themes";
+import { Play, Save, FolderOpen, RotateCcw, Code2, Plus, Download, WandSparkles } from "lucide-react";
 import { useI18n } from "@/lib/i18n/client";
 
 interface Props {
@@ -13,10 +12,12 @@ interface Props {
   onReset: () => void;
   onAddNode: () => void;
   onToggleJson: () => void;
+  onMagicPrompt: () => void;
   onExport: () => void;
   isRunning: boolean;
   dryRun: boolean;
   canExport: boolean;
+  isGeneratingPrompt?: boolean;
 }
 
 export function WorkflowToolbar({
@@ -28,12 +29,13 @@ export function WorkflowToolbar({
   onReset,
   onAddNode,
   onToggleJson,
+  onMagicPrompt,
   onExport,
   isRunning,
   dryRun,
   canExport,
+  isGeneratingPrompt = false,
 }: Props) {
-  const { resolvedTheme, setTheme } = useTheme();
   const { locale, setLocale, translate } = useI18n();
 
   return (
@@ -106,12 +108,13 @@ export function WorkflowToolbar({
         </button>
         <button
           type="button"
-          aria-label={translate("common.themeToggle")}
+          aria-label="Generate Perfect Prompt"
           className="rounded-md border border-zinc-700 p-2 text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70"
-          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-          title={translate("common.themeToggle")}
+          onClick={onMagicPrompt}
+          disabled={isGeneratingPrompt}
+          title={isGeneratingPrompt ? "Generating..." : "Generate Perfect Prompt"}
         >
-          {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          <WandSparkles className="h-4 w-4" />
         </button>
         <button
           type="button"
