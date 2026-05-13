@@ -36,6 +36,7 @@ async function generateAIText(data: AITextNodeData, input: string): Promise<stri
     openai: `openai/${data.model || "gpt-4o"}`,
     google: `google/${data.model || "gemini-2.0-flash"}`,
     xai: `xai/${data.model || "grok-3"}`,
+    mistral: `mistral/${data.model || "mistral-medium"}`,
   };
 
   const prompt = data.prompt.replace(/\{\{input\}\}/g, input);

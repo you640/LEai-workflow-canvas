@@ -14,6 +14,7 @@ export async function POST(request: Request) {
       openai: `openai/${model || "gpt-4o"}`,
       google: `google/${model || "gemini-2.0-flash"}`,
       xai: `xai/${model || "grok-3"}`,
+      mistral: `mistral/${model || "mistral-medium"}`,
     };
 
     const modelString = modelMap[provider] || "openai/gpt-4o";
