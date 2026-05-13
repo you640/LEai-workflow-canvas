@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Web do 24h by Rubberduck — AI Launch Studio",
-    "description": "From idea to a ready website in 24 hours. Pick a project type and Rubberduck Launch Studio prepares structure, copy, and launch-ready output."
+    "title": "Web do 24h — LE Studio",
+    "description": "From idea to a ready website in 24 hours. Pick a project type and LE Studio prepares structure, copy, and launch-ready output."
   },
   "common": {
     "language": "Language",
@@ -15,17 +15,20 @@
     "resetWorkflow": "Reset workflow",
     "codeJsonView": "Code/JSON view",
     "exportJson": "Export JSON",
-    "themeToggle": "Theme toggle"
+    "themeToggle": "Theme toggle",
+    "generate": "Generate",
+    "preview": "Preview",
+    "share": "Share"
   },
   "app": {
     "brandTop": "Web do 24h",
-    "brandName": "Rubberduck Launch Studio",
-    "badge": "Launch Studio",
+    "brandName": "LE Studio",
+    "badge": "LE Studio",
     "dryRunMode": "Dry-run mode",
-    "headline": "AI Launch Studio",
+    "headline": "LE Studio Editor",
     "subheadline": "From brief to website structure via a visual workflow.",
     "workflowName": "Web do 24h Generator",
-    "loading": "Launch Studio is loading...",
+    "loading": "LE Studio is loading...",
     "workflowNameLabel": "Workflow name",
     "projectType": "Project Type",
     "projectName": "Project Name",
@@ -78,7 +81,7 @@
   "jsonPreview": {
     "title": "JSON Preview",
     "metaboxNotice": "Content-first WordPress metabox payload preview (source of truth: meta.numbers).",
-    "dryRunNotice": "Dry-run only. Launch Studio generates data, WordPress stores and renders it.",
+    "dryRunNotice": "Dry-run only. LE Studio generates data, WordPress stores and renders it.",
     "empty": "Run workflow to generate structured JSON.",
     "blocked": "Export blocked by compliance."
   },

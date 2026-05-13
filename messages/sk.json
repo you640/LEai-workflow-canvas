@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Web do 24h by Rubberduck — AI Launch Studio",
-    "description": "Od nápadu po hotový web za 24 hodín. Vyber typ projektu a Rubberduck Launch Studio pripraví štruktúru, texty a výstup pripravený na spustenie."
+    "title": "Web do 24h — LE Studio",
+    "description": "Od nápadu po hotový web za 24 hodín. Vyber typ projektu a LE Studio pripraví štruktúru, texty a výstup pripravený na spustenie."
   },
   "common": {
     "language": "Jazyk",
@@ -15,17 +15,20 @@
     "resetWorkflow": "Reset workflow",
     "codeJsonView": "Kód/JSON náhľad",
     "exportJson": "Export JSON",
-    "themeToggle": "Prepnutie témy"
+    "themeToggle": "Prepnutie témy",
+    "generate": "Generovať",
+    "preview": "Náhľad",
+    "share": "Zdieľať"
   },
   "app": {
     "brandTop": "Web do 24h",
-    "brandName": "Rubberduck Launch Studio",
-    "badge": "Launch Studio",
+    "brandName": "LE Studio",
+    "badge": "LE Studio",
     "dryRunMode": "Dry-run režim",
-    "headline": "AI Launch Studio",
+    "headline": "LE Studio Editor",
     "subheadline": "Od briefu po štruktúru webu cez vizuálny workflow.",
     "workflowName": "Web do 24h Generator",
-    "loading": "Launch Studio sa načítava...",
+    "loading": "LE Studio sa načítava...",
     "workflowNameLabel": "Názov workflow",
     "projectType": "Typ projektu",
     "projectName": "Názov projektu",
@@ -78,7 +81,7 @@
   "jsonPreview": {
     "title": "JSON náhľad",
     "metaboxNotice": "Náhľad content-first WordPress metabox payloadu (source of truth: meta.numbers).",
-    "dryRunNotice": "Len dry-run. Launch Studio generuje dáta, WordPress ich ukladá a renderuje.",
+    "dryRunNotice": "Len dry-run. LE Studio generuje dáta, WordPress ich ukladá a renderuje.",
     "empty": "Spusť workflow pre generovanie štruktúrovaného JSON.",
     "blocked": "Export blokovaný kvôli compliance."
   },

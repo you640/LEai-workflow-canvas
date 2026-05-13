@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ReactFlowProvider, useEdgesState, useNodesState, type Edge } from "@xyflow/react";
+import { Activity, Compass, Database, FileJson, Monitor, RotateCcw, Share2, X } from "lucide-react";
 import { createDefaultWorkflow } from "@/lib/workflow/default-workflow";
 import type { LaunchBriefInput, ProjectType, WorkflowNode, WorkflowRunResponse } from "@/types/workflow";
 import { LaunchCanvas } from "@/components/workflow/LaunchCanvas";
@@ -29,6 +30,15 @@ const NODE_COPY_KEYS: Record<string, { label: `nodes.${string}.label`; descripti
   "wordpress-adapter": { label: "nodes.wordpress-adapter.label", description: "nodes.wordpress-adapter.description" },
   "qa-audit": { label: "nodes.qa-audit.label", description: "nodes.qa-audit.description" },
   "launch-pack": { label: "nodes.launch-pack.label", description: "nodes.launch-pack.description" },
+};
+
+const PROJECT_TYPE_LABEL_KEYS: Record<ProjectType, TranslationKey> = {
+  business: "projectTypes.business",
+  saas: "projectTypes.saas",
+  booking: "projectTypes.booking",
+  "product-launch": "projectTypes.product-launch",
+  "support-campaign": "projectTypes.support-campaign",
+  "personal-brand": "projectTypes.personal-brand",
 };
 
 function LaunchStudioInner() {
@@ -254,7 +264,7 @@ function LaunchStudioInner() {
     try {
 
       const generationPrompt = [
-        "Vygeneruj jeden kvalitný production-ready prompt v slovenčine do poľa 'Popis' pre AI Launch Studio.",
+        "Vygeneruj jeden kvalitný production-ready prompt v slovenčine do poľa 'Popis' pre LE Studio.",
         `Názov projektu: ${brief.projectName.trim()}`,
         `Typ projektu: ${brief.projectType}`,
         `Krátky kontext: ${shortContext || "nie je zadaný"}`,
@@ -313,118 +323,327 @@ function LaunchStudioInner() {
   }, []);
 
   const lastRunAt = timeline[timeline.length - 1]?.at;
+  const projectTypeLabel = translate(PROJECT_TYPE_LABEL_KEYS[brief.projectType]);
+  const latestEvent = timeline[timeline.length - 1];
+  const latestEventText = latestEvent
+    ? `${latestEvent.nodeLabel}: ${latestEvent.message}`
+    : translate("timeline.empty");
 
   return (
-    <div className="app-shell launch-studio-shell bg-zinc-950 text-zinc-100">
-      <WorkflowToolbar
-        workflowName={workflowName}
-        onWorkflowNameChange={setWorkflowName}
-        onRun={handleRun}
-        onSave={handleSave}
-        onLoad={handleLoad}
-        onReset={handleReset}
-        onAddNode={handleAddNode}
-        onToggleJson={() => setShowJson((v) => !v)}
-        onMagicPrompt={handleMagicPrompt}
-        onExport={handleExport}
-        isRunning={isRunning}
-        dryRun={false}
-        canExport={canExport}
-        isGeneratingPrompt={isGeneratingPrompt}
-      />
+    <div className="app-shell launch-studio-shell relative flex min-h-[100vh] min-h-[100dvh] flex-col bg-zinc-950 text-zinc-100">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(16,185,129,0.1),transparent_30%),radial-gradient(circle_at_90%_10%,rgba(59,130,246,0.08),transparent_28%)]" />
+      <nav className="xl:hidden flex h-12 shrink-0 items-center justify-between border-b border-zinc-800/70 bg-zinc-950/80 px-3 backdrop-blur-md">
+        <button
+          type="button"
+          onClick={handleReset}
+          className="rounded-full p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70"
+          aria-label={translate("common.resetWorkflow")}
+          title={translate("common.resetWorkflow")}
+        >
+          <X className="h-[18px] w-[18px]" />
+        </button>
+        <div className="text-xs font-medium tracking-wide text-zinc-400">studio.rubberduck.sk</div>
+        <button
+          type="button"
+          onClick={() => setShowJson((v) => !v)}
+          className="rounded-full p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70"
+          aria-label={translate("common.codeJsonView")}
+          title={translate("common.codeJsonView")}
+        >
+          <Monitor className="h-[18px] w-[18px]" />
+        </button>
+      </nav>
 
-      <div className="grid h-[calc(100dvh-64px-env(safe-area-inset-top)-env(safe-area-inset-bottom))] grid-cols-12 gap-3 overflow-hidden p-3">
-        <div className="col-span-8 flex min-h-0 flex-col gap-3 overflow-hidden">
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
-            <h2 className="text-sm font-semibold">{translate("app.headline")}</h2>
-            <p className="text-xs text-zinc-300">{translate("app.subheadline")}</p>
-            <div className="mt-3 grid grid-cols-2 gap-3">
-              <div>
-                <label htmlFor="brief-project-type" className="mb-1 block text-xs text-zinc-300">{translate("app.projectType")}</label>
-                <ProjectTypeSelector
-                  id="brief-project-type"
-                  ariaLabel={translate("app.projectType")}
-                  value={brief.projectType as ProjectType}
-                  onChange={(projectType) => setBrief((b) => ({ ...b, projectType }))}
+      <header className="xl:hidden flex shrink-0 items-center justify-between px-4 py-3">
+        <h1 className="text-lg font-bold leading-none text-zinc-50">{translate("app.brandName")}</h1>
+        <div className="flex items-center overflow-hidden rounded-md border border-emerald-900/40">
+          <span className="flex items-center gap-1 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-300 bg-emerald-950/50">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+            LIVE
+          </span>
+          <span className="border-l border-emerald-900/40 bg-zinc-900 px-2 py-0.5 text-[10px] font-medium text-zinc-400">
+            {translate("app.brandTop")}
+          </span>
+        </div>
+      </header>
+
+      <div className="hidden xl:block">
+        <WorkflowToolbar
+          workflowName={workflowName}
+          onWorkflowNameChange={setWorkflowName}
+          onRun={handleRun}
+          onSave={handleSave}
+          onLoad={handleLoad}
+          onReset={handleReset}
+          onAddNode={handleAddNode}
+          onToggleJson={() => setShowJson((v) => !v)}
+          onMagicPrompt={handleMagicPrompt}
+          onExport={handleExport}
+          isRunning={isRunning}
+          dryRun={false}
+          canExport={canExport}
+          isGeneratingPrompt={isGeneratingPrompt}
+        />
+      </div>
+
+      <main className="relative z-10 flex-1 min-h-0 overflow-hidden px-3 pb-2 xl:p-3">
+        <div className="mx-auto flex h-full min-h-0 w-full max-w-[1800px] flex-col gap-3 xl:grid xl:grid-cols-12">
+          <div className="flex min-h-0 flex-col gap-3 xl:col-span-8">
+            <section className="shrink-0 rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 p-3 shadow-[0_14px_50px_rgba(0,0,0,0.35)] xl:rounded-xl xl:p-4">
+              <h2 className="text-sm font-semibold text-zinc-50">{translate("app.headline")}</h2>
+              <p className="text-xs text-zinc-300/95">{translate("app.subheadline")}</p>
+              <div className="mt-3 grid grid-cols-2 gap-2 xl:gap-3">
+                <div>
+                  <label htmlFor="brief-project-type" className="mb-1 block text-xs text-zinc-300">
+                    {translate("app.projectType")}
+                  </label>
+                  <ProjectTypeSelector
+                    id="brief-project-type"
+                    ariaLabel={translate("app.projectType")}
+                    value={brief.projectType as ProjectType}
+                    onChange={(projectType) => setBrief((b) => ({ ...b, projectType }))}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="brief-project-name" className="mb-1 block text-xs text-zinc-300">
+                    {translate("app.projectName")}
+                  </label>
+                  <input
+                    id="brief-project-name"
+                    className="h-9 w-full rounded-lg border border-zinc-700/90 bg-zinc-950/90 px-3 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 xl:h-10 xl:rounded-md xl:text-sm"
+                    value={brief.projectName}
+                    onChange={(e) => setBrief((b) => ({ ...b, projectName: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="brief-target-audience" className="mb-1 block text-xs text-zinc-300">
+                    {translate("app.targetAudience")}
+                  </label>
+                  <input
+                    id="brief-target-audience"
+                    className="h-9 w-full rounded-lg border border-zinc-700/90 bg-zinc-950/90 px-3 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 xl:h-10 xl:rounded-md xl:text-sm"
+                    value={brief.targetAudience}
+                    onChange={(e) => setBrief((b) => ({ ...b, targetAudience: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="brief-goal" className="mb-1 block text-xs text-zinc-300">
+                    {translate("app.goal")}
+                  </label>
+                  <input
+                    id="brief-goal"
+                    className="h-9 w-full rounded-lg border border-zinc-700/90 bg-zinc-950/90 px-3 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 xl:h-10 xl:rounded-md xl:text-sm"
+                    value={brief.goal}
+                    onChange={(e) => setBrief((b) => ({ ...b, goal: e.target.value }))}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label htmlFor="brief-description" className="mb-1 block text-xs text-zinc-300">
+                    {translate("app.description")}
+                  </label>
+                  <textarea
+                    id="brief-description"
+                    className="h-9 w-full resize-none rounded-lg border border-zinc-700/90 bg-zinc-950/90 px-3 py-2 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 xl:h-auto xl:rounded-md xl:text-sm"
+                    rows={2}
+                    value={brief.description}
+                    onChange={(e) => setBrief((b) => ({ ...b, description: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="brief-preferred-tone" className="mb-1 block text-xs text-zinc-300">
+                    {translate("app.preferredTone")}
+                  </label>
+                  <input
+                    id="brief-preferred-tone"
+                    className="h-9 w-full rounded-lg border border-zinc-700/90 bg-zinc-950/90 px-3 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 xl:h-10 xl:rounded-md xl:text-sm"
+                    value={brief.preferredTone}
+                    onChange={(e) => setBrief((b) => ({ ...b, preferredTone: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="brief-contact-email" className="mb-1 block text-xs text-zinc-300">
+                    {translate("app.contactEmail")}
+                  </label>
+                  <input
+                    id="brief-contact-email"
+                    type="email"
+                    className="h-9 w-full rounded-lg border border-zinc-700/90 bg-zinc-950/90 px-3 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 xl:h-10 xl:rounded-md xl:text-sm"
+                    value={brief.contactEmail ?? ""}
+                    onChange={(e) => setBrief((b) => ({ ...b, contactEmail: e.target.value }))}
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section className="relative flex-1 min-h-[180px] overflow-hidden rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 shadow-[0_14px_50px_rgba(0,0,0,0.35)] xl:min-h-0 xl:rounded-xl">
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(#2a2a2a_1px,transparent_1px)] [background-size:12px_12px] opacity-60 xl:hidden" />
+              <div className="relative h-full w-full">
+                <LaunchCanvas
+                  nodes={nodes as WorkflowNode[]}
+                  edges={edges}
+                  onNodesChange={onNodesChange}
+                  onEdgesChange={onEdgesChange}
+                  onNodeClick={handleNodeClick}
                 />
               </div>
-              <div>
-                <label htmlFor="brief-project-name" className="mb-1 block text-xs text-zinc-300">{translate("app.projectName")}</label>
-                <input id="brief-project-name" className="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70" value={brief.projectName} onChange={(e) => setBrief((b) => ({ ...b, projectName: e.target.value }))} />
-              </div>
-              <div>
-                <label htmlFor="brief-target-audience" className="mb-1 block text-xs text-zinc-300">{translate("app.targetAudience")}</label>
-                <input id="brief-target-audience" className="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70" value={brief.targetAudience} onChange={(e) => setBrief((b) => ({ ...b, targetAudience: e.target.value }))} />
-              </div>
-              <div>
-                <label htmlFor="brief-goal" className="mb-1 block text-xs text-zinc-300">{translate("app.goal")}</label>
-                <input id="brief-goal" className="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70" value={brief.goal} onChange={(e) => setBrief((b) => ({ ...b, goal: e.target.value }))} />
-              </div>
-              <div className="col-span-2">
-                <label htmlFor="brief-description" className="mb-1 block text-xs text-zinc-300">{translate("app.description")}</label>
-                <textarea id="brief-description" className="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70" rows={2} value={brief.description} onChange={(e) => setBrief((b) => ({ ...b, description: e.target.value }))} />
-              </div>
-              <div>
-                <label htmlFor="brief-preferred-tone" className="mb-1 block text-xs text-zinc-300">{translate("app.preferredTone")}</label>
-                <input id="brief-preferred-tone" className="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70" value={brief.preferredTone} onChange={(e) => setBrief((b) => ({ ...b, preferredTone: e.target.value }))} />
-              </div>
-              <div>
-                <label htmlFor="brief-contact-email" className="mb-1 block text-xs text-zinc-300">{translate("app.contactEmail")}</label>
-                <input id="brief-contact-email" type="email" className="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70" value={brief.contactEmail ?? ""} onChange={(e) => setBrief((b) => ({ ...b, contactEmail: e.target.value }))} />
-              </div>
-            </div>
+            </section>
+
+            <section className="xl:hidden shrink-0 flex gap-3 overflow-x-auto pb-1 snap-x [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <article className="w-44 shrink-0 snap-start rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.28)]">
+                <h4 className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-zinc-100">
+                  <Database className="h-3 w-3 text-blue-400" />
+                  {translate("inspector.launchSummary")}
+                </h4>
+                <div className="space-y-1.5 text-[10px]">
+                  <div className="flex items-center justify-between">
+                    <span className="text-zinc-500">{translate("inspector.projectType")}:</span>
+                    <span className="font-medium text-zinc-300">{projectTypeLabel}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-zinc-500">{translate("inspector.complianceStatus")}:</span>
+                    <span className={compliancePassed ? "font-medium text-emerald-300" : "font-medium text-amber-300"}>
+                      {compliancePassed ? translate("inspector.passed") : translate("inspector.pendingFailed")}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-zinc-500">{translate("inspector.exportReadiness")}:</span>
+                    <span className={canExport ? "font-medium text-emerald-300" : "font-medium text-zinc-300"}>
+                      {canExport ? translate("inspector.ready") : translate("inspector.blocked")}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleImportDryRun}
+                  disabled={!compliancePassed || !generated}
+                  className="mt-2 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-2 py-1 text-[10px] font-medium text-zinc-300 transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {translate("app.prepareWpImport")}
+                </button>
+              </article>
+
+              {showJson ? (
+                <article className="flex w-44 shrink-0 snap-start flex-col justify-between rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.28)]">
+                  <div>
+                    <h4 className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-zinc-100">
+                      <FileJson className="h-3 w-3 text-purple-400" />
+                      {translate("jsonPreview.title")}
+                    </h4>
+                    <p className="text-[9px] leading-tight text-zinc-500">{translate("jsonPreview.metaboxNotice")}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleExport}
+                    disabled={!canExport}
+                    className="mt-2 w-full rounded-lg border border-zinc-700 bg-zinc-950 py-1 text-[10px] font-medium text-zinc-300 transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {translate("common.exportJson")}
+                  </button>
+                </article>
+              ) : null}
+
+              <article className="w-44 shrink-0 snap-start rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.28)]">
+                <h4 className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-zinc-100">
+                  <Activity className="h-3 w-3 text-orange-400" />
+                  {translate("timeline.title")}
+                </h4>
+                <p className="line-clamp-3 text-[10px] text-zinc-400">{latestEventText}</p>
+              </article>
+            </section>
+
+            <section className="xl:hidden rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.28)]">
+              <div className="text-[10px] text-emerald-300">LIVE mode active. Real user inputs required.</div>
+              {violations.length > 0 ? (
+                <div className="mt-1 text-[10px] text-rose-400">
+                  {translate("app.complianceViolations")}: {violations.join(", ")}
+                </div>
+              ) : null}
+              {validationErrors.length > 0 ? (
+                <div className="mt-1 text-[10px] text-amber-300">
+                  {translate("app.validationErrors")}: {validationErrors.join(", ")}
+                </div>
+              ) : null}
+              {importMessage ? <div className="mt-1 text-[10px] text-zinc-300">{importMessage}</div> : null}
+            </section>
           </div>
 
-          <div className="flex-1 min-h-0">
-            <LaunchCanvas
-              nodes={nodes as WorkflowNode[]}
-              edges={edges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onNodeClick={handleNodeClick}
-            />
-          </div>
-        </div>
-
-        <div className="col-span-4 flex min-h-0 flex-col gap-3 overflow-hidden">
-          <div className="min-h-[170px] overflow-auto">
-            <NodeInspector
-              node={selectedNode}
-              projectType={brief.projectType}
-              dryRun={false}
-              compliancePassed={compliancePassed}
-              canExport={canExport}
-              lastRunAt={lastRunAt}
-            />
-          </div>
-          <div className="min-h-[220px] overflow-auto">
-            <ExecutionTimeline events={timeline} />
-          </div>
-          {showJson ? (
-            <div className="min-h-[230px] overflow-auto">
-              <JsonPreview data={generated} blocked={!canExport} onExport={handleExport} />
+          <aside className="hidden min-h-0 flex-col gap-3 overflow-hidden xl:col-span-4 xl:flex">
+            <div className="min-h-[170px] overflow-auto">
+              <NodeInspector
+                node={selectedNode}
+                projectType={brief.projectType}
+                dryRun={false}
+                compliancePassed={compliancePassed}
+                canExport={canExport}
+                lastRunAt={lastRunAt}
+              />
             </div>
-          ) : null}
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
-            <button
-              type="button"
-              onClick={handleImportDryRun}
-              disabled={!compliancePassed || !generated}
-              className="w-full rounded-md border border-zinc-700 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 disabled:opacity-40"
-            >
-              {translate("app.prepareWpImport")}
-            </button>
-            <div className="mt-2 text-xs text-emerald-300">LIVE mode active. Real user inputs required.</div>
-            {violations.length > 0 ? (
-              <div className="mt-2 text-xs text-rose-400">{translate("app.complianceViolations")}: {violations.join(", ")}</div>
+            <div className="min-h-[220px] overflow-auto">
+              <ExecutionTimeline events={timeline} />
+            </div>
+            {showJson ? (
+              <div className="min-h-[230px] overflow-auto">
+                <JsonPreview data={generated} blocked={!canExport} onExport={handleExport} />
+              </div>
             ) : null}
-            {validationErrors.length > 0 ? (
-              <div className="mt-2 text-xs text-amber-300">{translate("app.validationErrors")}: {validationErrors.join(", ")}</div>
-            ) : null}
-            {importMessage ? <div className="mt-2 text-xs text-zinc-300">{importMessage}</div> : null}
-          </div>
+            <div className="rounded-xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 p-4 shadow-[0_14px_40px_rgba(0,0,0,0.3)]">
+              <button
+                type="button"
+                onClick={handleImportDryRun}
+                disabled={!compliancePassed || !generated}
+                className="w-full rounded-md border border-zinc-700 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 disabled:opacity-40"
+              >
+                {translate("app.prepareWpImport")}
+              </button>
+              <div className="mt-2 text-xs text-emerald-300">LIVE mode active. Real user inputs required.</div>
+              {violations.length > 0 ? (
+                <div className="mt-2 text-xs text-rose-400">
+                  {translate("app.complianceViolations")}: {violations.join(", ")}
+                </div>
+              ) : null}
+              {validationErrors.length > 0 ? (
+                <div className="mt-2 text-xs text-amber-300">
+                  {translate("app.validationErrors")}: {validationErrors.join(", ")}
+                </div>
+              ) : null}
+              {importMessage ? <div className="mt-2 text-xs text-zinc-300">{importMessage}</div> : null}
+            </div>
+          </aside>
         </div>
-      </div>
+      </main>
+
+      <footer className="xl:hidden shrink-0 border-t border-zinc-800/80 bg-zinc-950 px-2 pb-[calc(env(safe-area-inset-bottom)+8px)] pt-1">
+        <div className="flex items-center justify-around">
+          <button
+            type="button"
+            onClick={handleRun}
+            disabled={isRunning}
+            className="flex w-16 flex-col items-center justify-center gap-1 text-emerald-400 disabled:opacity-50"
+          >
+            <RotateCcw className="h-[18px] w-[18px] rotate-[-45deg] scale-x-[-1]" />
+            <span className="text-center text-[9px] font-medium leading-tight">
+              {isRunning ? translate("common.running") : translate("common.generate")}
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowJson((v) => !v)}
+            className="flex w-16 flex-col items-center justify-center gap-1 text-zinc-500 transition-colors hover:text-zinc-300"
+          >
+            <Compass className="h-[18px] w-[18px]" />
+            <span className="text-center text-[9px] font-medium leading-tight">{translate("common.preview")}</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleExport}
+            disabled={!canExport}
+            className="flex w-16 flex-col items-center justify-center gap-1 text-zinc-500 transition-colors hover:text-zinc-300 disabled:opacity-50"
+          >
+            <Share2 className="h-[18px] w-[18px]" />
+            <span className="text-center text-[9px] font-medium leading-tight">{translate("common.share")}</span>
+          </button>
+        </div>
+      </footer>
     </div>
   );
 }

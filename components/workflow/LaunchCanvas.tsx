@@ -44,7 +44,7 @@ export function LaunchCanvas({ nodes, edges, onNodesChange, onEdgesChange, onNod
   );
 
   return (
-    <div className="h-full w-full rounded-xl border border-zinc-800 bg-zinc-950">
+    <div className="h-full w-full bg-zinc-950">
       <ReactFlow
         nodes={nodes}
         edges={themedEdges}
@@ -57,8 +57,14 @@ export function LaunchCanvas({ nodes, edges, onNodesChange, onEdgesChange, onNod
         className="bg-zinc-950"
       >
         <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#1f2937" />
-        <MiniMap nodeColor="#3f3f46" maskColor="rgba(0,0,0,0.6)" />
-        <Controls showInteractive={false} />
+        <MiniMap className="hidden md:block" nodeColor="#3f3f46" maskColor="rgba(0,0,0,0.6)" />
+        <Controls
+          showFitView={false}
+          showInteractive={false}
+          position="bottom-left"
+          aria-label="Workflow zoom controls"
+          className="!border-zinc-700/90 !bg-zinc-950/90 !shadow-xl"
+        />
       </ReactFlow>
     </div>
   );

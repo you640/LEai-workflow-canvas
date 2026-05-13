@@ -27,7 +27,7 @@ export function ProjectTypeSelector({ value, onChange, id, ariaLabel }: Props) {
       id={id}
       value={value}
       onChange={(e) => onChange(e.target.value as ProjectType)}
-      className="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100"
+      className="h-9 w-full rounded-lg border border-zinc-700/90 bg-zinc-950/90 px-3 text-xs text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 xl:h-10 xl:rounded-md xl:text-sm"
       aria-label={ariaLabel}
     >
       {OPTIONS.map((opt) => (
