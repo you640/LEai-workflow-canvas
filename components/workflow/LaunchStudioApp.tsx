@@ -244,7 +244,7 @@ function LaunchStudioInner() {
       `Cieľová skupina: ${brief.targetAudience || "doplní sa po konzultácii"}.`,
       `Preferovaný tón: ${brief.preferredTone || "jasný, profesionálny, dôveryhodný"}.`,
       "Výstup musí obsahovať: hodnotový headline, stručný subheadline, sekcie (hero, benefits, process, offer, trust, faq, contact), CTA smer, SEO námety a FAQ.",
-      "Použi overiteľné tvrdenia, žiadne placeholdery, žiadne fake metriky a žiadne nereálne sľuby.",
+      "Použi overiteľné tvrdenia, bez výplňových viet, bez fake metrík a bez nereálnych sľubov.",
     ].join(" ");
 
     // Always provide immediate deterministic value to avoid empty Description state.
@@ -261,7 +261,7 @@ function LaunchStudioInner() {
         "",
         "Požiadavky:",
         "- výsledok má byť konkrétny, profesionálny a použiteľný pre web launch brief",
-        "- bez placeholderov, bez lorem ipsum, bez fake tvrdení",
+        "- bez výplňových viet, bez lorem ipsum, bez fake tvrdení",
         "- bez investičnej/garantovanej terminológie",
         "- zahrň: cieľ, publikum, tone of voice, štruktúru sekcií, CTA smer",
         "- výstup vráť ako čistý text bez markdownu a bez úvodzoviek",
