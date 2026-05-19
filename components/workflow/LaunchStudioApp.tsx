@@ -427,7 +427,7 @@ function LaunchStudioInner() {
     : translate("timeline.empty");
 
   return (
-    <div className="app-shell launch-studio-shell relative flex min-h-[100vh] min-h-[100dvh] flex-col bg-zinc-950 text-zinc-100">
+    <div className="app-shell launch-studio-shell relative flex h-[100vh] h-[100dvh] flex-col overflow-hidden bg-zinc-950 text-zinc-100">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(16,185,129,0.1),transparent_30%),radial-gradient(circle_at_90%_10%,rgba(59,130,246,0.08),transparent_28%)]" />
       <nav className="xl:hidden flex h-12 shrink-0 items-center justify-between border-b border-zinc-800/70 bg-zinc-950/80 px-3 backdrop-blur-md">
         <button
@@ -483,7 +483,7 @@ function LaunchStudioInner() {
         />
       </div>
 
-      <main className="relative z-10 flex-1 min-h-0 overflow-hidden px-3 pb-2 xl:p-3">
+      <main className="relative z-10 min-h-0 flex-1 overflow-y-auto px-3 pb-2 xl:overflow-hidden xl:p-3">
         <div className="mx-auto flex h-full min-h-0 w-full max-w-[1800px] flex-col gap-3 xl:grid xl:grid-cols-12">
           <div className="flex min-h-0 flex-col gap-3 xl:col-span-8">
             <section className="shrink-0 rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 p-3 shadow-[0_14px_50px_rgba(0,0,0,0.35)] xl:rounded-xl xl:p-4">
