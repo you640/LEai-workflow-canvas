@@ -1,4 +1,4 @@
-# Launch Studio Source-of-Truth Fixtures
+# LE Studio Source-of-Truth Fixtures
 
 `meta.numbers` is the single source of truth for final export payloads.
 
@@ -70,13 +70,13 @@ Final export must include:
 ## Dry-run safety rules
 
 - Import button prepares payload preview only.
-- No production write in Launch Studio mode.
+- No production write in LE Studio mode.
 - `wordpressPostId` always stays `null`.
 - `wordpress.postStatus` must be `draft`.
 
 ## Content format policy
 
-- Launch Studio generates **content payload only**, not final frontend layout.
+- LE Studio generates **content payload only**, not final frontend layout.
 - WordPress import route maps the payload into metabox fields.
 - WordPress theme/templates render the final UI.
 - Plain-text fields must stay plain text (no HTML tags).

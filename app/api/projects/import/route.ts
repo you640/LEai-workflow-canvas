@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       compliance: parsed.data.compliance,
       validation,
       payloadPreview: parsed.data.wordpress,
-      message: "Live execution complete. Export payload is production-ready. WordPress write remains server-guarded.",
+      message: "Live execution complete. Export payload is ready for review. WordPress write remains server-guarded.",
     });
   } catch {
     return safeError(500, "project_import_failed", t(locale, "api.projectImportFailed"));

@@ -1,0 +1,9 @@
+{
+  "projectType": "saas",
+  "projectName": "Secure PWA Booking Engine",
+  "targetAudience": "Salóny, súkromné kliniky, malé služby a solo poskytovatelia, ktorí potrebujú bezpečný mobilný rezervačný systém s jasnou správou termínov.",
+  "goal": "Pripraviť technický launch plán a obsah pre bezpečný PWA booking produkt so zameraním na validáciu slotov, rate limiting, audit logging, Supabase backend a WordPress-ready export.",
+  "description": "Vytvor security-first launch výstup pre SaaS produkt Secure PWA Booking Engine. Výstup má byť praktický, technický a použiteľný pre landing page aj interný implementation brief. Zahrň React + TypeScript frontend, PWA manifest, service worker stratégiu, offline cache pravidlá, Supabase backend architektúru, validáciu rezervačných slotov, Zod validáciu, rate limiting, audit log, REST API kontrakt, databázový návrh, security checklist, test plan a deployment checklist. Nepoužívaj techniky, ktoré obchádzajú validáciu, autentifikáciu, bezpečné ukladanie tokenov alebo API hranice.",
+  "preferredTone": "Senior technical architect, presný, praktický, security-first, priamy a bez hype.",
+  "contactEmail": "studio+booking@rubberduck.sk"
+}

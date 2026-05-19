@@ -1,0 +1,201 @@
+{
+  "dryRun": false,
+  "productionWrite": false,
+  "wordpressPostId": null,
+  "projectId": "7e3e8081-977f-41f9-a01a-b6a555788b95",
+  "buildStatus": "ready",
+  "generatedAt": "2026-05-19T12:39:14.098Z",
+  "sourceOfTruth": "meta.numbers",
+  "schemaVersion": "1.0.0",
+  "project": {
+    "name": "Moderná ambulancia pre súkromnú fyzioterapiu",
+    "type": "business",
+    "goal": "Pripraviť dôveryhodnú landing page pre objednanie úvodnej konzultácie, ktorá vysvetlí služby, proces návštevy, odborný prístup a bezpečný kontaktný krok bez neoverených medicínskych sľubov.",
+    "audience": "Ľudia po úraze, rekreační športovci, seniori a lokálni klienti, ktorí potrebujú odbornú fyzioterapiu, jasné objednanie a dôveryhodné vysvetlenie služieb.",
+    "description": "Vytvor obsah pre lokálnu súkromnú fyzioterapeutickú ambulanciu. Stránka má pôsobiť odborne, pokojne a ľudsky. Má vysvetliť, komu ambulancia pomáha, ako prebieha prvá konzultácia, aké typy problémov vie klient konzultovať a ako si dohodnúť termín. Nepoužívaj garantované vyliečenie, vymyslené recenzie, vymyslené počty pacientov ani medicínske tvrdenia bez overenia. Výstup má byť vhodný pre WordPress metabox export a následný staging review.",
+    "tone": "Odborný, pokojný, dôveryhodný, zrozumiteľný, lokálny a empatický bez lacného marketingu.",
+    "contactEmail": "studio+fyzioterapia@rubberduck.sk"
+  },
+  "wordpress": {
+    "postType": "launch_studio",
+    "postStatus": "draft",
+    "main": {
+      "title": "Moderná ambulancia pre súkromnú fyzioterapiu: dôveryhodná stránka pre objednanie konzultácie",
+      "slug": "moderna-ambulancia-pre-sukromnu-fyzioterapiu",
+      "tagline": "Pokojná a odborná prezentácia služieb, ktorá vysvetlí proces návštevy a navedie klienta ku kontaktu.",
+      "context": "Moderná ambulancia pre súkromnú fyzioterapiu rieši pre Ľudia po úraze, rekreační športovci, seniori a lokálni klienti, ktorí potrebujú odbornú fyzioterapiu, jasné objednanie a dôveryhodné vysvetlenie služieb. jasný cieľ: Pripraviť dôveryhodnú landing page pre objednanie úvodnej konzultácie, ktorá vysvetlí služby, proces návštevy, odborný prístup a bezpečný kontaktný krok bez neoverených medicínskych sľubov.",
+      "editor": "## Fyzioterapia vysvetlená zrozumiteľne\n\nModerná ambulancia pre súkromnú fyzioterapiu potrebuje stránku, ktorá návštevníkovi jasne ukáže, komu ambulancia pomáha, ako prebieha prvá konzultácia a ako si dohodnúť termín.\n\n- Jasná hodnota na prvej obrazovke\n- Silný CTA krok\n- Dôveryhodná komunikácia\n\n**CTA:** Poslať brief\n\n## Dôvera pred prvým kontaktom\n\nObsah pomáha klientovi pochopiť služby, pripraviť sa na návštevu a urobiť bezpečný ďalší krok bez nerealistických medicínskych sľubov.\n\n- Mobilná optimalizácia\n- Čitateľná štruktúra\n- SEO základ pripravený na publikovanie\n\n## Jednoduchý proces objednania\n\nStránka vysvetľuje úvodný kontakt, konzultáciu, odporúčaný postup a ďalšie kroky po vyhodnotení potrieb klienta.\n\n- Brief a validácia\n- Návrh štruktúry a copy\n- QA a odovzdanie\n\n**CTA:** Pozrieť možnosti\n\n## Čo má landing page obsahovať\n\nVýstup pripravuje hero, služby, proces, dôveru, FAQ, kontaktný smer a SEO metadata pre lokálnu zdravotnú službu.\n\n- Kompletný launch obsah\n- Import-ready štruktúra\n- Bez prepisovania od nuly\n\n## Odbornosť bez prehnaných tvrdení\n\nTexty ostávajú vecné, ľudské a opatrné pri zdravotných tvrdeniach. Dôvera vzniká cez jasnosť, nie cez vymyslené dôkazy.\n\n- Transparentná komunikácia\n- Konzistentný brand tón\n- Zrozumiteľná ponuka\n\n## FAQ\n\nFAQ dáva klientovi stručné odpovede k rozsahu, ďalším krokom, kontrole výstupu a bezpečnému odovzdaniu.\n\n- Rozsah služby\n- Časový plán\n- Odovzdanie a ďalšie kroky\n\n## Kontakt a štart\n\nAk chceš spustiť web bez chaosu, pošli brief na studio+fyzioterapia@rubberduck.sk a dostaneš jasný plán realizácie.\n\n- Jednoznačný CTA krok\n- Rýchla odpoveď\n- Pripravený handoff\n\n**CTA:** Poslať brief",
+      "label": "Poslať brief",
+      "link": "#kontakt"
+    },
+    "post": {
+      "section": [
+        "Landing page",
+        "Lokálna služba",
+        "Zdravie"
+      ],
+      "topic": [
+        "fyzioterapia",
+        "objednanie konzultácie",
+        "lokálna služba",
+        "dôvera"
+      ],
+      "source": "LE Studio guarded export"
+    },
+    "services": [
+      {
+        "type": [
+          "Fyzioterapia"
+        ],
+        "category": [
+          "Súkromná ambulancia"
+        ],
+        "badge": [
+          "Lokálne služby",
+          "Dôvera",
+          "Objednanie"
+        ],
+        "price": null,
+        "duration": null,
+        "datetime": null
+      }
+    ],
+    "products": [],
+    "media": {
+      "video": null,
+      "icon": null,
+      "image": null,
+      "gallery": [],
+      "files": []
+    }
+  },
+  "seo": {
+    "title": "Moderná ambulancia pre súkromnú fyzioterapiu | LE Studio",
+    "description": "Moderná ambulancia pre súkromnú fyzioterapiu pripravený ako štruktúrovaný WordPress metabox payload s obsahom, SEO podkladmi a review flow.",
+    "ogTitle": "Moderná ambulancia pre súkromnú fyzioterapiu — LE Studio",
+    "ogDescription": "Transparentný launch výstup cez LE Studio workflow."
+  },
+  "faq": [
+    {
+      "question": "Ako rýchlo vieme začať?",
+      "answer": "Po potvrdení briefu sa hneď pripraví štruktúra a obsah bez zbytočného čakania."
+    },
+    {
+      "question": "Je výstup pripravený pre WordPress?",
+      "answer": "Áno, výsledok je normalizovaný do metabox schémy a pripravený pre dry-run import preview."
+    },
+    {
+      "question": "Čo je súčasťou dodania?",
+      "answer": "H1, tagline, editor obsah, CTA, SEO metadata, FAQ a technické odporúčania."
+    },
+    {
+      "question": "Prečo je to bezpečné?",
+      "answer": "Systém beží v dry-run režime, productionWrite je false a wordpressPostId je vždy null."
+    }
+  ],
+  "compliance": {
+    "passed": true,
+    "violations": []
+  },
+  "technicalRecommendations": [
+    "Pred exportom validovať payload proti source-of-truth schéme.",
+    "Udržať striktne mapovanie frontend vstupov na metabox polia.",
+    "Použiť QA fixture gate pred každým release."
+  ],
+  "securityRecommendations": [
+    "Nezapisovať do produkcie v dry-run režime.",
+    "Nelogovať secrets ani auth hlavičky.",
+    "Guardovať import cez server-side feature flag a compliance pass."
+  ],
+  "antiPatterns": [
+    "Nevkladať generické výplňové vety do final exportu.",
+    "Nevymýšľať ceny, médiá alebo obchodné metriky bez vstupu.",
+    "Neobchádzať validáciu exportu/importu."
+  ],
+  "wordpressImportNotes": [
+    "Import payload sa skladá z wordpress.main/post/services/products/media.",
+    "UI preview môže používať _preview, ale import source je wordpress objekt.",
+    "Pri neúspešnej compliance musí zostať export/import blokovaný."
+  ],
+  "_preview": {
+    "sections": [
+      {
+        "id": "hero",
+        "title": "Fyzioterapia vysvetlená zrozumiteľne",
+        "body": "Moderná ambulancia pre súkromnú fyzioterapiu potrebuje stránku, ktorá návštevníkovi jasne ukáže, komu ambulancia pomáha, ako prebieha prvá konzultácia a ako si dohodnúť termín.",
+        "bullets": [
+          "Jasná hodnota na prvej obrazovke",
+          "Silný CTA krok",
+          "Dôveryhodná komunikácia"
+        ],
+        "cta": "Poslať brief"
+      },
+      {
+        "id": "benefits",
+        "title": "Dôvera pred prvým kontaktom",
+        "body": "Obsah pomáha klientovi pochopiť služby, pripraviť sa na návštevu a urobiť bezpečný ďalší krok bez nerealistických medicínskych sľubov.",
+        "bullets": [
+          "Mobilná optimalizácia",
+          "Čitateľná štruktúra",
+          "SEO základ pripravený na publikovanie"
+        ],
+        "cta": null
+      },
+      {
+        "id": "process",
+        "title": "Jednoduchý proces objednania",
+        "body": "Stránka vysvetľuje úvodný kontakt, konzultáciu, odporúčaný postup a ďalšie kroky po vyhodnotení potrieb klienta.",
+        "bullets": [
+          "Brief a validácia",
+          "Návrh štruktúry a copy",
+          "QA a odovzdanie"
+        ],
+        "cta": "Pozrieť možnosti"
+      },
+      {
+        "id": "offer",
+        "title": "Čo má landing page obsahovať",
+        "body": "Výstup pripravuje hero, služby, proces, dôveru, FAQ, kontaktný smer a SEO metadata pre lokálnu zdravotnú službu.",
+        "bullets": [
+          "Kompletný launch obsah",
+          "Import-ready štruktúra",
+          "Bez prepisovania od nuly"
+        ],
+        "cta": null
+      },
+      {
+        "id": "trust",
+        "title": "Odbornosť bez prehnaných tvrdení",
+        "body": "Texty ostávajú vecné, ľudské a opatrné pri zdravotných tvrdeniach. Dôvera vzniká cez jasnosť, nie cez vymyslené dôkazy.",
+        "bullets": [
+          "Transparentná komunikácia",
+          "Konzistentný brand tón",
+          "Zrozumiteľná ponuka"
+        ],
+        "cta": null
+      },
+      {
+        "id": "faq",
+        "title": "FAQ",
+        "body": "FAQ dáva klientovi stručné odpovede k rozsahu, ďalším krokom, kontrole výstupu a bezpečnému odovzdaniu.",
+        "bullets": [
+          "Rozsah služby",
+          "Časový plán",
+          "Odovzdanie a ďalšie kroky"
+        ],
+        "cta": null
+      },
+      {
+        "id": "contact",
+        "title": "Kontakt a štart",
+        "body": "Ak chceš spustiť web bez chaosu, pošli brief na studio+fyzioterapia@rubberduck.sk a dostaneš jasný plán realizácie.",
+        "bullets": [
+          "Jednoznačný CTA krok",
+          "Rýchla odpoveď",
+          "Pripravený handoff"
+        ],
+        "cta": "Poslať brief"
+      }
+    ]
+  }
+}

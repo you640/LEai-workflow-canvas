@@ -120,13 +120,13 @@ export function WorkflowToolbar({
         <div className="flex items-center gap-3">
           <Image
             src="/flowforge-logo.png"
-            alt="FlowForge"
+            alt="LE Studio"
             width={28}
             height={28}
             className="rounded-md"
           />
           <span className="font-mono font-semibold text-workflow-text tracking-tight text-sm">
-            FlowForge
+            LE Studio
           </span>
         </div>
 

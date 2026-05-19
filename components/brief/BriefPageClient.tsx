@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { LaunchBriefInput, ProjectType } from "@/types/workflow";
 import { useI18n } from "@/lib/i18n/client";
@@ -91,7 +92,8 @@ export function BriefPageClient({ initialPlan, initialType }: Props) {
         planLabel: "Zvolený balík",
         sectionTypes: "Typ projektu",
         sectionBrief: "Launch brief",
-        proceed: "Pokračovať do Launch Studia",
+        proceed: "Pokračovať do LE Studia",
+        offerLink: "Pozrieť ponuku Web do 24h",
         helper: "Po odoslaní sa brief uloží a otvorí sa workflow s predvyplnenými dátami.",
       }
     : {
@@ -100,7 +102,8 @@ export function BriefPageClient({ initialPlan, initialType }: Props) {
         planLabel: "Selected plan",
         sectionTypes: "Project type",
         sectionBrief: "Launch brief",
-        proceed: "Continue to Launch Studio",
+        proceed: "Continue to LE Studio",
+        offerLink: "View Web do 24h offer",
         helper: "After submit, the brief is saved and workflow opens with prefilled data.",
       };
 
@@ -141,6 +144,9 @@ export function BriefPageClient({ initialPlan, initialType }: Props) {
           </div>
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{ui.title}</h1>
           <p className="mt-2 text-sm text-zinc-300 sm:text-base">{ui.subtitle}</p>
+          <Link href="/web-do-24h" className="mt-4 inline-flex text-sm font-semibold text-emerald-300 underline-offset-4 hover:underline">
+            {ui.offerLink}
+          </Link>
         </div>
 
         <section className="mb-8">
@@ -261,4 +267,3 @@ export function BriefPageClient({ initialPlan, initialType }: Props) {
     </main>
   );
 }
-

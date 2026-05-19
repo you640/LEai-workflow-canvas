@@ -16,7 +16,7 @@
     "secondaryCTA": "Pozrieť možnosti"
   },
   "page": {
-    "headline": "Od nápadu po hotový web za 24 hodín",
+    "headline": "Od nápadu po web pripravený podľa rozsahu a podkladov",
     "subheadline": "Vyplň brief a získaj štruktúru stránky, obsah a CTA pripravené na nasadenie.",
     "sections": [
       {
@@ -101,7 +101,7 @@
   "seo": {
     "title": "Web do 24h | Moderný firemný web bez chaosu",
     "description": "Spusti moderný web pripravený na klientov do 24 hodín. Štruktúra, copy, SEO základ a bezpečný dry-run import preview.",
-    "ogTitle": "Web do 24h — AI Launch Studio",
+    "ogTitle": "Web do 24h — LE Studio",
     "ogDescription": "Rýchly a transparentný launch webu pre malé a stredné firmy."
   },
   "faq": [

@@ -23,6 +23,7 @@ export function generateSourceOfTruthPayload(input: LaunchStudioInput): SourceOf
   const { wordpress, previewSections } = normalizeToWordPressMetabox(brief);
 
   const description = stripHtmlForPlainText(brief.description);
+  const projectName = stripHtmlForPlainText(brief.identity.name);
   const claimViolations = CLAIM_VIOLATION_CODES
     .filter((rule) => rule.match.test(description))
     .map((rule) => rule.code);
@@ -39,7 +40,7 @@ export function generateSourceOfTruthPayload(input: LaunchStudioInput): SourceOf
     sourceOfTruth: "meta.numbers",
     schemaVersion: "1.0.0",
     project: {
-      name: stripHtmlForPlainText(brief.identity.name),
+      name: projectName,
       type: brief.identity.type,
       goal: stripHtmlForPlainText(brief.goal),
       audience: stripHtmlForPlainText(brief.audience),
@@ -49,10 +50,10 @@ export function generateSourceOfTruthPayload(input: LaunchStudioInput): SourceOf
     },
     wordpress,
     seo: {
-      title: `${stripHtmlForPlainText(brief.identity.name)} | Web do 24h by Rubberduck`,
-      description: "Moderný firemný web pripravený na klientov do 24 hodín. Štruktúra, obsah a bezpečný dry-run import payload.",
-      ogTitle: `${stripHtmlForPlainText(brief.identity.name)} — AI Launch Studio`,
-      ogDescription: "Rýchly a transparentný launch webu cez Launch Studio workflow."
+      title: `${projectName} | LE Studio`,
+      description: `${projectName} pripravený ako štruktúrovaný WordPress metabox payload s obsahom, SEO podkladmi a review flow.`,
+      ogTitle: `${projectName} — LE Studio`,
+      ogDescription: "Transparentný launch výstup cez LE Studio workflow."
     },
     faq: [
       {

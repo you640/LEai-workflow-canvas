@@ -10,7 +10,10 @@
     "typecheck": "tsc --noEmit",
     "check:schemas": "node scripts/check-schemas.mjs",
     "test": "node scripts/test-launch-studio.mjs",
-    "validate:fixture": "node scripts/validate-launch-studio-fixture.mjs"
+    "validate:fixture": "node scripts/validate-launch-studio-fixture.mjs",
+    "test:e2e:full": "node scripts/e2e-launch-studio-full.mjs",
+    "qa:predeploy": "node scripts/predeploy-qa.mjs",
+    "smoke:browser": "node scripts/smoke-launch-studio-browser.mjs"
   },
   "dependencies": {
     "@ai-sdk/mistral": "^3.0.36",

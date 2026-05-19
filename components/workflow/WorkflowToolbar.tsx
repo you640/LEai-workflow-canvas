@@ -108,11 +108,11 @@ export function WorkflowToolbar({
         </button>
         <button
           type="button"
-          aria-label="Generate Perfect Prompt"
+          aria-label={translate("common.improvePrompt")}
           className="rounded-md border border-zinc-700 p-2 text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70"
           onClick={onMagicPrompt}
           disabled={isGeneratingPrompt}
-          title={isGeneratingPrompt ? "Generating..." : "Generate Perfect Prompt"}
+          title={isGeneratingPrompt ? translate("app.magicPromptRunning") : translate("common.improvePrompt")}
         >
           <WandSparkles className="h-4 w-4" />
         </button>

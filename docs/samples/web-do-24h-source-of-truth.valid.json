@@ -37,7 +37,7 @@
         "SEO základ",
         "kontakt"
       ],
-      "source": "Launch Studio dry-run"
+      "source": "LE Studio guarded export"
     },
     "services": [
       {
@@ -69,8 +69,8 @@
   "seo": {
     "title": "Web do 24h Project | Web do 24h by Rubberduck",
     "description": "Moderný firemný web pripravený na klientov do 24 hodín.",
-    "ogTitle": "Web do 24h Project — AI Launch Studio",
-    "ogDescription": "Rýchly a transparentný launch webu cez Launch Studio workflow."
+    "ogTitle": "Web do 24h Project — LE Studio",
+    "ogDescription": "Rýchly a transparentný launch webu cez LE Studio workflow."
   },
   "faq": [
     {

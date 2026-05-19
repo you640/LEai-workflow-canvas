@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ReactFlowProvider, useEdgesState, useNodesState, type Edge } from "@xyflow/react";
-import { Activity, Compass, Database, FileJson, Monitor, RotateCcw, Share2, X } from "lucide-react";
+import { Activity, Compass, Database, FileJson, Monitor, Play, Share2, WandSparkles, X } from "lucide-react";
 import { createDefaultWorkflow } from "@/lib/workflow/default-workflow";
 import type { LaunchBriefInput, ProjectType, WorkflowNode, WorkflowRunResponse } from "@/types/workflow";
 import { LaunchCanvas } from "@/components/workflow/LaunchCanvas";
@@ -16,6 +16,7 @@ import type { TranslationKey } from "@/lib/i18n";
 import { validateSourceOfTruthExport } from "@/lib/launch-studio/validation";
 import { validateLiveBrief } from "@/lib/launch-studio/brief-validation";
 import { loadProjectConfig, saveProjectConfig } from "@/lib/launch-studio/project-store";
+import { containsForbiddenClaims, containsPlaceholderText, stripHtmlForPlainText } from "@/lib/launch-studio/content-format";
 
 const NODE_COPY_KEYS: Record<string, { label: `nodes.${string}.label`; description: `nodes.${string}.description` }> = {
   "project-type": { label: "nodes.project-type.label", description: "nodes.project-type.description" },
@@ -40,6 +41,59 @@ const PROJECT_TYPE_LABEL_KEYS: Record<ProjectType, TranslationKey> = {
   "support-campaign": "projectTypes.support-campaign",
   "personal-brand": "projectTypes.personal-brand",
 };
+
+const MAGIC_TIMEOUT_MS = 15000;
+const MAGIC_MAX_ATTEMPTS = 2;
+
+function cleanMagicValue(value: string): string {
+  return stripHtmlForPlainText(value).replace(/\s+/g, " ").trim();
+}
+
+function parseMagicPayload(rawText: string): Partial<Pick<LaunchBriefInput, "description" | "goal" | "targetAudience" | "preferredTone">> {
+  const cleaned = rawText.trim();
+  const fenced = cleaned.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  const jsonCandidate = (fenced?.[1] ?? cleaned).trim();
+
+  try {
+    const parsed = JSON.parse(jsonCandidate) as Record<string, unknown>;
+    const description = typeof parsed.description === "string" ? cleanMagicValue(parsed.description) : "";
+    const goal = typeof parsed.goal === "string" ? cleanMagicValue(parsed.goal) : "";
+    const targetAudience = typeof parsed.targetAudience === "string" ? cleanMagicValue(parsed.targetAudience) : "";
+    const preferredTone = typeof parsed.preferredTone === "string" ? cleanMagicValue(parsed.preferredTone) : "";
+    return { description, goal, targetAudience, preferredTone };
+  } catch {
+    return { description: cleanMagicValue(cleaned) };
+  }
+}
+
+function isSafeMagicText(value: string): boolean {
+  if (!value.trim()) return false;
+  if (containsPlaceholderText(value)) return false;
+  if (containsForbiddenClaims(value)) return false;
+  return true;
+}
+
+function createDeterministicMagicDraft(brief: LaunchBriefInput): Required<Pick<LaunchBriefInput, "description" | "goal" | "targetAudience" | "preferredTone">> {
+  const projectName = brief.projectName.trim();
+  const projectType = brief.projectType;
+
+  return {
+    goal:
+      brief.goal.trim() ||
+      `Pripraviť dôveryhodný launch plán pre projekt ${projectName} so zrozumiteľnou ponukou, jasnou CTA cestou a exportom pripraveným pre WordPress payload.`,
+    targetAudience:
+      brief.targetAudience.trim() ||
+      `Majitelia menších a stredných firiem, tímy a tvorcovia, ktorí potrebujú rýchlo spustiť profesionálnu webovú prezentáciu pre typ projektu ${projectType}.`,
+    preferredTone:
+      brief.preferredTone.trim() || "Jasný, profesionálny, dôveryhodný, vecný a konverzne zameraný bez lacných marketingových fráz.",
+    description: [
+      `Vytvor production-grade brief pre projekt „${projectName}“ typu ${projectType}.`,
+      "Výstup musí byť konkrétny, overiteľný a použiteľný pre LE Studio workflow bez placeholderov a bez fake tvrdení.",
+      "Doplň hodnotový headline, stručný subheadline, sekcie (hero, benefits, process, offer, trust, faq, contact), CTA smer a SEO základy.",
+      "Text musí byť pripravený pre export do source-of-truth WordPress metabox payloadu.",
+    ].join(" "),
+  };
+}
 
 function LaunchStudioInner() {
   const { translate } = useI18n();
@@ -143,8 +197,10 @@ function LaunchStudioInner() {
       setNodes(runData.nodes);
       setTimeline(runData.timeline);
       setGenerated(runData.generated ?? null);
-      setCompliancePassed(Boolean(runData.compliancePassed));
-      setViolations(runData.violations ?? []);
+      const runCompliancePassed = Boolean(runData.compliancePassed);
+      const runViolations: string[] = Array.isArray(runData.violations) ? runData.violations : [];
+      setCompliancePassed(runCompliancePassed);
+      setViolations(runViolations);
       setValidationErrors([]);
 
       const genRes = await fetch("/api/projects/generate", {
@@ -161,10 +217,12 @@ function LaunchStudioInner() {
       }
       if (genRes.ok && genData?.project) {
         setGenerated(genData.project);
-        setCompliancePassed(Boolean(genData?.compliance?.passed));
-        setViolations(genData?.compliance?.violations ?? []);
+        const generationCompliancePassed = Boolean(genData?.compliance?.passed);
+        const generationViolations: string[] = Array.isArray(genData?.compliance?.violations) ? genData.compliance.violations : [];
+        setCompliancePassed(runCompliancePassed && generationCompliancePassed);
+        setViolations(Array.from(new Set([...runViolations, ...generationViolations])));
         const gate = validateSourceOfTruthExport(genData.project);
-        setValidationErrors(gate.errors);
+        setValidationErrors(Array.from(new Set([...(runCompliancePassed ? [] : runViolations), ...gate.errors])));
       }
       } finally {
       setIsRunning(false);
@@ -237,71 +295,110 @@ function LaunchStudioInner() {
 
   const handleMagicPrompt = useCallback(async () => {
     if (!brief.projectName.trim()) {
-      setImportMessage("Doplň názov projektu a krátky kontext, potom skús kúzelnú paličku.");
+      setValidationErrors([translate("app.magicPromptMissingProjectName")]);
+      setImportMessage(translate("app.magicPromptMissingProjectName"));
       return;
     }
 
-    const shortContext = [brief.goal, brief.targetAudience, brief.preferredTone]
-      .filter(Boolean)
-      .map((v) => v.trim())
-      .filter((v) => v.length > 0)
-      .join(" | ");
-
-    const fallback = [
-      `Vytvor profesionálny výstup pre projekt „${brief.projectName.trim()}“.`,
-      `Typ projektu: ${brief.projectType}.`,
-      `Cieľ: ${brief.goal || "doplní sa po konzultácii"}.`,
-      `Cieľová skupina: ${brief.targetAudience || "doplní sa po konzultácii"}.`,
-      `Preferovaný tón: ${brief.preferredTone || "jasný, profesionálny, dôveryhodný"}.`,
-      "Výstup musí obsahovať: hodnotový headline, stručný subheadline, sekcie (hero, benefits, process, offer, trust, faq, contact), CTA smer, SEO námety a FAQ.",
-      "Použi overiteľné tvrdenia, bez výplňových viet, bez fake metrík a bez nereálnych sľubov.",
-    ].join(" ");
-
-    // Always provide immediate deterministic value to avoid empty Description state.
-    setBrief((prev) => ({ ...prev, description: fallback }));
-    setImportMessage("Draft prompt bol vložený. Doladzujem AI verziu...");
+    const deterministicDraft = createDeterministicMagicDraft(brief);
+    setBrief((prev) => ({
+      ...prev,
+      description: deterministicDraft.description,
+      goal: prev.goal.trim() ? prev.goal : deterministicDraft.goal,
+      targetAudience: prev.targetAudience.trim() ? prev.targetAudience : deterministicDraft.targetAudience,
+      preferredTone: prev.preferredTone.trim() ? prev.preferredTone : deterministicDraft.preferredTone,
+    }));
+    setValidationErrors([]);
+    setImportMessage(translate("app.magicPromptPreparing"));
     setIsGeneratingPrompt(true);
+
     try {
+      const shortContext = [brief.goal, brief.targetAudience, brief.preferredTone]
+        .filter(Boolean)
+        .map((v) => v.trim())
+        .filter((v) => v.length > 0)
+        .join(" | ");
 
-      const generationPrompt = [
-        "Vygeneruj jeden kvalitný production-ready prompt v slovenčine do poľa 'Popis' pre LE Studio.",
-        `Názov projektu: ${brief.projectName.trim()}`,
-        `Typ projektu: ${brief.projectType}`,
-        `Krátky kontext: ${shortContext || "nie je zadaný"}`,
-        "",
-        "Požiadavky:",
-        "- výsledok má byť konkrétny, profesionálny a použiteľný pre web launch brief",
-        "- bez výplňových viet, bez lorem ipsum, bez fake tvrdení",
-        "- bez investičnej/garantovanej terminológie",
-        "- zahrň: cieľ, publikum, tone of voice, štruktúru sekcií, CTA smer",
-        "- výstup vráť ako čistý text bez markdownu a bez úvodzoviek",
-      ].join("\\n");
+      let aiText = "";
+      let attemptError = "";
 
-      const res = await fetch("/api/ai/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          provider: "mistral",
-          model: "mistral-small",
-          temperature: 0.6,
-          prompt: generationPrompt,
-        }),
-      });
-      const data = await res.json();
+      for (let attempt = 1; attempt <= MAGIC_MAX_ATTEMPTS; attempt += 1) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), MAGIC_TIMEOUT_MS);
+        const model = attempt === 1 ? "mistral-small" : "mistral-large-latest";
 
-      if (!res.ok || !data?.text) {
-        setImportMessage("AI prompt fallback bol použitý.");
+        try {
+          const generationPrompt = [
+            "Vráť STRICT JSON objekt bez markdownu s kľúčmi: description, goal, targetAudience, preferredTone.",
+            `Project Name: ${brief.projectName.trim()}`,
+            `Project Type: ${brief.projectType}`,
+            `Context: ${shortContext || "none"}`,
+            "",
+            "Rules:",
+            "- content must be production-grade and concrete",
+            "- no fake claims, no manipulated urgency, no placeholders",
+            "- no forbidden investment wording",
+            "- use clean plain text only",
+            "- description should be launch-ready for LE Studio brief",
+          ].join("\\n");
+
+          const res = await fetch("/api/ai/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              provider: "mistral",
+              model,
+              temperature: 0.45,
+              prompt: generationPrompt,
+            }),
+            signal: controller.signal,
+          });
+          const data = await res.json().catch(() => ({}));
+          clearTimeout(timeout);
+
+          if (!res.ok || !data?.text) {
+            attemptError = `attempt_${attempt}_failed`;
+            continue;
+          }
+
+          aiText = String(data.text);
+          break;
+        } catch {
+          clearTimeout(timeout);
+          attemptError = `attempt_${attempt}_failed`;
+        }
+      }
+
+      if (!aiText) {
+        setImportMessage(`${translate("app.magicPromptFallback")} (${attemptError || "network"})`);
         return;
       }
 
-      setBrief((prev) => ({ ...prev, description: String(data.text).trim() }));
-      setImportMessage("Kúzelná palička doplnila Popis.");
+      const parsed = parseMagicPayload(aiText);
+      setBrief((prev) => {
+        const next = { ...prev };
+        const safeDescription = parsed.description && isSafeMagicText(parsed.description) ? parsed.description : deterministicDraft.description;
+        next.description = safeDescription;
+        if (!prev.goal.trim()) {
+          next.goal = parsed.goal && isSafeMagicText(parsed.goal) ? parsed.goal : deterministicDraft.goal;
+        }
+        if (!prev.targetAudience.trim()) {
+          next.targetAudience =
+            parsed.targetAudience && isSafeMagicText(parsed.targetAudience) ? parsed.targetAudience : deterministicDraft.targetAudience;
+        }
+        if (!prev.preferredTone.trim()) {
+          next.preferredTone =
+            parsed.preferredTone && isSafeMagicText(parsed.preferredTone) ? parsed.preferredTone : deterministicDraft.preferredTone;
+        }
+        return next;
+      });
+      setImportMessage(translate("app.magicPromptSuccess"));
     } catch {
-      setImportMessage("Generovanie promptu zlyhalo.");
+      setImportMessage(translate("app.magicPromptError"));
     } finally {
       setIsGeneratingPrompt(false);
     }
-  }, [brief]);
+  }, [brief, translate]);
 
   const handleAddNode = useCallback(() => {
     const last = nodes[nodes.length - 1];
@@ -438,9 +535,22 @@ function LaunchStudioInner() {
                   />
                 </div>
                 <div className="col-span-2">
-                  <label htmlFor="brief-description" className="mb-1 block text-xs text-zinc-300">
-                    {translate("app.description")}
-                  </label>
+                  <div className="mb-1 flex items-center justify-between gap-2">
+                    <label htmlFor="brief-description" className="block text-xs text-zinc-300">
+                      {translate("app.description")}
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleMagicPrompt}
+                      disabled={isGeneratingPrompt}
+                      aria-label={translate("common.improvePrompt")}
+                      title={translate("common.improvePrompt")}
+                      className="inline-flex items-center gap-1 rounded-md border border-emerald-700/60 bg-emerald-950/30 px-2 py-1 text-[10px] font-medium text-emerald-200 transition-colors hover:border-emerald-400 hover:bg-emerald-900/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 disabled:cursor-not-allowed disabled:opacity-50 xl:hidden"
+                    >
+                      <WandSparkles className="h-3.5 w-3.5" />
+                      <span>{isGeneratingPrompt ? translate("app.magicPromptRunning") : translate("common.magicPrompt")}</span>
+                    </button>
+                  </div>
                   <textarea
                     id="brief-description"
                     className="h-9 w-full resize-none rounded-lg border border-zinc-700/90 bg-zinc-950/90 px-3 py-2 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 xl:h-auto xl:rounded-md xl:text-sm"
@@ -551,7 +661,7 @@ function LaunchStudioInner() {
               </article>
             </section>
 
-            <section className="xl:hidden rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.28)]">
+            <section className="xl:hidden rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.28)]" aria-live="polite">
               <div className="text-[10px] text-emerald-300">LIVE mode active. Real user inputs required.</div>
               {violations.length > 0 ? (
                 <div className="mt-1 text-[10px] text-rose-400">
@@ -612,37 +722,53 @@ function LaunchStudioInner() {
         </div>
       </main>
 
-      <footer className="xl:hidden shrink-0 border-t border-zinc-800/80 bg-zinc-950 px-2 pb-[calc(env(safe-area-inset-bottom)+8px)] pt-1">
-        <div className="flex items-center justify-around">
+      <footer
+        className="xl:hidden shrink-0 border-t border-zinc-800/80 bg-zinc-950/95 px-3 pb-[calc(env(safe-area-inset-bottom)+10px)] pt-2 backdrop-blur"
+        aria-label={translate("app.mobileActionBarLabel")}
+      >
+        <div className="mx-auto flex max-w-3xl items-center gap-2">
           <button
             type="button"
             onClick={handleRun}
             disabled={isRunning}
-            className="flex w-16 flex-col items-center justify-center gap-1 text-emerald-400 disabled:opacity-50"
+            className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-400 px-4 text-sm font-semibold text-zinc-950 shadow-[0_10px_30px_rgba(16,185,129,0.18)] transition-colors hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <RotateCcw className="h-[18px] w-[18px] rotate-[-45deg] scale-x-[-1]" />
-            <span className="text-center text-[9px] font-medium leading-tight">
-              {isRunning ? translate("common.running") : translate("common.generate")}
-            </span>
+            <Play className="h-4 w-4" />
+            <span>{isRunning ? translate("common.running") : translate("common.run")}</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleMagicPrompt}
+            disabled={isGeneratingPrompt}
+            aria-label={translate("common.improvePrompt")}
+            title={translate("common.improvePrompt")}
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-700/70 bg-emerald-950/40 text-emerald-200 transition-colors hover:border-emerald-400 hover:bg-emerald-900/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <WandSparkles className={isGeneratingPrompt ? "h-4 w-4 animate-pulse" : "h-4 w-4"} />
           </button>
           <button
             type="button"
             onClick={() => setShowJson((v) => !v)}
-            className="flex w-16 flex-col items-center justify-center gap-1 text-zinc-500 transition-colors hover:text-zinc-300"
+            aria-label={translate("common.preview")}
+            title={translate("common.preview")}
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 transition-colors hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70"
           >
-            <Compass className="h-[18px] w-[18px]" />
-            <span className="text-center text-[9px] font-medium leading-tight">{translate("common.preview")}</span>
+            <Compass className="h-4 w-4" />
           </button>
           <button
             type="button"
             onClick={handleExport}
             disabled={!canExport}
-            className="flex w-16 flex-col items-center justify-center gap-1 text-zinc-500 transition-colors hover:text-zinc-300 disabled:opacity-50"
+            aria-label={translate("common.exportJson")}
+            title={translate("common.exportJson")}
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 transition-colors hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <Share2 className="h-[18px] w-[18px]" />
-            <span className="text-center text-[9px] font-medium leading-tight">{translate("common.share")}</span>
+            <Share2 className="h-4 w-4" />
           </button>
         </div>
+        <p className="sr-only" aria-live="polite">
+          {isGeneratingPrompt ? translate("app.magicPromptRunning") : importMessage}
+        </p>
       </footer>
     </div>
   );
