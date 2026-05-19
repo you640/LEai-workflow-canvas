@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateText } from "ai";
+import { createMistral } from "@ai-sdk/mistral";
 import type { Edge } from "@xyflow/react";
 import type {
   WorkflowNode,
@@ -39,6 +40,28 @@ async function generateAIText(data: AITextNodeData, input: string): Promise<stri
   };
 
   const prompt = data.prompt.replace(/\{\{input\}\}/g, input);
+
+  if (data.provider === "mistral") {
+    const keys = [process.env.MISTRAL_API_KEY, process.env.MISTRAL_API_KEY_BACKUP].filter(Boolean) as string[];
+    if (keys.length === 0) throw new Error("Mistral API key is not configured");
+
+    let lastError: unknown = null;
+    for (const apiKey of keys) {
+      try {
+        const mistral = createMistral({ apiKey });
+        const { text } = await generateText({
+          model: mistral(data.model || "mistral-small"),
+          prompt,
+          system: data.systemPrompt || undefined,
+          temperature: data.temperature ?? 0.7,
+        });
+        return text;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+    throw lastError ?? new Error("Mistral request failed");
+  }
 
   const { text } = await generateText({
     model: modelMap[data.provider] || "openai/gpt-4o",

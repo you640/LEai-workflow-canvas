@@ -1,13 +1,16 @@
 import type { LaunchBriefInput, WorkflowNode } from "@/types/workflow";
-import { ProjectLaunchSchema } from "@/lib/schemas/project.schema";
+import { SourceOfTruthExportSchema } from "@/lib/launch-studio/source-of-truth-schema";
 import { buildMockProject } from "@/lib/mock/mock-project";
 import { scanProjectPayload } from "@/lib/compliance/wording";
+import type { Locale } from "@/lib/i18n";
+import { validateSourceOfTruthExport } from "@/lib/launch-studio/validation";
 
 export interface NodeContext {
   brief: LaunchBriefInput;
   generated?: unknown;
   compliancePassed: boolean;
   violations: string[];
+  locale: Locale;
 }
 
 export function runNode(node: WorkflowNode, ctx: NodeContext): NodeContext {
@@ -27,7 +30,7 @@ export function runNode(node: WorkflowNode, ctx: NodeContext): NodeContext {
       return { ...ctx, compliancePassed: scan.passed, violations: scan.violations };
     }
     case "preview-builder": {
-      const generated = buildMockProject(ctx.brief);
+      const generated = buildMockProject(ctx.brief, ctx.locale);
       return { ...ctx, generated };
     }
     case "qa-audit": {
@@ -39,7 +42,7 @@ export function runNode(node: WorkflowNode, ctx: NodeContext): NodeContext {
         };
       }
 
-      const parsed = ProjectLaunchSchema.safeParse(ctx.generated);
+      const parsed = SourceOfTruthExportSchema.safeParse(ctx.generated);
       if (!parsed.success) {
         return {
           ...ctx,
@@ -49,11 +52,13 @@ export function runNode(node: WorkflowNode, ctx: NodeContext): NodeContext {
       }
 
       const scan = scanProjectPayload(parsed.data);
+      const validation = validateSourceOfTruthExport(parsed.data);
+
       return {
         ...ctx,
         generated: parsed.data,
-        compliancePassed: ctx.compliancePassed && scan.passed,
-        violations: [...ctx.violations, ...scan.violations],
+        compliancePassed: ctx.compliancePassed && scan.passed && validation.valid,
+        violations: [...ctx.violations, ...scan.violations, ...validation.errors],
       };
     }
     default:

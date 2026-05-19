@@ -13,6 +13,7 @@ import {
 } from "@xyflow/react";
 
 import type { WorkflowNode, WorkflowNodeType, WorkflowExecution } from "@/lib/workflow-types";
+import { randomId } from "@/lib/random-id";
 import { WorkflowCanvas } from "./workflow-canvas";
 import { WorkflowToolbar } from "./workflow-toolbar";
 import { OutputPanel } from "./output-panel";
@@ -212,7 +213,7 @@ function WorkflowEditorInner() {
 
       if (response.ok) {
         setExecution({
-          id: crypto.randomUUID(),
+          id: randomId("execution"),
           workflowId: workflowId || "",
           status: "completed",
           results: result.results,
@@ -222,7 +223,7 @@ function WorkflowEditorInner() {
         });
       } else {
         setExecution({
-          id: crypto.randomUUID(),
+          id: randomId("execution"),
           workflowId: workflowId || "",
           status: "failed",
           results: [
@@ -241,7 +242,7 @@ function WorkflowEditorInner() {
       }
     } catch (error) {
       setExecution({
-        id: crypto.randomUUID(),
+        id: randomId("execution"),
         workflowId: workflowId || "",
         status: "failed",
         results: [],
@@ -332,7 +333,7 @@ function WorkflowEditorInner() {
 
   const handleSelectHistoryRun = (output: string) => {
     setExecution({
-      id: crypto.randomUUID(),
+      id: randomId("execution"),
       workflowId: workflowId || "",
       status: "completed",
       results: [],

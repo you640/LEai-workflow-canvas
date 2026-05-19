@@ -1,0 +1,202 @@
+{
+  "dryRun": false,
+  "productionWrite": false,
+  "wordpressPostId": null,
+  "projectId": "9214c3e2-b32c-4fe2-ba2a-d0077856de30",
+  "buildStatus": "ready",
+  "generatedAt": "2026-05-19T12:39:14.127Z",
+  "sourceOfTruth": "meta.numbers",
+  "schemaVersion": "1.0.0",
+  "project": {
+    "name": "Secure PWA Booking Engine",
+    "type": "saas",
+    "goal": "Pripraviť technický launch plán a obsah pre bezpečný PWA booking produkt so zameraním na validáciu slotov, rate limiting, audit logging, Supabase backend a WordPress-ready export.",
+    "audience": "Salóny, súkromné kliniky, malé služby a solo poskytovatelia, ktorí potrebujú bezpečný mobilný rezervačný systém s jasnou správou termínov.",
+    "description": "Vytvor security-first launch výstup pre SaaS produkt Secure PWA Booking Engine. Výstup má byť praktický, technický a použiteľný pre landing page aj interný implementation brief. Zahrň React + TypeScript frontend, PWA manifest, service worker stratégiu, offline cache pravidlá, Supabase backend architektúru, validáciu rezervačných slotov, Zod validáciu, rate limiting, audit log, REST API kontrakt, databázový návrh, security checklist, test plan a deployment checklist. Nepoužívaj techniky, ktoré obchádzajú validáciu, autentifikáciu, bezpečné ukladanie tokenov alebo API hranice.",
+    "tone": "Senior technical architect, presný, praktický, security-first, priamy a bez hype.",
+    "contactEmail": "studio+booking@rubberduck.sk"
+  },
+  "wordpress": {
+    "postType": "launch_studio",
+    "postStatus": "draft",
+    "main": {
+      "title": "Secure PWA Booking Engine: bezpečný rezervačný systém pre služby",
+      "slug": "secure-pwa-booking-engine",
+      "tagline": "Technický launch plán pre mobilný booking produkt s validáciou, auditom a bezpečným backendom.",
+      "context": "Secure PWA Booking Engine rieši pre Salóny, súkromné kliniky, malé služby a solo poskytovatelia, ktorí potrebujú bezpečný mobilný rezervačný systém s jasnou správou termínov. jasný cieľ: Pripraviť technický launch plán a obsah pre bezpečný PWA booking produkt so zameraním na validáciu slotov, rate limiting, audit logging, Supabase backend a WordPress-ready export.",
+      "editor": "## Rezervácie bez bezpečnostných skratiek\n\nSecure PWA Booking Engine vysvetľuje hodnotu bezpečného rezervačného systému pre služby, ktoré potrebujú spoľahlivý mobilný flow a jasnú správu termínov.\n\n- Jasná hodnota na prvej obrazovke\n- Silný CTA krok\n- Dôveryhodná komunikácia\n\n**CTA:** Poslať brief\n\n## Bezpečnosť ako súčasť produktu\n\nVýstup pomenúva validáciu slotov, rate limiting, audit log, API hranice a technické pravidlá, ktoré patria do prvého releasu.\n\n- Mobilná optimalizácia\n- Čitateľná štruktúra\n- SEO základ pripravený na publikovanie\n\n## Od launch plánu po implementáciu\n\nBrief sa premieňa na landing obsah, technické odporúčania, REST kontrakt, testovací plán a checklist pre bezpečné nasadenie.\n\n- Brief a validácia\n- Návrh štruktúry a copy\n- QA a odovzdanie\n\n**CTA:** Pozrieť možnosti\n\n## Čo dostane produktový tím\n\nPayload pokrýva positioning, CTA, SEO, FAQ, technické odporúčania a WordPress metabox dáta pre review pred publikovaním.\n\n- Kompletný launch obsah\n- Import-ready štruktúra\n- Bez prepisovania od nuly\n\n## Dôvera cez auditovateľný návrh\n\nKomunikácia neobchádza validáciu, autentifikáciu ani bezpečnostné hranice. Riziká sú pomenované pred implementáciou.\n\n- Transparentná komunikácia\n- Konzistentný brand tón\n- Zrozumiteľná ponuka\n\n## FAQ\n\nFAQ dáva klientovi stručné odpovede k rozsahu, ďalším krokom, kontrole výstupu a bezpečnému odovzdaniu.\n\n- Rozsah služby\n- Časový plán\n- Odovzdanie a ďalšie kroky\n\n## Kontakt a štart\n\nAk chceš spustiť web bez chaosu, pošli brief na studio+booking@rubberduck.sk a dostaneš jasný plán realizácie.\n\n- Jednoznačný CTA krok\n- Rýchla odpoveď\n- Pripravený handoff\n\n**CTA:** Poslať brief",
+      "label": "Poslať brief",
+      "link": "#kontakt"
+    },
+    "post": {
+      "section": [
+        "SaaS",
+        "Booking",
+        "Security"
+      ],
+      "topic": [
+        "PWA",
+        "Supabase",
+        "Zod validácia",
+        "rate limiting",
+        "audit log"
+      ],
+      "source": "LE Studio guarded export"
+    },
+    "services": [
+      {
+        "type": [
+          "SaaS launch plán"
+        ],
+        "category": [
+          "Booking systémy"
+        ],
+        "badge": [
+          "Security-first",
+          "PWA",
+          "API-ready"
+        ],
+        "price": null,
+        "duration": null,
+        "datetime": null
+      }
+    ],
+    "products": [],
+    "media": {
+      "video": null,
+      "icon": null,
+      "image": null,
+      "gallery": [],
+      "files": []
+    }
+  },
+  "seo": {
+    "title": "Secure PWA Booking Engine | LE Studio",
+    "description": "Secure PWA Booking Engine pripravený ako štruktúrovaný WordPress metabox payload s obsahom, SEO podkladmi a review flow.",
+    "ogTitle": "Secure PWA Booking Engine — LE Studio",
+    "ogDescription": "Transparentný launch výstup cez LE Studio workflow."
+  },
+  "faq": [
+    {
+      "question": "Ako rýchlo vieme začať?",
+      "answer": "Po potvrdení briefu sa hneď pripraví štruktúra a obsah bez zbytočného čakania."
+    },
+    {
+      "question": "Je výstup pripravený pre WordPress?",
+      "answer": "Áno, výsledok je normalizovaný do metabox schémy a pripravený pre dry-run import preview."
+    },
+    {
+      "question": "Čo je súčasťou dodania?",
+      "answer": "H1, tagline, editor obsah, CTA, SEO metadata, FAQ a technické odporúčania."
+    },
+    {
+      "question": "Prečo je to bezpečné?",
+      "answer": "Systém beží v dry-run režime, productionWrite je false a wordpressPostId je vždy null."
+    }
+  ],
+  "compliance": {
+    "passed": true,
+    "violations": []
+  },
+  "technicalRecommendations": [
+    "Pred exportom validovať payload proti source-of-truth schéme.",
+    "Udržať striktne mapovanie frontend vstupov na metabox polia.",
+    "Použiť QA fixture gate pred každým release."
+  ],
+  "securityRecommendations": [
+    "Nezapisovať do produkcie v dry-run režime.",
+    "Nelogovať secrets ani auth hlavičky.",
+    "Guardovať import cez server-side feature flag a compliance pass."
+  ],
+  "antiPatterns": [
+    "Nevkladať generické výplňové vety do final exportu.",
+    "Nevymýšľať ceny, médiá alebo obchodné metriky bez vstupu.",
+    "Neobchádzať validáciu exportu/importu."
+  ],
+  "wordpressImportNotes": [
+    "Import payload sa skladá z wordpress.main/post/services/products/media.",
+    "UI preview môže používať _preview, ale import source je wordpress objekt.",
+    "Pri neúspešnej compliance musí zostať export/import blokovaný."
+  ],
+  "_preview": {
+    "sections": [
+      {
+        "id": "hero",
+        "title": "Rezervácie bez bezpečnostných skratiek",
+        "body": "Secure PWA Booking Engine vysvetľuje hodnotu bezpečného rezervačného systému pre služby, ktoré potrebujú spoľahlivý mobilný flow a jasnú správu termínov.",
+        "bullets": [
+          "Jasná hodnota na prvej obrazovke",
+          "Silný CTA krok",
+          "Dôveryhodná komunikácia"
+        ],
+        "cta": "Poslať brief"
+      },
+      {
+        "id": "benefits",
+        "title": "Bezpečnosť ako súčasť produktu",
+        "body": "Výstup pomenúva validáciu slotov, rate limiting, audit log, API hranice a technické pravidlá, ktoré patria do prvého releasu.",
+        "bullets": [
+          "Mobilná optimalizácia",
+          "Čitateľná štruktúra",
+          "SEO základ pripravený na publikovanie"
+        ],
+        "cta": null
+      },
+      {
+        "id": "process",
+        "title": "Od launch plánu po implementáciu",
+        "body": "Brief sa premieňa na landing obsah, technické odporúčania, REST kontrakt, testovací plán a checklist pre bezpečné nasadenie.",
+        "bullets": [
+          "Brief a validácia",
+          "Návrh štruktúry a copy",
+          "QA a odovzdanie"
+        ],
+        "cta": "Pozrieť možnosti"
+      },
+      {
+        "id": "offer",
+        "title": "Čo dostane produktový tím",
+        "body": "Payload pokrýva positioning, CTA, SEO, FAQ, technické odporúčania a WordPress metabox dáta pre review pred publikovaním.",
+        "bullets": [
+          "Kompletný launch obsah",
+          "Import-ready štruktúra",
+          "Bez prepisovania od nuly"
+        ],
+        "cta": null
+      },
+      {
+        "id": "trust",
+        "title": "Dôvera cez auditovateľný návrh",
+        "body": "Komunikácia neobchádza validáciu, autentifikáciu ani bezpečnostné hranice. Riziká sú pomenované pred implementáciou.",
+        "bullets": [
+          "Transparentná komunikácia",
+          "Konzistentný brand tón",
+          "Zrozumiteľná ponuka"
+        ],
+        "cta": null
+      },
+      {
+        "id": "faq",
+        "title": "FAQ",
+        "body": "FAQ dáva klientovi stručné odpovede k rozsahu, ďalším krokom, kontrole výstupu a bezpečnému odovzdaniu.",
+        "bullets": [
+          "Rozsah služby",
+          "Časový plán",
+          "Odovzdanie a ďalšie kroky"
+        ],
+        "cta": null
+      },
+      {
+        "id": "contact",
+        "title": "Kontakt a štart",
+        "body": "Ak chceš spustiť web bez chaosu, pošli brief na studio+booking@rubberduck.sk a dostaneš jasný plán realizácie.",
+        "bullets": [
+          "Jednoznačný CTA krok",
+          "Rýchla odpoveď",
+          "Pripravený handoff"
+        ],
+        "cta": "Poslať brief"
+      }
+    ]
+  }
+}

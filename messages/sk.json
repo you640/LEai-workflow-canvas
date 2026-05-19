@@ -1,0 +1,325 @@
+{
+  "meta": {
+    "title": "Web do 24h — LE Studio",
+    "description": "Vyber typ projektu a LE Studio pripraví štruktúru, texty a WordPress-ready výstup pre Web do 24h podľa rozsahu a dostupných podkladov."
+  },
+  "common": {
+    "language": "Jazyk",
+    "english": "EN",
+    "slovak": "SK",
+    "save": "Uložiť",
+    "load": "Načítať",
+    "run": "Spustiť workflow",
+    "running": "Spúšťa sa...",
+    "addNode": "Pridať uzol",
+    "resetWorkflow": "Reset workflow",
+    "codeJsonView": "Kód/JSON náhľad",
+    "exportJson": "Export JSON",
+    "themeToggle": "Prepnutie témy",
+    "generate": "Generovať",
+    "preview": "Náhľad",
+    "share": "Zdieľať",
+    "magicPrompt": "Kúzelná palička",
+    "improvePrompt": "Vylepšiť prompt"
+  },
+  "app": {
+    "brandTop": "Web do 24h",
+    "brandName": "LE Studio",
+    "badge": "LE Studio",
+    "dryRunMode": "Dry-run režim",
+    "headline": "LE Studio Editor",
+    "subheadline": "Z briefu pripraví štruktúru, texty a WordPress-ready výstup pre Web do 24h.",
+    "workflowName": "Web do 24h Generator",
+    "loading": "LE Studio sa načítava...",
+    "workflowNameLabel": "Názov workflow",
+    "projectType": "Typ projektu",
+    "projectName": "Názov projektu",
+    "targetAudience": "Cieľová skupina",
+    "goal": "Cieľ",
+    "description": "Popis",
+    "preferredTone": "Preferovaný tón",
+    "contactEmail": "Kontaktný e-mail",
+    "prepareWpImport": "Pripraviť WordPress import (Dry-run)",
+    "realImportDisabled": "Reálny import je štandardne vypnutý.",
+    "complianceViolations": "Compliance porušenia",
+    "validationErrors": "Validačné chyby",
+    "importResponseReceived": "Import odpoveď prijatá.",
+    "workflowSaved": "Workflow uložený.",
+    "workflowLoaded": "Workflow načítaný.",
+    "workflowRunFailed": "Spustenie workflow zlyhalo.",
+    "customStepLabel": "Vlastný krok",
+    "customStepDescription": "Vlastný plánovací uzol.",
+    "magicPromptRunning": "Vylepšujem prompt…",
+    "magicPromptMissingProjectName": "Najprv vyplň názov projektu.",
+    "magicPromptPreparing": "Draft bol vložený. Pripravujem AI vylepšenie briefu…",
+    "magicPromptFallback": "AI vylepšenie briefu neprešlo. Použitý bol bezpečný draft.",
+    "magicPromptSuccess": "Kúzelná palička doplnila brief.",
+    "magicPromptError": "Kúzelná palička zlyhala. Použitý bol bezpečný draft bez placeholderov.",
+    "mobileActionBarLabel": "Mobilné akcie LE Studio"
+  },
+  "projectTypes": {
+    "business": "Business landing page",
+    "saas": "SaaS landing page",
+    "booking": "Booking page",
+    "product-launch": "Product launch page",
+    "support-campaign": "Support Campaign",
+    "personal-brand": "Personal brand page"
+  },
+  "inspector": {
+    "launchSummary": "Súhrn spustenia",
+    "projectType": "Typ projektu",
+    "dryRunStatus": "Stav dry-run",
+    "active": "Aktívny",
+    "disabled": "Vypnutý",
+    "complianceStatus": "Compliance stav",
+    "passed": "Prešiel",
+    "pendingFailed": "Čaká / zlyhal",
+    "lastRun": "Posledný beh",
+    "notRunYet": "Ešte nespustené",
+    "exportReadiness": "Pripravenosť exportu",
+    "ready": "Pripravený",
+    "blocked": "Blokovaný",
+    "status": "Stav",
+    "summary": "Súhrn",
+    "nodeId": "ID uzla"
+  },
+  "timeline": {
+    "title": "Log vykonania",
+    "empty": "Zatiaľ neprebehol žiadny beh."
+  },
+  "jsonPreview": {
+    "title": "JSON náhľad",
+    "metaboxNotice": "Náhľad content-first WordPress metabox payloadu (source of truth: meta.numbers).",
+    "dryRunNotice": "Výstup je pripravený na kontrolu pred importom. Produkčný zápis do WordPressu zostáva chránený serverovým guardom.",
+    "empty": "Spusť workflow pre generovanie štruktúrovaného JSON.",
+    "blocked": "Export blokovaný kvôli compliance."
+  },
+  "status": {
+    "idle": "Nečinný",
+    "running": "Beží",
+    "success": "Hotovo",
+    "warning": "Upozornenie",
+    "failed": "Zlyhal"
+  },
+  "api": {
+    "briefRequired": "Launch brief je povinný.",
+    "projectInvalid": "Project payload je neplatný.",
+    "generatedProjectInvalid": "Vygenerovaný project payload je neplatný.",
+    "projectGenerationFailed": "Generovanie projektu zlyhalo.",
+    "projectImportFailed": "Import projektu zlyhal.",
+    "workflowNotFound": "Workflow nebol nájdený.",
+    "workflowExecutionFailed": "Vykonanie workflow zlyhalo.",
+    "importBlockedCompliance": "Import bol zablokovaný, pretože compliance kontrola zlyhala."
+  },
+  "runner": {
+    "nodeStarted": "Uzol spustený",
+    "complianceBlocked": "Compliance zablokovala beh",
+    "skippedCompliance": "Preskočené kvôli compliance zlyhaniu",
+    "previewGenerated": "Preview JSON vygenerovaný",
+    "completed": "Dokončené",
+    "executionFailed": "Vykonanie zlyhalo",
+    "skippedNodeFailure": "Preskočené kvôli zlyhaniu uzla"
+  },
+  "mock": {
+    "defaultProjectName": "Web do 24h Projekt",
+    "defaultAudience": "Majitelia menších a stredných firiem",
+    "defaultGoal": "Spustiť moderný web pripravený na klientov",
+    "defaultDescription": "Prehľadný web s jasnou ponukou a CTA.",
+    "defaultTone": "jasný, profesionálny, priamy"
+  },
+  "webDo24h": {
+    "nav": {
+      "brand": "LE Studio / Web do 24h",
+      "cta": "Pripraviť brief"
+    },
+    "hero": {
+      "kicker": "Pilotná ponuka od Rubberduck",
+      "title": "Web do 24h",
+      "subtitle": "Moderný web pripravený podľa rozsahu a dodaných podkladov. LE Studio pripraví štruktúru, texty, CTA smerovanie a WordPress-ready obsahový výstup na kontrolu.",
+      "primaryCta": "Poslať brief",
+      "secondaryCta": "Pozrieť ukážku výstupu"
+    },
+    "sample": {
+      "label": "Ukážka výstupu",
+      "title": "Čo dostaneš na kontrolu",
+      "items": [
+        "Obsahový payload pre WordPress metabox štruktúru",
+        "Headline, sekcie, CTA, FAQ a SEO podklady",
+        "Review flow pred akýmkoľvek produkčným importom"
+      ]
+    },
+    "audience": {
+      "kicker": "Pre koho",
+      "title": "Pre firmy, ktoré potrebujú jasný web bez dlhého chaosu",
+      "items": [
+        "Malé firmy",
+        "Služby",
+        "Salóny",
+        "Ambulancie",
+        "Remeselníci",
+        "Lokálne podniky"
+      ]
+    },
+    "deliverables": {
+      "kicker": "Dodanie",
+      "title": "Čo klient reálne dostane",
+      "items": [
+        "Štruktúru webu",
+        "Texty pripravené na kontrolu",
+        "CTA smerovanie",
+        "Základné SEO podklady",
+        "WordPress-ready obsahový výstup",
+        "Staging alebo review handoff"
+      ]
+    },
+    "process": {
+      "kicker": "Proces",
+      "title": "Od briefu po odovzdanie",
+      "steps": [
+        "Brief",
+        "Návrh štruktúry",
+        "Obsah",
+        "WordPress príprava",
+        "Kontrola",
+        "Odovzdanie"
+      ]
+    },
+    "pricing": {
+      "kicker": "Pilotný cenník",
+      "title": "Úvodné ceny pre overenie ponuky",
+      "note": "Ceny sú pilotné a závisia od rozsahu, dodaných podkladov a požiadaviek. Nie sú garantovaným trvalým cenníkom.",
+      "plans": [
+        {
+          "name": "Start",
+          "price": "299 €",
+          "description": "Jedna jednoduchá landing page so základným obsahom a CTA smerovaním."
+        },
+        {
+          "name": "Pro",
+          "price": "699 €",
+          "description": "Kompletnejšia štruktúra, rozšírené sekcie, FAQ, SEO podklady a review handoff."
+        },
+        {
+          "name": "Custom",
+          "price": "od 1 200 €",
+          "description": "Individuálny rozsah, viac podstránok, špecifické technické alebo obsahové potreby."
+        },
+        {
+          "name": "Maintenance",
+          "price": "od 49 €/mesiac",
+          "description": "Priebežná starostlivosť, drobné úpravy a kontrolovaný obsahový support."
+        }
+      ]
+    },
+    "faq": {
+      "kicker": "FAQ",
+      "title": "Otázky pred briefom",
+      "items": [
+        {
+          "question": "Čo znamená do 24h?",
+          "answer": "Znamená rýchly pilotný proces podľa rozsahu a dostupných podkladov. Väčší rozsah alebo chýbajúce materiály môžu termín predĺžiť."
+        },
+        {
+          "question": "Čo musím dodať?",
+          "answer": "Názov projektu, popis služby, cieľovú skupinu, kontakty, základné podklady a informáciu, čo má stránka dosiahnuť."
+        },
+        {
+          "question": "Je to šablóna?",
+          "answer": "Nie je to anonymná šablónová skladačka. LE Studio pripraví štruktúru a obsah podľa briefu, finálne spracovanie ide cez kontrolu."
+        },
+        {
+          "question": "Viem si výstup skontrolovať?",
+          "answer": "Áno. Výstup je pripravený na review pred importom alebo publikovaním."
+        },
+        {
+          "question": "Robíte aj WordPress?",
+          "answer": "Áno, výstup je pripravený pre WordPress workflow. Produkčný zápis a nasadenie sa rieši samostatne a až po kontrole."
+        }
+      ]
+    },
+    "lead": {
+      "title": "Pošli brief",
+      "note": "Formulár zatiaľ nič neposiela na backend. Po odoslaní pripraví bezpečný e-mail s podkladmi, ktorý môžeš skontrolovať pred odoslaním.",
+      "fields": {
+        "name": "Meno",
+        "company": "Firma",
+        "email": "E-mail",
+        "projectType": "Typ projektu",
+        "description": "Popis projektu",
+        "budget": "Rozpočet voliteľne"
+      },
+      "projectTypes": [
+        {
+          "value": "business",
+          "label": "Business landing page"
+        },
+        {
+          "value": "booking",
+          "label": "Booking page"
+        },
+        {
+          "value": "saas",
+          "label": "SaaS landing page"
+        },
+        {
+          "value": "personal-brand",
+          "label": "Personal brand page"
+        }
+      ],
+      "consent": "Súhlasím, aby ma Rubberduck kontaktoval k tomuto dopytu.",
+      "submit": "Pripraviť e-mail",
+      "success": "Brief je pripravený lokálne. Skontroluj e-mail pred odoslaním.",
+      "mailto": "Otvoriť pripravený e-mail"
+    }
+  },
+  "nodes": {
+    "project-type": {
+      "label": "Typ projektu",
+      "description": "Vyber jeden zo šiestich typov projektu."
+    },
+    "launch-brief": {
+      "label": "Launch Brief",
+      "description": "Vyplň vstupný brief."
+    },
+    "scope-guard": {
+      "label": "Scope Guard",
+      "description": "Over rozsah požiadavky a bezpečnosť."
+    },
+    "strategy-agent": {
+      "label": "Strategy Agent",
+      "description": "Vytvor positioning a CTA stratégiu."
+    },
+    "copy-agent": {
+      "label": "Copy Agent",
+      "description": "Vygeneruj headline, subheadline, CTA a FAQ návrh."
+    },
+    "structure-agent": {
+      "label": "Structure Agent",
+      "description": "Vygeneruj architektúru sekcií stránky."
+    },
+    "template-selector": {
+      "label": "Template Selector",
+      "description": "Vyber preset podľa typu projektu."
+    },
+    "seo-agent": {
+      "label": "SEO Agent",
+      "description": "Vygeneruj metadata balík."
+    },
+    "preview-builder": {
+      "label": "Preview Builder",
+      "description": "Zostav JSON náhľad výsledku."
+    },
+    "wordpress-adapter": {
+      "label": "WordPress Adapter",
+      "description": "Priprav server-side import payload."
+    },
+    "qa-audit": {
+      "label": "QA Audit",
+      "description": "Over povinné polia a wording."
+    },
+    "launch-pack": {
+      "label": "Launch Pack",
+      "description": "Priprav checklist a ďalšie kroky."
+    }
+  }
+}

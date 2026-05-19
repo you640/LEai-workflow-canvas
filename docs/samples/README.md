@@ -1,25 +1,123 @@
-# Launch Studio Sample Fixtures
+# LE Studio Source-of-Truth Fixtures
 
-This directory contains golden dry-run JSON exports generated from Launch Studio.
+`meta.numbers` is the single source of truth for final export payloads.
 
-## Fixture Contract
+## Source-of-truth contract
 
-A valid dry-run export fixture must satisfy:
+Final export must include:
 
-- `dryRun === true`
-- `page.headline` is a non-empty string
-- `strategy.primaryCTA` is a non-empty string
-- `page.sections` is a non-empty array
-- `seo` is an object
-- `faq` is an array
-- `compliance.violations` is empty or missing
-- `productionWrite` is false or missing
-- `wordpressPostId` is null or missing
+- `dryRun: true`
+- `productionWrite: false`
+- `wordpressPostId: null`
+- `sourceOfTruth: "meta.numbers"`
+- `schemaVersion: "1.0.0"`
+- `project`
+- `wordpress.main`
+- `wordpress.post`
+- `wordpress.services`
+- `wordpress.products`
+- `wordpress.media`
+- `seo`
+- `faq`
+- `compliance`
+- `technicalRecommendations`
+- `securityRecommendations`
+- `antiPatterns`
+- `wordpressImportNotes`
 
-## Purpose
+## WordPress metabox mapping
 
-These fixtures are used to verify that Launch Studio can generate structured, safe, import-ready payloads without writing to WordPress production.
+### `wordpress.main`
+- `title`
+- `slug`
+- `tagline`
+- `context`
+- `editor`
+- `label`
+- `link`
 
-## Safety Rule
+### `wordpress.post`
+- `section[]`
+- `topic[]`
+- `source`
 
-Dry-run fixtures must never contain real production write results, real WordPress post IDs, secrets, API keys, or customer private data.
+### `wordpress.services[]`
+- `type[]`
+- `category[]`
+- `badge[]`
+- `price`
+- `duration`
+- `datetime`
+
+### `wordpress.products[]`
+- `type[]`
+- `category[]`
+- `badge[]`
+- `brand[]`
+- `stock`
+- `regular_price`
+- `reseller_price`
+- `sale_price`
+- `paylink`
+
+### `wordpress.media`
+- `video`
+- `icon`
+- `image`
+- `gallery[]`
+- `files[]`
+
+## Dry-run safety rules
+
+- Import button prepares payload preview only.
+- No production write in LE Studio mode.
+- `wordpressPostId` always stays `null`.
+- `wordpress.postStatus` must be `draft`.
+
+## Content format policy
+
+- LE Studio generates **content payload only**, not final frontend layout.
+- WordPress import route maps the payload into metabox fields.
+- WordPress theme/templates render the final UI.
+- Plain-text fields must stay plain text (no HTML tags).
+- Array fields must remain arrays of clean strings.
+- `wordpress.main.editor` may contain Markdown or safe basic HTML only.
+- Forbidden in editor: `script`, `style`, `iframe`, `object`, `embed`, `form`, `input`, `button`, `svg`, inline styles, event handlers, and layout wrappers.
+- Layout-only properties are forbidden in export payload (`className`, `style`, `components`, `blocks`, `jsx`, `css`, tailwind-style keys).
+- Never invent media URLs, prices, paylinks, stock, or fake business claims.
+
+## Forbidden placeholder phrases
+
+- `Krátke vysvetlenie`
+- `Hlavné prínosy`
+- `Tri až štyri kroky`
+- `Balíky alebo varianty`
+- `Najčastejšie otázky`
+- `Tu bude`
+- `Placeholder`
+- `Lorem ipsum`
+
+## Compliance rules
+
+- no fake testimonials
+- no fake customer counts
+- no fake revenue
+- no guaranteed income or ranking claims
+- no fake urgency
+- no gambling/lottery mechanics
+- no unsafe bypass advice
+
+## Fixtures
+
+- `web-do-24h-source-of-truth.valid.json`
+- `web-do-24h-source-of-truth.invalid.json`
+
+## Validator
+
+```bash
+node scripts/validate-launch-studio-fixture.mjs docs/samples/web-do-24h-source-of-truth.valid.json
+```
+
+Exit code:
+- `0` valid
+- `1` invalid
