@@ -1,0 +1,102 @@
+{
+  "dryRun": true,
+  "productionWrite": false,
+  "wordpressPostId": null,
+  "sourceOfTruth": "meta.numbers",
+  "schemaVersion": "1.0.0",
+  "project": {
+    "name": "support-campaign",
+    "type": "support-campaign",
+    "goal": "Launch",
+    "audience": "SMB",
+    "description": "Placeholder demo",
+    "tone": "generic",
+    "contactEmail": "hello@example.com"
+  },
+  "wordpress": {
+    "postType": "launch_studio",
+    "postStatus": "draft",
+    "main": {
+      "title": "",
+      "slug": "",
+      "tagline": "",
+      "context": "",
+      "editor": "Krátke vysvetlenie hodnoty...",
+      "label": "",
+      "link": ""
+    },
+    "post": {
+      "section": "Landing",
+      "topic": "Topic",
+      "source": ""
+    },
+    "services": [
+      {
+        "type": [
+          "Tvorba webu"
+        ],
+        "category": [
+          "Firemné weby"
+        ],
+        "badge": [
+          "Do 24h"
+        ],
+        "price": 100,
+        "duration": 24,
+        "datetime": null
+      }
+    ],
+    "products": [
+      {
+        "type": [
+          "A"
+        ],
+        "category": [
+          "B"
+        ],
+        "badge": [
+          "C"
+        ],
+        "brand": [
+          "D"
+        ],
+        "stock": 5,
+        "regular_price": 10,
+        "reseller_price": 9,
+        "sale_price": 8,
+        "paylink": "https://pay.example.com"
+      }
+    ],
+    "media": {
+      "video": null,
+      "icon": null,
+      "image": "https://example.com/img.jpg",
+      "gallery": [
+        "https://example.com/g1.jpg"
+      ],
+      "files": [
+        "https://example.com/file.pdf"
+      ]
+    }
+  },
+  "seo": {
+    "title": "",
+    "description": "",
+    "ogTitle": "x",
+    "ogDescription": "x"
+  },
+  "faq": [
+    {
+      "question": "Q",
+      "answer": "A"
+    }
+  ],
+  "compliance": {
+    "passed": true,
+    "violations": []
+  },
+  "technicalRecommendations": [],
+  "securityRecommendations": [],
+  "antiPatterns": [],
+  "wordpressImportNotes": []
+}

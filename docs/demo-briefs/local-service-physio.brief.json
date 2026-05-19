@@ -1,0 +1,9 @@
+{
+  "projectType": "business",
+  "projectName": "Moderná ambulancia pre súkromnú fyzioterapiu",
+  "targetAudience": "Ľudia po úraze, rekreační športovci, seniori a lokálni klienti, ktorí potrebujú odbornú fyzioterapiu, jasné objednanie a dôveryhodné vysvetlenie služieb.",
+  "goal": "Pripraviť dôveryhodnú landing page pre objednanie úvodnej konzultácie, ktorá vysvetlí služby, proces návštevy, odborný prístup a bezpečný kontaktný krok bez neoverených medicínskych sľubov.",
+  "description": "Vytvor obsah pre lokálnu súkromnú fyzioterapeutickú ambulanciu. Stránka má pôsobiť odborne, pokojne a ľudsky. Má vysvetliť, komu ambulancia pomáha, ako prebieha prvá konzultácia, aké typy problémov vie klient konzultovať a ako si dohodnúť termín. Nepoužívaj garantované vyliečenie, vymyslené recenzie, vymyslené počty pacientov ani medicínske tvrdenia bez overenia. Výstup má byť vhodný pre WordPress metabox export a následný staging review.",
+  "preferredTone": "Odborný, pokojný, dôveryhodný, zrozumiteľný, lokálny a empatický bez lacného marketingu.",
+  "contactEmail": "studio+fyzioterapia@rubberduck.sk"
+}

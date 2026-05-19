@@ -74,4 +74,6 @@ export interface LaunchBriefInput {
   contactEmail?: string;
   budget?: string;
   deadline?: string;
+  targetAmount?: number | null;
+  rewardsRequested?: boolean;
 }

@@ -1,4 +1,5 @@
 import type { WorkflowDefinition, WorkflowNode, WorkflowEdge } from "@/types/workflow";
+import { randomId } from "@/lib/random-id";
 
 function node(id: string, label: string, description: string, x: number, y: number, type: WorkflowNode["type"]): WorkflowNode {
   return {
@@ -37,9 +38,9 @@ export function createDefaultWorkflow(): WorkflowDefinition {
 
   const now = new Date().toISOString();
   return {
-    id: crypto.randomUUID(),
+    id: randomId("workflow"),
     name: "Web do 24h Generator",
-    dryRun: true,
+    dryRun: false,
     nodes,
     edges,
     createdAt: now,

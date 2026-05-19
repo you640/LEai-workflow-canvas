@@ -1,5 +1,5 @@
-import { LaunchStudioApp } from "@/components/workflow/LaunchStudioApp";
+import { LaunchStudioClientGate } from "@/components/workflow/LaunchStudioClientGate";
 
 export default function LaunchStudioPage() {
-  return <LaunchStudioApp />;
+  return <LaunchStudioClientGate />;
 }

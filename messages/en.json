@@ -1,0 +1,325 @@
+{
+  "meta": {
+    "title": "Web do 24h — LE Studio",
+    "description": "Pick a project type and LE Studio prepares structure, copy, and a WordPress-ready output for Web do 24h based on scope and available materials."
+  },
+  "common": {
+    "language": "Language",
+    "english": "EN",
+    "slovak": "SK",
+    "save": "Save",
+    "load": "Load",
+    "run": "Run Workflow",
+    "running": "Running...",
+    "addNode": "Add node",
+    "resetWorkflow": "Reset workflow",
+    "codeJsonView": "Code/JSON view",
+    "exportJson": "Export JSON",
+    "themeToggle": "Theme toggle",
+    "generate": "Generate",
+    "preview": "Preview",
+    "share": "Share",
+    "magicPrompt": "Magic wand",
+    "improvePrompt": "Improve prompt"
+  },
+  "app": {
+    "brandTop": "Web do 24h",
+    "brandName": "LE Studio",
+    "badge": "LE Studio",
+    "dryRunMode": "Dry-run mode",
+    "headline": "LE Studio Editor",
+    "subheadline": "From brief to structure, copy, and WordPress-ready output for Web do 24h.",
+    "workflowName": "Web do 24h Generator",
+    "loading": "LE Studio is loading...",
+    "workflowNameLabel": "Workflow name",
+    "projectType": "Project Type",
+    "projectName": "Project Name",
+    "targetAudience": "Target Audience",
+    "goal": "Goal",
+    "description": "Description",
+    "preferredTone": "Preferred Tone",
+    "contactEmail": "Contact Email",
+    "prepareWpImport": "Prepare WordPress Import (Dry-run)",
+    "realImportDisabled": "Real import is disabled by default.",
+    "complianceViolations": "Compliance violations",
+    "validationErrors": "Validation errors",
+    "importResponseReceived": "Import response received.",
+    "workflowSaved": "Workflow saved.",
+    "workflowLoaded": "Workflow loaded.",
+    "workflowRunFailed": "Workflow run failed.",
+    "customStepLabel": "Custom Step",
+    "customStepDescription": "Custom planning node.",
+    "magicPromptRunning": "Improving prompt…",
+    "magicPromptMissingProjectName": "Fill the project name first.",
+    "magicPromptPreparing": "Draft inserted. Preparing AI prompt enhancement…",
+    "magicPromptFallback": "AI prompt enhancement did not pass. Safe draft was used.",
+    "magicPromptSuccess": "Magic wand completed the brief.",
+    "magicPromptError": "Magic wand failed. Safe draft without placeholders was used.",
+    "mobileActionBarLabel": "LE Studio mobile actions"
+  },
+  "projectTypes": {
+    "business": "Business landing page",
+    "saas": "SaaS landing page",
+    "booking": "Booking page",
+    "product-launch": "Product launch page",
+    "support-campaign": "Support Campaign",
+    "personal-brand": "Personal brand page"
+  },
+  "inspector": {
+    "launchSummary": "Launch Summary",
+    "projectType": "Project type",
+    "dryRunStatus": "Dry-run status",
+    "active": "Active",
+    "disabled": "Disabled",
+    "complianceStatus": "Compliance status",
+    "passed": "Passed",
+    "pendingFailed": "Pending / Failed",
+    "lastRun": "Last run",
+    "notRunYet": "Not run yet",
+    "exportReadiness": "Export readiness",
+    "ready": "Ready",
+    "blocked": "Blocked",
+    "status": "Status",
+    "summary": "Summary",
+    "nodeId": "Node ID"
+  },
+  "timeline": {
+    "title": "Execution Log",
+    "empty": "No runs yet."
+  },
+  "jsonPreview": {
+    "title": "JSON Preview",
+    "metaboxNotice": "Content-first WordPress metabox payload preview (source of truth: meta.numbers).",
+    "dryRunNotice": "Output is ready for review before import. Production WordPress writes remain protected by the server guard.",
+    "empty": "Run workflow to generate structured JSON.",
+    "blocked": "Export blocked by compliance."
+  },
+  "status": {
+    "idle": "Idle",
+    "running": "Running",
+    "success": "Success",
+    "warning": "Warning",
+    "failed": "Failed"
+  },
+  "api": {
+    "briefRequired": "Launch brief is required.",
+    "projectInvalid": "Project payload is invalid.",
+    "generatedProjectInvalid": "Generated project payload is invalid.",
+    "projectGenerationFailed": "Project generation failed.",
+    "projectImportFailed": "Project import failed.",
+    "workflowNotFound": "Workflow not found.",
+    "workflowExecutionFailed": "Workflow execution failed.",
+    "importBlockedCompliance": "Import blocked because compliance scan failed."
+  },
+  "runner": {
+    "nodeStarted": "Node started",
+    "complianceBlocked": "Compliance blocked",
+    "skippedCompliance": "Skipped due to compliance failure",
+    "previewGenerated": "Preview JSON generated",
+    "completed": "Completed",
+    "executionFailed": "Execution failed",
+    "skippedNodeFailure": "Skipped due to node failure"
+  },
+  "mock": {
+    "defaultProjectName": "Web do 24h Project",
+    "defaultAudience": "Owners of small and medium businesses",
+    "defaultGoal": "Launch a modern website ready for clients",
+    "defaultDescription": "A clear website with a clear offer and CTA.",
+    "defaultTone": "clear, professional, direct"
+  },
+  "webDo24h": {
+    "nav": {
+      "brand": "LE Studio / Web do 24h",
+      "cta": "Prepare brief"
+    },
+    "hero": {
+      "kicker": "Pilot offer by Rubberduck",
+      "title": "Web do 24h",
+      "subtitle": "A modern website prepared according to scope and supplied materials. LE Studio prepares structure, copy, CTA direction, and a WordPress-ready content output for review.",
+      "primaryCta": "Send brief",
+      "secondaryCta": "View sample output"
+    },
+    "sample": {
+      "label": "Sample output",
+      "title": "What you get for review",
+      "items": [
+        "Content payload for the WordPress metabox structure",
+        "Headline, sections, CTA, FAQ, and SEO materials",
+        "Review flow before any production import"
+      ]
+    },
+    "audience": {
+      "kicker": "Audience",
+      "title": "For companies that need a clear website without a long messy process",
+      "items": [
+        "Small businesses",
+        "Services",
+        "Salons",
+        "Clinics",
+        "Trades",
+        "Local companies"
+      ]
+    },
+    "deliverables": {
+      "kicker": "Delivery",
+      "title": "What the client actually receives",
+      "items": [
+        "Website structure",
+        "Copy prepared for review",
+        "CTA direction",
+        "Basic SEO materials",
+        "WordPress-ready content output",
+        "Staging or review handoff"
+      ]
+    },
+    "process": {
+      "kicker": "Process",
+      "title": "From brief to handoff",
+      "steps": [
+        "Brief",
+        "Structure draft",
+        "Copy",
+        "WordPress preparation",
+        "Review",
+        "Handoff"
+      ]
+    },
+    "pricing": {
+      "kicker": "Pilot pricing",
+      "title": "Introductory prices for offer validation",
+      "note": "Prices are pilot prices and depend on scope, supplied materials, and requirements. They are not a guaranteed permanent price list.",
+      "plans": [
+        {
+          "name": "Start",
+          "price": "299 €",
+          "description": "One simple landing page with basic copy and CTA direction."
+        },
+        {
+          "name": "Pro",
+          "price": "699 €",
+          "description": "More complete structure, expanded sections, FAQ, SEO materials, and review handoff."
+        },
+        {
+          "name": "Custom",
+          "price": "from 1,200 €",
+          "description": "Custom scope, more pages, and specific technical or content needs."
+        },
+        {
+          "name": "Maintenance",
+          "price": "from 49 €/month",
+          "description": "Ongoing care, small updates, and controlled content support."
+        }
+      ]
+    },
+    "faq": {
+      "kicker": "FAQ",
+      "title": "Questions before the brief",
+      "items": [
+        {
+          "question": "What does 24h mean?",
+          "answer": "It means a fast pilot process based on scope and available materials. Larger scope or missing inputs can extend the timeline."
+        },
+        {
+          "question": "What do I need to provide?",
+          "answer": "Project name, service description, audience, contacts, basic materials, and what the page should achieve."
+        },
+        {
+          "question": "Is it a template?",
+          "answer": "It is not an anonymous template assembly. LE Studio prepares structure and content from the brief, and the final output goes through review."
+        },
+        {
+          "question": "Can I review the output?",
+          "answer": "Yes. The output is prepared for review before import or publishing."
+        },
+        {
+          "question": "Do you handle WordPress?",
+          "answer": "Yes, the output is prepared for a WordPress workflow. Production writes and deployment are handled separately after review."
+        }
+      ]
+    },
+    "lead": {
+      "title": "Send brief",
+      "note": "This form does not submit to a backend yet. After submit it prepares a safe email with the details so you can review it before sending.",
+      "fields": {
+        "name": "Name",
+        "company": "Company",
+        "email": "Email",
+        "projectType": "Project type",
+        "description": "Project description",
+        "budget": "Budget optional"
+      },
+      "projectTypes": [
+        {
+          "value": "business",
+          "label": "Business landing page"
+        },
+        {
+          "value": "booking",
+          "label": "Booking page"
+        },
+        {
+          "value": "saas",
+          "label": "SaaS landing page"
+        },
+        {
+          "value": "personal-brand",
+          "label": "Personal brand page"
+        }
+      ],
+      "consent": "I agree that Rubberduck may contact me about this request.",
+      "submit": "Prepare email",
+      "success": "The brief is prepared locally. Review the email before sending.",
+      "mailto": "Open prepared email"
+    }
+  },
+  "nodes": {
+    "project-type": {
+      "label": "Project Type",
+      "description": "Choose one of six project types."
+    },
+    "launch-brief": {
+      "label": "Launch Brief",
+      "description": "Fill launch brief input."
+    },
+    "scope-guard": {
+      "label": "Scope Guard",
+      "description": "Validate request scope and safety."
+    },
+    "strategy-agent": {
+      "label": "Strategy Agent",
+      "description": "Generate positioning and CTA strategy."
+    },
+    "copy-agent": {
+      "label": "Copy Agent",
+      "description": "Generate headline, subheadline, CTA, FAQ draft."
+    },
+    "structure-agent": {
+      "label": "Structure Agent",
+      "description": "Generate section architecture."
+    },
+    "template-selector": {
+      "label": "Template Selector",
+      "description": "Pick preset by project type."
+    },
+    "seo-agent": {
+      "label": "SEO Agent",
+      "description": "Generate metadata package."
+    },
+    "preview-builder": {
+      "label": "Preview Builder",
+      "description": "Assemble launch preview JSON."
+    },
+    "wordpress-adapter": {
+      "label": "WordPress Adapter",
+      "description": "Prepare server-side import payload."
+    },
+    "qa-audit": {
+      "label": "QA Audit",
+      "description": "Validate required fields and wording."
+    },
+    "launch-pack": {
+      "label": "Launch Pack",
+      "description": "Produce checklist and next steps."
+    }
+  }
+}

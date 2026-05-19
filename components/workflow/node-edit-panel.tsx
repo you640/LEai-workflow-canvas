@@ -57,12 +57,21 @@ export function NodeEditPanel({ node, onUpdate, onClose }: NodeEditPanelProps) {
                 <label className="block text-xs text-workflow-text-muted font-mono mb-1">Provider</label>
                 <select
                   value={(node.data as { provider: string }).provider}
-                  onChange={(e) => handleChange("provider", e.target.value)}
+                  onChange={(e) => {
+                    const nextProvider = e.target.value as keyof typeof AI_MODELS;
+                    const nextModel = AI_MODELS[nextProvider]?.[0] ?? "";
+                    onUpdate(node.id, {
+                      ...node.data,
+                      provider: nextProvider,
+                      model: nextModel,
+                    });
+                  }}
                   className="w-full bg-workflow-node-input border border-workflow-border rounded-lg px-3 py-2 text-sm text-workflow-text font-mono transition-colors duration-200"
                 >
                   <option value="openai">OpenAI</option>
                   <option value="google">Google</option>
                   <option value="xai">xAI</option>
+                  <option value="mistral">Mistral</option>
                 </select>
               </div>
               <div>
@@ -72,7 +81,7 @@ export function NodeEditPanel({ node, onUpdate, onClose }: NodeEditPanelProps) {
                   onChange={(e) => handleChange("model", e.target.value)}
                   className="w-full bg-workflow-node-input border border-workflow-border rounded-lg px-3 py-2 text-sm text-workflow-text font-mono transition-colors duration-200"
                 >
-                  {AI_MODELS[(node.data as { provider: "openai" | "google" | "xai" }).provider].map((model) => (
+                  {AI_MODELS[(node.data as { provider: "openai" | "google" | "xai" | "mistral" }).provider].map((model) => (
                     <option key={model} value={model}>{model}</option>
                   ))}
                 </select>

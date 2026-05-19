@@ -1,0 +1,120 @@
+{
+  "dryRun": false,
+  "productionWrite": false,
+  "wordpressPostId": null,
+  "sourceOfTruth": "meta.numbers",
+  "schemaVersion": "1.0.0",
+  "project": {
+    "name": "Web do 24h Project",
+    "type": "support-campaign",
+    "goal": "Vytvoriť kvalitnú landing page a štruktúru kampane pre službu Web do 24h.",
+    "audience": "Majitelia malých a stredných firiem, lokálni podnikatelia a služby.",
+    "description": "Profesionálny výstup pre rýchly launch moderného firemného webu.",
+    "tone": "Jasný, profesionálny, priamy, dôveryhodný.",
+    "contactEmail": "hello@example.com"
+  },
+  "wordpress": {
+    "postType": "launch_studio",
+    "postStatus": "draft",
+    "main": {
+      "title": "Moderný firemný web pripravený na klientov už do 24 hodín",
+      "slug": "web-do-24h-project",
+      "tagline": "Rýchly štart moderného webu bez chaosu, nekonečných úprav a lacnej šablónovej bolesti.",
+      "context": "Web do 24h rieši rýchly štart profesionálnej webovej prezentácie pre firmy, ktoré chcú jasnú ponuku a konverzný kontakt.",
+      "editor": "## Hero\n\nWeb do 24h pomáha firmám spustiť moderný web bez zbytočných prieťahov.\n\n## Benefits\n\nZískate jasnú štruktúru, dôveryhodný obsah a pripravený CTA flow.\n\n## Process\n\nBrief, návrh štruktúry, finálny obsah a handoff pre implementáciu.\n\n## Offer\n\nHeadline, sekcie, FAQ, SEO metadata a import-ready payload preview.\n\n## Trust\n\nBez fake referencií, bez manipulácie, iba overiteľné tvrdenia.\n\n## FAQ\n\nOtázky pokrývajú rozsah, termíny a ďalšie kroky.\n\n## Contact\n\nPošli brief a získaj konkrétny plán realizácie.",
+      "label": "Poslať brief",
+      "link": "#kontakt"
+    },
+    "post": {
+      "section": [
+        "Landing page",
+        "Firemný web",
+        "Služby"
+      ],
+      "topic": [
+        "web do 24h",
+        "responzívny dizajn",
+        "SEO základ",
+        "kontakt"
+      ],
+      "source": "LE Studio guarded export"
+    },
+    "services": [
+      {
+        "type": [
+          "Tvorba webu"
+        ],
+        "category": [
+          "Firemné weby"
+        ],
+        "badge": [
+          "Do 24h",
+          "Mobile-first",
+          "SEO základ"
+        ],
+        "price": null,
+        "duration": 24,
+        "datetime": null
+      }
+    ],
+    "products": [],
+    "media": {
+      "video": null,
+      "icon": null,
+      "image": null,
+      "gallery": [],
+      "files": []
+    }
+  },
+  "seo": {
+    "title": "Web do 24h Project | Web do 24h by Rubberduck",
+    "description": "Moderný firemný web pripravený na klientov do 24 hodín.",
+    "ogTitle": "Web do 24h Project — LE Studio",
+    "ogDescription": "Rýchly a transparentný launch webu cez LE Studio workflow."
+  },
+  "faq": [
+    {
+      "question": "Ako rýchlo vieme začať?",
+      "answer": "Po potvrdení briefu sa pripraví návrh bez zbytočného čakania."
+    },
+    {
+      "question": "Je výstup pripravený pre WordPress?",
+      "answer": "Áno, payload je normalizovaný do metabox schémy."
+    },
+    {
+      "question": "Čo je súčasťou dodania?",
+      "answer": "H1, editor obsah, CTA, SEO metadata, FAQ a odporúčania."
+    },
+    {
+      "question": "Je to bezpečné?",
+      "answer": "Systém ostáva v dry-run režime a nič nezapisuje do produkcie."
+    }
+  ],
+  "compliance": {
+    "passed": true,
+    "violations": []
+  },
+  "technicalRecommendations": [
+    "Validovať payload proti source-of-truth schéme.",
+    "Držať mapovanie formulár -> metabox bez skrytých polí.",
+    "Spúšťať fixture gate pred release."
+  ],
+  "securityRecommendations": [
+    "Nezapisovať do produkcie v dry-run režime.",
+    "Nelogovať secrets.",
+    "Guardovať import cez server-side pravidlá."
+  ],
+  "antiPatterns": [
+    "Nevkladať generické výplňové vety.",
+    "Nevymýšľať ceny alebo fake metriky.",
+    "Neobchádzať validáciu."
+  ],
+  "wordpressImportNotes": [
+    "Import preview používa wordpress.main/post/services/products/media.",
+    "_preview je len pomocný UI render.",
+    "Pri compliance fail musí byť export/import blokovaný."
+  ],
+  "projectId": "project-fixture-1",
+  "buildStatus": "ready",
+  "generatedAt": "2026-05-13T03:27:03.091Z"
+}

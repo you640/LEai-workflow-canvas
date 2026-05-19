@@ -1,0 +1,202 @@
+{
+  "dryRun": false,
+  "productionWrite": false,
+  "wordpressPostId": null,
+  "projectId": "0c3e8370-ea48-48d6-92b4-bc5db9dfd257",
+  "buildStatus": "ready",
+  "generatedAt": "2026-05-19T12:39:14.147Z",
+  "sourceOfTruth": "meta.numbers",
+  "schemaVersion": "1.0.0",
+  "project": {
+    "name": "Palicox Terminal",
+    "type": "personal-brand",
+    "goal": "Pripraviť obsahový základ pre slovenský WordPress knowledge hub s jasnou homepage, kategóriami, FAQ, bezpečnou newsletter integráciou ako samostatným krokom a kontaktom.",
+    "audience": "WordPress administrátori, tvorcovia webov, malí podnikatelia a technicky zvedaví ľudia, ktorí chcú lepšie rozumieť WordPressu bez chaosu a zastaraných rád.",
+    "description": "Vytvor profesionálny slovenský content hub o WordPresse s identitou Palicox Terminal. Stránka má slúžiť ako blog a knowledge base pre návody, pluginy, témy, bezpečnosť, SEO a novinky. Homepage má fungovať ako landing page pre dôveryhodný technický obsah. Nepoužívaj fake návštevnosť, fake autoritu, fake klientov, garantované SEO pozície ani vymyslené média. Výstup má byť content-first, pripravený pre WordPress metabox payload a použiteľný ako dôkaz kvality LE Studio generovania.",
+    "tone": "Technický, jasný, slovenský, vecný, mierne odľahčený, ale bez prázdneho hype.",
+    "contactEmail": "studio+palicox@rubberduck.sk"
+  },
+  "wordpress": {
+    "postType": "launch_studio",
+    "postStatus": "draft",
+    "main": {
+      "title": "Palicox Terminal: slovenský WordPress knowledge hub",
+      "slug": "palicox-terminal",
+      "tagline": "Technické návody, bezpečnostné poznámky a praktické rozhodnutia pre ľudí, ktorí spravujú WordPress bez chaosu.",
+      "context": "Palicox Terminal rieši pre WordPress administrátori, tvorcovia webov, malí podnikatelia a technicky zvedaví ľudia, ktorí chcú lepšie rozumieť WordPressu bez chaosu a zastaraných rád. jasný cieľ: Pripraviť obsahový základ pre slovenský WordPress knowledge hub s jasnou homepage, kategóriami, FAQ, bezpečnou newsletter integráciou ako samostatným krokom a kontaktom.",
+      "editor": "## WordPress poznanie, ktoré sa dá použiť\n\nPalicox Terminal pomáha čitateľom rýchlo pochopiť WordPress témy, pluginy, bezpečnosť, SEO a každodenné rozhodnutia pri správe webu.\n\n- Jasná hodnota na prvej obrazovke\n- Silný CTA krok\n- Dôveryhodná komunikácia\n\n**CTA:** Poslať brief\n\n## Prehľadný obsah namiesto náhodných rád\n\nObsah je rozdelený podľa praktických tém, aby čitateľ našiel odpoveď bez prehrabávania zastaraných postupov.\n\n- Mobilná optimalizácia\n- Čitateľná štruktúra\n- SEO základ pripravený na publikovanie\n\n## Ako je hub postavený\n\nHomepage vedie návštevníka cez hlavné témy, blog index nesie pravidelný obsah a FAQ pomáha uzavrieť rozhodnutie pred kontaktom alebo odberom.\n\n- Brief a validácia\n- Návrh štruktúry a copy\n- QA a odovzdanie\n\n**CTA:** Pozrieť možnosti\n\n## Čo má stránka niesť\n\nVýstup pripravuje jasný brand kontext, kategórie, tagy, SEO metadata, FAQ a bezpečný obsahový základ pre WordPress publikovanie.\n\n- Kompletný launch obsah\n- Import-ready štruktúra\n- Bez prepisovania od nuly\n\n## Dôvera cez vecnosť\n\nKomunikácia stojí na praktických vysvetleniach, jasných obmedzeniach a technickej presnosti bez vymyslených autorít.\n\n- Transparentná komunikácia\n- Konzistentný brand tón\n- Zrozumiteľná ponuka\n\n## FAQ\n\nFAQ dáva klientovi stručné odpovede k rozsahu, ďalším krokom, kontrole výstupu a bezpečnému odovzdaniu.\n\n- Rozsah služby\n- Časový plán\n- Odovzdanie a ďalšie kroky\n\n## Kontakt a štart\n\nAk chceš spustiť web bez chaosu, pošli brief na studio+palicox@rubberduck.sk a dostaneš jasný plán realizácie.\n\n- Jednoznačný CTA krok\n- Rýchla odpoveď\n- Pripravený handoff\n\n**CTA:** Poslať brief",
+      "label": "Poslať brief",
+      "link": "#kontakt"
+    },
+    "post": {
+      "section": [
+        "Knowledge hub",
+        "WordPress",
+        "Blog"
+      ],
+      "topic": [
+        "WordPress návody",
+        "pluginy",
+        "témy",
+        "bezpečnosť",
+        "SEO"
+      ],
+      "source": "LE Studio guarded export"
+    },
+    "services": [
+      {
+        "type": [
+          "Obsahový hub"
+        ],
+        "category": [
+          "WordPress vzdelávanie"
+        ],
+        "badge": [
+          "Slovenský obsah",
+          "Technický tón",
+          "Blog-ready"
+        ],
+        "price": null,
+        "duration": null,
+        "datetime": null
+      }
+    ],
+    "products": [],
+    "media": {
+      "video": null,
+      "icon": null,
+      "image": null,
+      "gallery": [],
+      "files": []
+    }
+  },
+  "seo": {
+    "title": "Palicox Terminal | LE Studio",
+    "description": "Palicox Terminal pripravený ako štruktúrovaný WordPress metabox payload s obsahom, SEO podkladmi a review flow.",
+    "ogTitle": "Palicox Terminal — LE Studio",
+    "ogDescription": "Transparentný launch výstup cez LE Studio workflow."
+  },
+  "faq": [
+    {
+      "question": "Ako rýchlo vieme začať?",
+      "answer": "Po potvrdení briefu sa hneď pripraví štruktúra a obsah bez zbytočného čakania."
+    },
+    {
+      "question": "Je výstup pripravený pre WordPress?",
+      "answer": "Áno, výsledok je normalizovaný do metabox schémy a pripravený pre dry-run import preview."
+    },
+    {
+      "question": "Čo je súčasťou dodania?",
+      "answer": "H1, tagline, editor obsah, CTA, SEO metadata, FAQ a technické odporúčania."
+    },
+    {
+      "question": "Prečo je to bezpečné?",
+      "answer": "Systém beží v dry-run režime, productionWrite je false a wordpressPostId je vždy null."
+    }
+  ],
+  "compliance": {
+    "passed": true,
+    "violations": []
+  },
+  "technicalRecommendations": [
+    "Pred exportom validovať payload proti source-of-truth schéme.",
+    "Udržať striktne mapovanie frontend vstupov na metabox polia.",
+    "Použiť QA fixture gate pred každým release."
+  ],
+  "securityRecommendations": [
+    "Nezapisovať do produkcie v dry-run režime.",
+    "Nelogovať secrets ani auth hlavičky.",
+    "Guardovať import cez server-side feature flag a compliance pass."
+  ],
+  "antiPatterns": [
+    "Nevkladať generické výplňové vety do final exportu.",
+    "Nevymýšľať ceny, médiá alebo obchodné metriky bez vstupu.",
+    "Neobchádzať validáciu exportu/importu."
+  ],
+  "wordpressImportNotes": [
+    "Import payload sa skladá z wordpress.main/post/services/products/media.",
+    "UI preview môže používať _preview, ale import source je wordpress objekt.",
+    "Pri neúspešnej compliance musí zostať export/import blokovaný."
+  ],
+  "_preview": {
+    "sections": [
+      {
+        "id": "hero",
+        "title": "WordPress poznanie, ktoré sa dá použiť",
+        "body": "Palicox Terminal pomáha čitateľom rýchlo pochopiť WordPress témy, pluginy, bezpečnosť, SEO a každodenné rozhodnutia pri správe webu.",
+        "bullets": [
+          "Jasná hodnota na prvej obrazovke",
+          "Silný CTA krok",
+          "Dôveryhodná komunikácia"
+        ],
+        "cta": "Poslať brief"
+      },
+      {
+        "id": "benefits",
+        "title": "Prehľadný obsah namiesto náhodných rád",
+        "body": "Obsah je rozdelený podľa praktických tém, aby čitateľ našiel odpoveď bez prehrabávania zastaraných postupov.",
+        "bullets": [
+          "Mobilná optimalizácia",
+          "Čitateľná štruktúra",
+          "SEO základ pripravený na publikovanie"
+        ],
+        "cta": null
+      },
+      {
+        "id": "process",
+        "title": "Ako je hub postavený",
+        "body": "Homepage vedie návštevníka cez hlavné témy, blog index nesie pravidelný obsah a FAQ pomáha uzavrieť rozhodnutie pred kontaktom alebo odberom.",
+        "bullets": [
+          "Brief a validácia",
+          "Návrh štruktúry a copy",
+          "QA a odovzdanie"
+        ],
+        "cta": "Pozrieť možnosti"
+      },
+      {
+        "id": "offer",
+        "title": "Čo má stránka niesť",
+        "body": "Výstup pripravuje jasný brand kontext, kategórie, tagy, SEO metadata, FAQ a bezpečný obsahový základ pre WordPress publikovanie.",
+        "bullets": [
+          "Kompletný launch obsah",
+          "Import-ready štruktúra",
+          "Bez prepisovania od nuly"
+        ],
+        "cta": null
+      },
+      {
+        "id": "trust",
+        "title": "Dôvera cez vecnosť",
+        "body": "Komunikácia stojí na praktických vysvetleniach, jasných obmedzeniach a technickej presnosti bez vymyslených autorít.",
+        "bullets": [
+          "Transparentná komunikácia",
+          "Konzistentný brand tón",
+          "Zrozumiteľná ponuka"
+        ],
+        "cta": null
+      },
+      {
+        "id": "faq",
+        "title": "FAQ",
+        "body": "FAQ dáva klientovi stručné odpovede k rozsahu, ďalším krokom, kontrole výstupu a bezpečnému odovzdaniu.",
+        "bullets": [
+          "Rozsah služby",
+          "Časový plán",
+          "Odovzdanie a ďalšie kroky"
+        ],
+        "cta": null
+      },
+      {
+        "id": "contact",
+        "title": "Kontakt a štart",
+        "body": "Ak chceš spustiť web bez chaosu, pošli brief na studio+palicox@rubberduck.sk a dostaneš jasný plán realizácie.",
+        "bullets": [
+          "Jednoznačný CTA krok",
+          "Rýchla odpoveď",
+          "Pripravený handoff"
+        ],
+        "cta": "Poslať brief"
+      }
+    ]
+  }
+}
