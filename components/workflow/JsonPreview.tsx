@@ -37,22 +37,26 @@ export function JsonPreview({ data, blocked, onExport, lastSavedAt }: Props) {
           {translate("common.exportJson")}
         </button>
       </div>
+
       <p className="mb-1 text-[11px] leading-relaxed text-zinc-400">{translate("jsonPreview.metaboxNotice")}</p>
       <p className="mb-3 text-[11px] leading-relaxed text-zinc-500">{translate("jsonPreview.dryRunNotice")}</p>
       <div className="mb-4 rounded-2xl border border-white/10 bg-black/35 p-4 text-[11px] text-zinc-300">
         <div className="font-semibold text-emerald-200">{translate("jsonPreview.storageTitle")}</div>
         <p className="mt-1 leading-relaxed text-zinc-400">{translate("jsonPreview.storageBody")}</p>
+
         {lastSavedAt ? (
           <p className="mt-1 text-emerald-200">
             {translate("jsonPreview.storageSaved")}: {lastSavedAt}
           </p>
         ) : null}
       </div>
+
       <pre className="max-h-72 overflow-auto rounded-2xl border border-white/10 bg-black/45 p-4 text-xs text-zinc-300">
         {previewPayload ? JSON.stringify(previewPayload, null, 2) : translate("jsonPreview.empty")}
       </pre>
       <div className="mt-4 rounded-2xl border border-white/10 bg-black/35 p-4 text-[11px] text-zinc-300">
         <div className="font-semibold text-white">{translate("jsonPreview.nextTitle")}</div>
+
         <ol className="mt-2 list-decimal space-y-1 pl-4">
           <li>{translate("jsonPreview.nextStepExport")}</li>
           <li>{translate("jsonPreview.nextStepDryRun")}</li>

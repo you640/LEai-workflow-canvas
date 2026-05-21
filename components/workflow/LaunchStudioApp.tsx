@@ -46,6 +46,7 @@ const PROJECT_TYPE_LABEL_KEYS: Record<ProjectType, TranslationKey> = {
 const MAGIC_TIMEOUT_MS = 15000;
 const MAGIC_MAX_ATTEMPTS = 2;
 const GENERATED_PAYLOAD_STORAGE_KEY = "le-studio:last-generated-payload";
+
 const DEFAULT_CONTACT_EMAIL = "space@rubberduck.space";
 type GenerationEngine = "local" | "architect";
 const GLASS_PANEL =
@@ -54,6 +55,7 @@ const GLASS_PANEL_SOFT =
   "rounded-[1.35rem] border border-white/10 bg-white/[0.028] shadow-[inset_0_1px_0_rgba(255,255,255,0.035),0_18px_60px_rgba(0,0,0,0.38)] backdrop-blur-xl";
 const FIELD_CLASS =
   "h-10 w-full rounded-xl border border-white/10 bg-black/45 px-3 text-sm text-zinc-100 placeholder:text-zinc-600 transition-[background-color,border-color,box-shadow] hover:border-white/15 focus-visible:border-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 xl:h-11";
+
 
 function cleanMagicValue(value: string): string {
   return stripHtmlForPlainText(value).replace(/\s+/g, " ").trim();
@@ -115,6 +117,7 @@ function createDeterministicMagicDraft(brief: LaunchBriefInput): Required<Pick<L
     ].join(" "),
   };
 }
+
 
 function detectProjectTypeFromPrompt(prompt: string, fallback: ProjectType): ProjectType {
   const lower = prompt.toLowerCase();
@@ -185,6 +188,7 @@ function buildAutopilotBrief(prompt: string, current: LaunchBriefInput): LaunchB
     contactEmail: current.contactEmail?.trim() || DEFAULT_CONTACT_EMAIL,
   };
 }
+
 
 function persistGeneratedPayload(payload: unknown): string | null {
   if (typeof window === "undefined") return null;
@@ -257,9 +261,11 @@ function LaunchStudioInner() {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<string>("");
+
   const [studioMode, setStudioMode] = useState<"simple" | "advanced">("simple");
   const [simplePrompt, setSimplePrompt] = useState<string>("");
   const [generationEngine, setGenerationEngine] = useState<GenerationEngine>("architect");
+
 
   const selectedNode: WorkflowNode | null = useMemo(
     () => nodes.find((n) => n.id === selectedNodeId) ?? null,
@@ -969,16 +975,20 @@ function LaunchStudioInner() {
               ) : null}
               {importMessage ? <div className="mt-1 text-[10px] text-zinc-300">{importMessage}</div> : null}
               {generated ? (
+
                 <div className="mt-4 rounded-2xl border border-white/10 bg-black/35 p-4 text-[10px] text-zinc-300">
                   <div className="font-semibold text-emerald-200">{translate("jsonPreview.storageTitle")}</div>
                   <p className="mt-1 text-zinc-400">{translate("jsonPreview.storageBody")}</p>
+
                   {lastSavedAt ? (
                     <p className="mt-1 text-emerald-200">
                       {translate("jsonPreview.storageSaved")}: {lastSavedAt}
                     </p>
                   ) : null}
                   <div className="mt-2 font-semibold text-emerald-200">{translate("jsonPreview.nextTitle")}</div>
+
                   <ol className="mt-1 list-decimal space-y-1 pl-4 text-zinc-400">
+
                     <li>{translate("jsonPreview.nextStepExport")}</li>
                     <li>{translate("jsonPreview.nextStepDryRun")}</li>
                     <li>{translate("jsonPreview.nextStepWordPress")}</li>
