@@ -43,8 +43,8 @@ const PROJECT_TYPE_LABEL_KEYS: Record<ProjectType, TranslationKey> = {
   "personal-brand": "projectTypes.personal-brand",
 };
 
-const MAGIC_TIMEOUT_MS = 15000;
-const MAGIC_MAX_ATTEMPTS = 2;
+const MAGIC_TIMEOUT_MS = 10000;
+const MAGIC_MAX_ATTEMPTS = 1;
 const GENERATED_PAYLOAD_STORAGE_KEY = "le-studio:last-generated-payload";
 
 const DEFAULT_CONTACT_EMAIL = "space@rubberduck.space";
@@ -260,6 +260,7 @@ function LaunchStudioInner() {
   const [importMessage, setImportMessage] = useState<string>("");
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
+  const [isPreparingAutopilot, setIsPreparingAutopilot] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<string>("");
 
   const [studioMode, setStudioMode] = useState<"simple" | "advanced">("simple");
@@ -279,6 +280,7 @@ function LaunchStudioInner() {
     [generated]
   );
   const canExport = compliancePassed && Boolean(generated) && validation.valid;
+  const isStudioBusy = isRunning || isGeneratingPrompt || isPreparingAutopilot;
   const liveBriefErrors = useMemo(() => validateLiveBrief(brief), [brief]);
   const autopilotBrief = useMemo(() => buildAutopilotBrief(simplePrompt, brief), [simplePrompt, brief]);
   const autopilotPhases = useMemo(
@@ -468,21 +470,24 @@ function LaunchStudioInner() {
       return;
     }
     void (async () => {
+      setIsPreparingAutopilot(true);
       let briefToRun = autopilotBrief;
 
-      if (generationEngine === "architect") {
-        setIsGeneratingPrompt(true);
-        setImportMessage(translate("app.magicPromptPreparing"));
-        const result = await generateArchitectBrief(autopilotBrief, true);
-        briefToRun = result.brief;
-        setBrief(result.brief);
-        setImportMessage(
-          result.usedAi ? translate("app.magicPromptSuccess") : `${translate("app.magicPromptFallback")} (${result.error || "network"})`
-        );
-        setIsGeneratingPrompt(false);
-      }
+      try {
+        if (generationEngine === "architect") {
+          setImportMessage(translate("app.magicPromptPreparing"));
+          const result = await generateArchitectBrief(autopilotBrief, true);
+          briefToRun = result.brief;
+          setBrief(result.brief);
+          setImportMessage(
+            result.usedAi ? translate("app.magicPromptSuccess") : `${translate("app.magicPromptFallback")} (${result.error || "network"})`
+          );
+        }
 
-      await handleRun(briefToRun);
+        await handleRun(briefToRun);
+      } finally {
+        setIsPreparingAutopilot(false);
+      }
     })();
   };
 
@@ -736,11 +741,15 @@ function LaunchStudioInner() {
                       <button
                         type="button"
                         onClick={handleSimpleRun}
-	                        disabled={isRunning || isGeneratingPrompt}
+	                        disabled={isStudioBusy}
 	                        className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-semibold text-black shadow-[0_18px_45px_rgba(255,255,255,0.12)] transition-colors hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 disabled:cursor-not-allowed disabled:opacity-50 xl:h-12"
                       >
                         <Play className="h-4 w-4" />
-	                        {isGeneratingPrompt ? translate("app.magicPromptRunning") : isRunning ? translate("common.running") : translate("autopilot.generateAll")}
+	                        {isRunning
+                            ? translate("common.running")
+                            : isPreparingAutopilot
+                              ? translate("autopilot.workingTitle")
+                              : translate("autopilot.generateAll")}
                       </button>
                     </div>
 	                    <p className="mt-2 line-clamp-1 text-[11px] leading-relaxed text-zinc-500 sm:line-clamp-2 xl:mt-3 xl:text-xs">{translate("autopilot.helper")}</p>
@@ -836,7 +845,7 @@ function LaunchStudioInner() {
                       <button
                         type="button"
                         onClick={handleMagicPrompt}
-                        disabled={isGeneratingPrompt}
+                        disabled={isStudioBusy}
                         aria-label={translate("common.improvePrompt")}
                         title={translate("common.improvePrompt")}
                         className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.055] px-2.5 py-1 text-[10px] font-medium text-zinc-200 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25 disabled:cursor-not-allowed disabled:opacity-50 xl:hidden"
@@ -1057,16 +1066,16 @@ function LaunchStudioInner() {
               }
               void handleRun();
             }}
-            disabled={isRunning || isGeneratingPrompt}
+            disabled={isStudioBusy}
             className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-zinc-50 px-4 text-sm font-semibold text-black shadow-[0_18px_45px_rgba(255,255,255,0.12)] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Play className="h-4 w-4" />
-            <span>{isGeneratingPrompt ? translate("app.magicPromptRunning") : isRunning ? translate("common.running") : translate("common.run")}</span>
+            <span>{isRunning ? translate("common.running") : isPreparingAutopilot ? translate("autopilot.workingTitle") : translate("common.run")}</span>
           </button>
           <button
             type="button"
             onClick={handleMagicPrompt}
-            disabled={isGeneratingPrompt}
+            disabled={isStudioBusy}
             aria-label={translate("common.improvePrompt")}
             title={translate("common.improvePrompt")}
             className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-zinc-200 transition-colors hover:bg-white/[0.09] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25 disabled:cursor-not-allowed disabled:opacity-50"
@@ -1094,7 +1103,7 @@ function LaunchStudioInner() {
           </button>
         </div>
         <p className="sr-only" aria-live="polite">
-          {isGeneratingPrompt ? translate("app.magicPromptRunning") : importMessage}
+          {isGeneratingPrompt ? translate("app.magicPromptRunning") : isPreparingAutopilot ? translate("autopilot.workingTitle") : importMessage}
         </p>
       </footer>
     </div>
