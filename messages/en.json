@@ -329,5 +329,32 @@
       "label": "Launch Pack",
       "description": "Produce checklist and next steps."
     }
+  },
+  "autopilot": {
+    "modeLabel": "LE Studio mode",
+    "simpleMode": "Simple",
+    "advancedMode": "Advanced",
+    "promptLabel": "One sentence is enough",
+    "placeholder": "Example: I need a 24h website for a local beauty salon.",
+    "generateAll": "Generate everything",
+    "helper": "AI infers audience, goal, tone, structure, SEO, and the WordPress-ready payload from one sentence. You can fine-tune details in Advanced mode.",
+    "aiWillInfer": "AI will infer internally",
+    "waiting": "Waiting for one sentence",
+    "workingTitle": "Studio is working",
+    "analyze": "Analyzing brief",
+    "copy": "Writing copy",
+    "seo": "Preparing SEO",
+    "payload": "Normalizing WordPress payload",
+    "ready": "Export is ready",
+    "promptRequired": "Write at least one specific sentence about the project.",
+    "internalSummary": "Audience, goal, and tone stay internal. The user writes one sentence and Studio fills the rest without extra fields.",
+    "fieldStructure": "Website structure",
+    "fieldTone": "Communication tone",
+    "fieldWordPress": "WordPress payload",
+    "engineLocal": "Local",
+    "engineArchitect": "Launch Architect AI",
+    "engineLabel": "Generation engine",
+    "engineHintLocal": "Fast local autopilot without an AI call.",
+    "engineHintArchitect": "Mistral first expands the brief with the Launch Architect prompt, then the workflow runs."
   }
 }

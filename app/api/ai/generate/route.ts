@@ -1,10 +1,13 @@
 import { generateText } from "ai";
 import { createMistral } from "@ai-sdk/mistral";
 import { NextResponse } from "next/server";
+import { LE_STUDIO_LAUNCH_ARCHITECT_SYSTEM_PROMPT } from "@/lib/launch-studio/launch-architect-prompt";
 
 export async function POST(request: Request) {
   try {
-    const { provider, model, prompt, systemPrompt, temperature } = await request.json();
+    const { provider, model, prompt, systemPrompt, temperature, purpose } = await request.json();
+    const resolvedSystemPrompt =
+      purpose === "launch-architect" ? LE_STUDIO_LAUNCH_ARCHITECT_SYSTEM_PROMPT : systemPrompt || undefined;
 
     if (!prompt) {
       return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
@@ -20,6 +23,9 @@ export async function POST(request: Request) {
     if (provider === "mistral") {
       const keys = [process.env.MISTRAL_API_KEY, process.env.MISTRAL_API_KEY_BACKUP].filter(Boolean) as string[];
       if (keys.length === 0) {
+        if (purpose === "launch-architect") {
+          return NextResponse.json({ text: "", unavailable: true, error: "Mistral API key is not configured" });
+        }
         return NextResponse.json({ error: "Mistral API key is not configured" }, { status: 500 });
       }
 
@@ -30,7 +36,7 @@ export async function POST(request: Request) {
           const { text } = await generateText({
             model: mistral(model || "mistral-small"),
             prompt,
-            system: systemPrompt || undefined,
+            system: resolvedSystemPrompt,
             temperature: temperature ?? 0.7,
           });
           return NextResponse.json({ text });
@@ -39,13 +45,21 @@ export async function POST(request: Request) {
         }
       }
 
+      if (purpose === "launch-architect") {
+        return NextResponse.json({
+          text: "",
+          unavailable: true,
+          error: lastError instanceof Error ? lastError.message : "Mistral request failed",
+        });
+      }
+
       throw lastError ?? new Error("Mistral request failed");
     }
 
     const { text } = await generateText({
       model: modelMap[provider] || "openai/gpt-4o",
       prompt,
-      system: systemPrompt || undefined,
+      system: resolvedSystemPrompt,
       temperature: temperature ?? 0.7,
     });
 

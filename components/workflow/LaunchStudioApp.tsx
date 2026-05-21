@@ -17,6 +17,7 @@ import { validateSourceOfTruthExport } from "@/lib/launch-studio/validation";
 import { validateLiveBrief } from "@/lib/launch-studio/brief-validation";
 import { loadProjectConfig, saveProjectConfig } from "@/lib/launch-studio/project-store";
 import { containsForbiddenClaims, containsPlaceholderText, stripHtmlForPlainText } from "@/lib/launch-studio/content-format";
+import { buildLaunchArchitectUserPrompt } from "@/lib/launch-studio/launch-architect-prompt";
 
 const NODE_COPY_KEYS: Record<string, { label: `nodes.${string}.label`; description: `nodes.${string}.description` }> = {
   "project-type": { label: "nodes.project-type.label", description: "nodes.project-type.description" },
@@ -45,9 +46,25 @@ const PROJECT_TYPE_LABEL_KEYS: Record<ProjectType, TranslationKey> = {
 const MAGIC_TIMEOUT_MS = 15000;
 const MAGIC_MAX_ATTEMPTS = 2;
 const GENERATED_PAYLOAD_STORAGE_KEY = "le-studio:last-generated-payload";
+const DEFAULT_CONTACT_EMAIL = "space@rubberduck.space";
+type GenerationEngine = "local" | "architect";
+const GLASS_PANEL =
+  "rounded-[1.35rem] border border-white/10 bg-white/[0.035] shadow-[inset_0_1px_0_rgba(255,255,255,0.045),0_24px_80px_rgba(0,0,0,0.46)] backdrop-blur-xl";
+const GLASS_PANEL_SOFT =
+  "rounded-[1.35rem] border border-white/10 bg-white/[0.028] shadow-[inset_0_1px_0_rgba(255,255,255,0.035),0_18px_60px_rgba(0,0,0,0.38)] backdrop-blur-xl";
+const FIELD_CLASS =
+  "h-10 w-full rounded-xl border border-white/10 bg-black/45 px-3 text-sm text-zinc-100 placeholder:text-zinc-600 transition-[background-color,border-color,box-shadow] hover:border-white/15 focus-visible:border-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 xl:h-11";
 
 function cleanMagicValue(value: string): string {
   return stripHtmlForPlainText(value).replace(/\s+/g, " ").trim();
+}
+
+function readString(value: unknown): string {
+  return typeof value === "string" ? cleanMagicValue(value) : "";
+}
+
+function readRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
 }
 
 function parseMagicPayload(rawText: string): Partial<Pick<LaunchBriefInput, "description" | "goal" | "targetAudience" | "preferredTone">> {
@@ -57,10 +74,13 @@ function parseMagicPayload(rawText: string): Partial<Pick<LaunchBriefInput, "des
 
   try {
     const parsed = JSON.parse(jsonCandidate) as Record<string, unknown>;
-    const description = typeof parsed.description === "string" ? cleanMagicValue(parsed.description) : "";
-    const goal = typeof parsed.goal === "string" ? cleanMagicValue(parsed.goal) : "";
-    const targetAudience = typeof parsed.targetAudience === "string" ? cleanMagicValue(parsed.targetAudience) : "";
-    const preferredTone = typeof parsed.preferredTone === "string" ? cleanMagicValue(parsed.preferredTone) : "";
+    const project = readRecord(parsed.project);
+    const wordpress = readRecord(parsed.wordpress);
+    const main = readRecord(wordpress.main);
+    const description = readString(parsed.description) || readString(project.description) || readString(main.context);
+    const goal = readString(parsed.goal) || readString(project.goal);
+    const targetAudience = readString(parsed.targetAudience) || readString(project.audience);
+    const preferredTone = readString(parsed.preferredTone) || readString(project.tone);
     return { description, goal, targetAudience, preferredTone };
   } catch {
     return { description: cleanMagicValue(cleaned) };
@@ -89,10 +109,80 @@ function createDeterministicMagicDraft(brief: LaunchBriefInput): Required<Pick<L
       brief.preferredTone.trim() || "Jasný, profesionálny, dôveryhodný, vecný a konverzne zameraný bez lacných marketingových fráz.",
     description: [
       `Vytvor production-grade brief pre projekt „${projectName}“ typu ${projectType}.`,
-      "Výstup musí byť konkrétny, overiteľný a použiteľný pre LE Studio workflow bez placeholderov a bez fake tvrdení.",
+      "Výstup musí byť konkrétny, overiteľný a použiteľný pre LE Studio workflow bez výplňových viet a bez fake tvrdení.",
       "Doplň hodnotový headline, stručný subheadline, sekcie (hero, benefits, process, offer, trust, faq, contact), CTA smer a SEO základy.",
       "Text musí byť pripravený pre export do source-of-truth WordPress metabox payloadu.",
     ].join(" "),
+  };
+}
+
+function detectProjectTypeFromPrompt(prompt: string, fallback: ProjectType): ProjectType {
+  const lower = prompt.toLowerCase();
+  if (/(rezerv|booking|objedn|termín|termin)/.test(lower)) return "booking";
+  if (/(saas|softvér|software|aplikáci|platform|dashboard|pwa)/.test(lower)) return "saas";
+  if (/(produkt|launch|uveden|predaj)/.test(lower)) return "product-launch";
+  if (/(podpor|komunit|zbierk|kampaň|kampan)/.test(lower)) return "support-campaign";
+  if (/(osobn|personal|portfolio|brand|freelancer)/.test(lower)) return "personal-brand";
+  return fallback || "business";
+}
+
+function inferProjectNameFromPrompt(prompt: string): string {
+  const cleaned = cleanMagicValue(prompt)
+    .replace(/^(chcem|potrebujem|vytvor|sprav|navrhni|urob|chcel by som|chcela by som)\s+/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!cleaned) return "";
+  return cleaned.length > 76 ? `${cleaned.slice(0, 73).trim()}...` : cleaned;
+}
+
+function inferAudienceFromPrompt(prompt: string, projectType: ProjectType): string {
+  const lower = prompt.toLowerCase();
+  if (/(salón|salon|kader|kozmet|beauty|necht|spa)/.test(lower)) {
+    return "Majitelia salónov, kaderníctiev, kozmetických štúdií a lokálnych služieb, ktorí potrebujú rýchlo získať dôveryhodný web s jasnou ponukou a kontaktom.";
+  }
+  if (/(ambul|klin|lekár|zubar|fyzi|terap)/.test(lower)) {
+    return "Ambulancie, kliniky, terapeuti a zdravotnícke služby, ktoré potrebujú dôveryhodnú webovú prezentáciu s jasným kontaktom a bezpečnou komunikáciou.";
+  }
+  if (/(remes|servis|stavb|elektr|inštalat|instalat)/.test(lower)) {
+    return "Remeselníci a lokálne služby, ktoré potrebujú zrozumiteľne ukázať ponuku, dostupnosť, kontakt a dôvody, prečo im zákazník môže dôverovať.";
+  }
+  if (projectType === "saas") {
+    return "Tímy a firmy, ktoré hľadajú praktický digitálny nástroj s jasnou hodnotou, jednoduchým onboardingom a dôveryhodným technickým vysvetlením.";
+  }
+  if (projectType === "booking") {
+    return "Lokálne služby a malé firmy, ktoré potrebujú jednoduchý rezervačný alebo kontaktný flow bez zbytočného technického chaosu.";
+  }
+  return "Majitelia menších a stredných firiem, lokálne služby a tvorcovia, ktorí potrebujú rýchlo spustiť profesionálnu webovú prezentáciu s jasnou ponukou.";
+}
+
+function buildAutopilotBrief(prompt: string, current: LaunchBriefInput): LaunchBriefInput {
+  const safePrompt = cleanMagicValue(prompt);
+  const projectType = detectProjectTypeFromPrompt(safePrompt, current.projectType);
+  const projectName = current.projectName.trim() || inferProjectNameFromPrompt(safePrompt);
+  const targetAudience = inferAudienceFromPrompt(safePrompt, projectType);
+  const goal = `Pripraviť štruktúru, texty, CTA smerovanie, SEO základ a WordPress-ready obsahový payload pre projekt „${projectName}“ tak, aby bol použiteľný na kontrolu pred importom.`;
+  const preferredTone = "Profesionálny, jasný, dôveryhodný, priamy, mierne prémiový, bez lacného marketingu a bez nereálnych sľubov.";
+  const description = [
+    `Používateľský zámer: ${safePrompt}.`,
+    `Projekt: ${projectName}.`,
+    `Typ projektu: ${projectType}.`,
+    `Cieľová skupina: ${targetAudience}`,
+    `Cieľ: ${goal}`,
+    `Tón: ${preferredTone}`,
+    "Výstup musí obsahovať hodnotový headline, stručný subheadline, sekcie hero, benefits, process, offer, trust, faq a contact, CTA smer, SEO námety a FAQ.",
+    "Použi len overiteľné tvrdenia. Nepoužívaj fake referencie, fake počty klientov, garantované výsledky, manipulatívnu urgenciu ani výplňový text.",
+  ].join(" ");
+
+  return {
+    ...current,
+    projectType,
+    projectName,
+    targetAudience,
+    goal,
+    description,
+    preferredTone,
+    contactEmail: current.contactEmail?.trim() || DEFAULT_CONTACT_EMAIL,
   };
 }
 
@@ -167,6 +257,9 @@ function LaunchStudioInner() {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<string>("");
+  const [studioMode, setStudioMode] = useState<"simple" | "advanced">("simple");
+  const [simplePrompt, setSimplePrompt] = useState<string>("");
+  const [generationEngine, setGenerationEngine] = useState<GenerationEngine>("architect");
 
   const selectedNode: WorkflowNode | null = useMemo(
     () => nodes.find((n) => n.id === selectedNodeId) ?? null,
@@ -181,11 +274,23 @@ function LaunchStudioInner() {
   );
   const canExport = compliancePassed && Boolean(generated) && validation.valid;
   const liveBriefErrors = useMemo(() => validateLiveBrief(brief), [brief]);
+  const autopilotBrief = useMemo(() => buildAutopilotBrief(simplePrompt, brief), [simplePrompt, brief]);
+  const autopilotPhases = useMemo(
+    () => [
+      { label: translate("autopilot.analyze"), done: Boolean(simplePrompt.trim()) || timeline.length > 0 || Boolean(generated) },
+      { label: translate("autopilot.copy"), done: timeline.some((event) => event.nodeId === "copy-agent") || Boolean(generated) },
+      { label: translate("autopilot.seo"), done: timeline.some((event) => event.nodeId === "seo-agent") || Boolean(generated) },
+      { label: translate("autopilot.payload"), done: Boolean(generated) },
+      { label: translate("autopilot.ready"), done: canExport },
+    ],
+    [canExport, generated, simplePrompt, timeline, translate]
+  );
 
   useEffect(() => {
     const restored = loadProjectConfig();
     if (restored) {
       setBrief(restored);
+      setSimplePrompt((current) => current || restored.projectName || "");
     }
 
     const storedPayload = loadStoredGeneratedPayload();
@@ -202,11 +307,91 @@ function LaunchStudioInner() {
     saveProjectConfig(brief);
   }, [brief]);
 
-  const handleRun = async () => {
-    if (liveBriefErrors.length > 0) {
-      setValidationErrors(liveBriefErrors);
+  const generateArchitectBrief = useCallback(
+    async (sourceBrief: LaunchBriefInput, overwriteInferredFields: boolean): Promise<{ brief: LaunchBriefInput; usedAi: boolean; error?: string }> => {
+      const deterministicDraft = createDeterministicMagicDraft(sourceBrief);
+      const fallbackBrief: LaunchBriefInput = {
+        ...sourceBrief,
+        description: deterministicDraft.description,
+        goal: sourceBrief.goal.trim() ? sourceBrief.goal : deterministicDraft.goal,
+        targetAudience: sourceBrief.targetAudience.trim() ? sourceBrief.targetAudience : deterministicDraft.targetAudience,
+        preferredTone: sourceBrief.preferredTone.trim() ? sourceBrief.preferredTone : deterministicDraft.preferredTone,
+        contactEmail: sourceBrief.contactEmail,
+      };
+      let aiText = "";
+      let attemptError = "";
+
+      for (let attempt = 1; attempt <= MAGIC_MAX_ATTEMPTS; attempt += 1) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), MAGIC_TIMEOUT_MS);
+        const model = attempt === 1 ? "mistral-small" : "mistral-large-latest";
+
+        try {
+          const res = await fetch("/api/ai/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              provider: "mistral",
+              model,
+              purpose: "launch-architect",
+              temperature: 0.45,
+              prompt: buildLaunchArchitectUserPrompt(sourceBrief),
+            }),
+            signal: controller.signal,
+          });
+          const data = await res.json().catch(() => ({}));
+          clearTimeout(timeout);
+
+          if (!res.ok || !data?.text) {
+            attemptError = `attempt_${attempt}_failed`;
+            continue;
+          }
+
+          aiText = String(data.text);
+          break;
+        } catch {
+          clearTimeout(timeout);
+          attemptError = `attempt_${attempt}_failed`;
+        }
+      }
+
+      if (!aiText) {
+        return { brief: fallbackBrief, usedAi: false, error: attemptError || "network" };
+      }
+
+      const parsed = parseMagicPayload(aiText);
+      const next: LaunchBriefInput = { ...fallbackBrief };
+      const safeDescription = parsed.description && isSafeMagicText(parsed.description) ? parsed.description : deterministicDraft.description;
+      next.description = safeDescription;
+
+      if (overwriteInferredFields || !sourceBrief.goal.trim()) {
+        next.goal = parsed.goal && isSafeMagicText(parsed.goal) ? parsed.goal : deterministicDraft.goal;
+      }
+      if (overwriteInferredFields || !sourceBrief.targetAudience.trim()) {
+        next.targetAudience =
+          parsed.targetAudience && isSafeMagicText(parsed.targetAudience) ? parsed.targetAudience : deterministicDraft.targetAudience;
+      }
+      if (overwriteInferredFields || !sourceBrief.preferredTone.trim()) {
+        next.preferredTone =
+          parsed.preferredTone && isSafeMagicText(parsed.preferredTone) ? parsed.preferredTone : deterministicDraft.preferredTone;
+      }
+
+      return { brief: next, usedAi: true };
+    },
+    []
+  );
+
+  const handleRun = async (briefOverride?: LaunchBriefInput) => {
+    const briefToRun = briefOverride ?? brief;
+    const runBriefErrors = validateLiveBrief(briefToRun);
+    if (runBriefErrors.length > 0) {
+      setValidationErrors(runBriefErrors);
       setImportMessage("Validation failed. Fill all required real project fields.");
       return;
+    }
+
+    if (briefOverride) {
+      setBrief(briefOverride);
     }
 
     setIsRunning(true);
@@ -221,7 +406,7 @@ function LaunchStudioInner() {
       const runRes = await fetch(`/api/workflows/${workflowId}/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ brief, workflow: { id: workflowId, name: workflowName, nodes, edges } }),
+        body: JSON.stringify({ brief: briefToRun, workflow: { id: workflowId, name: workflowName, nodes, edges } }),
       });
       const runData = await runRes.json();
 
@@ -246,7 +431,7 @@ function LaunchStudioInner() {
       const genRes = await fetch("/api/projects/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ brief }),
+        body: JSON.stringify({ brief: briefToRun }),
       });
 
       const genData = await genRes.json();
@@ -265,9 +450,34 @@ function LaunchStudioInner() {
         const gate = validateSourceOfTruthExport(genData.project);
         setValidationErrors(Array.from(new Set([...(runCompliancePassed ? [] : runViolations), ...gate.errors])));
       }
-      } finally {
+    } finally {
       setIsRunning(false);
     }
+  };
+
+  const handleSimpleRun = () => {
+    if (!simplePrompt.trim() || simplePrompt.trim().length < 6) {
+      setValidationErrors([translate("autopilot.promptRequired")]);
+      setImportMessage(translate("autopilot.promptRequired"));
+      return;
+    }
+    void (async () => {
+      let briefToRun = autopilotBrief;
+
+      if (generationEngine === "architect") {
+        setIsGeneratingPrompt(true);
+        setImportMessage(translate("app.magicPromptPreparing"));
+        const result = await generateArchitectBrief(autopilotBrief, true);
+        briefToRun = result.brief;
+        setBrief(result.brief);
+        setImportMessage(
+          result.usedAi ? translate("app.magicPromptSuccess") : `${translate("app.magicPromptFallback")} (${result.error || "network"})`
+        );
+        setIsGeneratingPrompt(false);
+      }
+
+      await handleRun(briefToRun);
+    })();
   };
 
   const handleSave = async () => {
@@ -338,111 +548,30 @@ function LaunchStudioInner() {
   };
 
   const handleMagicPrompt = useCallback(async () => {
-    if (!brief.projectName.trim()) {
+    const sourceBrief = !brief.projectName.trim() && simplePrompt.trim() ? buildAutopilotBrief(simplePrompt, brief) : brief;
+
+    if (!sourceBrief.projectName.trim()) {
       setValidationErrors([translate("app.magicPromptMissingProjectName")]);
       setImportMessage(translate("app.magicPromptMissingProjectName"));
       return;
     }
 
-    const deterministicDraft = createDeterministicMagicDraft(brief);
-    setBrief((prev) => ({
-      ...prev,
-      description: deterministicDraft.description,
-      goal: prev.goal.trim() ? prev.goal : deterministicDraft.goal,
-      targetAudience: prev.targetAudience.trim() ? prev.targetAudience : deterministicDraft.targetAudience,
-      preferredTone: prev.preferredTone.trim() ? prev.preferredTone : deterministicDraft.preferredTone,
-    }));
     setValidationErrors([]);
     setImportMessage(translate("app.magicPromptPreparing"));
     setIsGeneratingPrompt(true);
 
     try {
-      const shortContext = [brief.goal, brief.targetAudience, brief.preferredTone]
-        .filter(Boolean)
-        .map((v) => v.trim())
-        .filter((v) => v.length > 0)
-        .join(" | ");
-
-      let aiText = "";
-      let attemptError = "";
-
-      for (let attempt = 1; attempt <= MAGIC_MAX_ATTEMPTS; attempt += 1) {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), MAGIC_TIMEOUT_MS);
-        const model = attempt === 1 ? "mistral-small" : "mistral-large-latest";
-
-        try {
-          const generationPrompt = [
-            "Vráť STRICT JSON objekt bez markdownu s kľúčmi: description, goal, targetAudience, preferredTone.",
-            `Project Name: ${brief.projectName.trim()}`,
-            `Project Type: ${brief.projectType}`,
-            `Context: ${shortContext || "none"}`,
-            "",
-            "Rules:",
-            "- content must be production-grade and concrete",
-            "- no fake claims, no manipulated urgency, no placeholders",
-            "- no forbidden investment wording",
-            "- use clean plain text only",
-            "- description should be launch-ready for LE Studio brief",
-          ].join("\\n");
-
-          const res = await fetch("/api/ai/generate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              provider: "mistral",
-              model,
-              temperature: 0.45,
-              prompt: generationPrompt,
-            }),
-            signal: controller.signal,
-          });
-          const data = await res.json().catch(() => ({}));
-          clearTimeout(timeout);
-
-          if (!res.ok || !data?.text) {
-            attemptError = `attempt_${attempt}_failed`;
-            continue;
-          }
-
-          aiText = String(data.text);
-          break;
-        } catch {
-          clearTimeout(timeout);
-          attemptError = `attempt_${attempt}_failed`;
-        }
-      }
-
-      if (!aiText) {
-        setImportMessage(`${translate("app.magicPromptFallback")} (${attemptError || "network"})`);
-        return;
-      }
-
-      const parsed = parseMagicPayload(aiText);
-      setBrief((prev) => {
-        const next = { ...prev };
-        const safeDescription = parsed.description && isSafeMagicText(parsed.description) ? parsed.description : deterministicDraft.description;
-        next.description = safeDescription;
-        if (!prev.goal.trim()) {
-          next.goal = parsed.goal && isSafeMagicText(parsed.goal) ? parsed.goal : deterministicDraft.goal;
-        }
-        if (!prev.targetAudience.trim()) {
-          next.targetAudience =
-            parsed.targetAudience && isSafeMagicText(parsed.targetAudience) ? parsed.targetAudience : deterministicDraft.targetAudience;
-        }
-        if (!prev.preferredTone.trim()) {
-          next.preferredTone =
-            parsed.preferredTone && isSafeMagicText(parsed.preferredTone) ? parsed.preferredTone : deterministicDraft.preferredTone;
-        }
-        return next;
-      });
-      setImportMessage(translate("app.magicPromptSuccess"));
+      const result = await generateArchitectBrief(sourceBrief, studioMode === "simple");
+      setBrief(result.brief);
+      setImportMessage(
+        result.usedAi ? translate("app.magicPromptSuccess") : `${translate("app.magicPromptFallback")} (${result.error || "network"})`
+      );
     } catch {
       setImportMessage(translate("app.magicPromptError"));
     } finally {
       setIsGeneratingPrompt(false);
     }
-  }, [brief, translate]);
+  }, [brief, generateArchitectBrief, simplePrompt, studioMode, translate]);
 
   const handleAddNode = useCallback(() => {
     const last = nodes[nodes.length - 1];
@@ -464,30 +593,31 @@ function LaunchStudioInner() {
   }, []);
 
   const lastRunAt = timeline[timeline.length - 1]?.at;
-  const projectTypeLabel = translate(PROJECT_TYPE_LABEL_KEYS[brief.projectType]);
+  const activeBrief = studioMode === "simple" && simplePrompt.trim() ? autopilotBrief : brief;
+  const projectTypeLabel = translate(PROJECT_TYPE_LABEL_KEYS[activeBrief.projectType]);
   const latestEvent = timeline[timeline.length - 1];
   const latestEventText = latestEvent
     ? `${latestEvent.nodeLabel}: ${latestEvent.message}`
     : translate("timeline.empty");
 
   return (
-    <div className="app-shell launch-studio-shell relative flex h-[100vh] h-[100dvh] flex-col overflow-hidden bg-zinc-950 text-zinc-100">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(16,185,129,0.1),transparent_30%),radial-gradient(circle_at_90%_10%,rgba(59,130,246,0.08),transparent_28%)]" />
-      <nav className="xl:hidden flex h-12 shrink-0 items-center justify-between border-b border-zinc-800/70 bg-zinc-950/80 px-3 backdrop-blur-md">
+    <div className="app-shell launch-studio-shell relative flex h-[100vh] h-[100dvh] max-h-[100dvh] flex-col overflow-hidden bg-black text-zinc-100">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_0%,rgba(255,255,255,0.055),transparent_30%),radial-gradient(circle_at_85%_8%,rgba(16,185,129,0.055),transparent_26%)]" />
+      <nav className="xl:hidden flex h-12 shrink-0 items-center justify-between border-b border-white/5 bg-black/70 px-3 backdrop-blur-xl">
         <button
           type="button"
           onClick={handleReset}
-          className="rounded-full p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70"
+          className="rounded-full p-1.5 text-zinc-500 transition-colors hover:bg-white/10 hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25"
           aria-label={translate("common.resetWorkflow")}
           title={translate("common.resetWorkflow")}
         >
           <X className="h-[18px] w-[18px]" />
         </button>
-        <div className="text-xs font-medium tracking-wide text-zinc-400">studio.rubberduck.sk</div>
+        <div className="text-xs font-medium tracking-wide text-zinc-500">studio.rubberduck.sk</div>
         <button
           type="button"
           onClick={() => setShowJson((v) => !v)}
-          className="rounded-full p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70"
+          className="rounded-full p-1.5 text-zinc-500 transition-colors hover:bg-white/10 hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25"
           aria-label={translate("common.codeJsonView")}
           title={translate("common.codeJsonView")}
         >
@@ -495,14 +625,14 @@ function LaunchStudioInner() {
         </button>
       </nav>
 
-      <header className="xl:hidden flex shrink-0 items-center justify-between px-4 py-3">
-        <h1 className="text-lg font-bold leading-none text-zinc-50">{translate("app.brandName")}</h1>
-        <div className="flex items-center overflow-hidden rounded-md border border-emerald-900/40">
-          <span className="flex items-center gap-1 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-300 bg-emerald-950/50">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+      <header className="xl:hidden flex shrink-0 items-center justify-between px-4 py-4">
+        <h1 className="text-xl font-semibold tracking-tight text-white">{translate("app.brandName")}</h1>
+        <div className="flex items-center overflow-hidden rounded-xl border border-white/10 bg-white/[0.035] backdrop-blur-xl">
+          <span className="flex items-center gap-1.5 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-wider text-emerald-300">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
             LIVE
           </span>
-          <span className="border-l border-emerald-900/40 bg-zinc-900 px-2 py-0.5 text-[10px] font-medium text-zinc-400">
+          <span className="border-l border-white/10 px-2.5 py-1 text-[10px] font-medium text-zinc-400">
             {translate("app.brandTop")}
           </span>
         </div>
@@ -512,7 +642,7 @@ function LaunchStudioInner() {
         <WorkflowToolbar
           workflowName={workflowName}
           onWorkflowNameChange={setWorkflowName}
-          onRun={handleRun}
+          onRun={studioMode === "simple" ? handleSimpleRun : handleRun}
           onSave={handleSave}
           onLoad={handleLoad}
           onReset={handleReset}
@@ -527,110 +657,225 @@ function LaunchStudioInner() {
         />
       </div>
 
-      <main className="relative z-10 min-h-0 flex-1 overflow-y-auto px-3 pb-2 xl:overflow-hidden xl:p-3">
-        <div className="mx-auto flex h-full min-h-0 w-full max-w-[1800px] flex-col gap-3 xl:grid xl:grid-cols-12">
-          <div className="flex min-h-0 flex-col gap-3 xl:col-span-8">
-            <section className="shrink-0 rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 p-3 shadow-[0_14px_50px_rgba(0,0,0,0.35)] xl:rounded-xl xl:p-4">
-              <h2 className="text-sm font-semibold text-zinc-50">{translate("app.headline")}</h2>
-              <p className="text-xs text-zinc-300/95">{translate("app.subheadline")}</p>
-              <div className="mt-3 grid grid-cols-2 gap-2 xl:gap-3">
+      <main className="relative z-10 min-h-0 flex-1 overflow-hidden px-4 pb-3 xl:p-5">
+        <div className="mx-auto flex h-full min-h-0 w-full max-w-[1800px] flex-col gap-4 xl:grid xl:grid-cols-12">
+          <div className="flex min-h-0 flex-col gap-4 xl:col-span-8">
+	            <section className={`${GLASS_PANEL} shrink-0 p-3 xl:p-6`}>
+	              <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
                 <div>
-                  <label htmlFor="brief-project-type" className="mb-1 block text-xs text-zinc-300">
-                    {translate("app.projectType")}
-                  </label>
-                  <ProjectTypeSelector
-                    id="brief-project-type"
-                    ariaLabel={translate("app.projectType")}
-                    value={brief.projectType as ProjectType}
-                    onChange={(projectType) => setBrief((b) => ({ ...b, projectType }))}
-                  />
+                  <h2 className="text-base font-semibold tracking-tight text-white xl:text-xl">{translate("app.headline")}</h2>
+                  <p className="mt-1 text-sm font-light text-zinc-400">{translate("app.subheadline")}</p>
                 </div>
-                <div>
-                  <label htmlFor="brief-project-name" className="mb-1 block text-xs text-zinc-300">
-                    {translate("app.projectName")}
-                  </label>
-                  <input
-                    id="brief-project-name"
-                    className="h-9 w-full rounded-lg border border-zinc-700/90 bg-zinc-950/90 px-3 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 xl:h-10 xl:rounded-md xl:text-sm"
-                    value={brief.projectName}
-                    onChange={(e) => setBrief((b) => ({ ...b, projectName: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="brief-target-audience" className="mb-1 block text-xs text-zinc-300">
-                    {translate("app.targetAudience")}
-                  </label>
-                  <input
-                    id="brief-target-audience"
-                    className="h-9 w-full rounded-lg border border-zinc-700/90 bg-zinc-950/90 px-3 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 xl:h-10 xl:rounded-md xl:text-sm"
-                    value={brief.targetAudience}
-                    onChange={(e) => setBrief((b) => ({ ...b, targetAudience: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="brief-goal" className="mb-1 block text-xs text-zinc-300">
-                    {translate("app.goal")}
-                  </label>
-                  <input
-                    id="brief-goal"
-                    className="h-9 w-full rounded-lg border border-zinc-700/90 bg-zinc-950/90 px-3 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 xl:h-10 xl:rounded-md xl:text-sm"
-                    value={brief.goal}
-                    onChange={(e) => setBrief((b) => ({ ...b, goal: e.target.value }))}
-                  />
-                </div>
-                <div className="col-span-2">
-                  <div className="mb-1 flex items-center justify-between gap-2">
-                    <label htmlFor="brief-description" className="block text-xs text-zinc-300">
-                      {translate("app.description")}
-                    </label>
-                    <button
-                      type="button"
-                      onClick={handleMagicPrompt}
-                      disabled={isGeneratingPrompt}
-                      aria-label={translate("common.improvePrompt")}
-                      title={translate("common.improvePrompt")}
-                      className="inline-flex items-center gap-1 rounded-md border border-emerald-700/60 bg-emerald-950/30 px-2 py-1 text-[10px] font-medium text-emerald-200 transition-colors hover:border-emerald-400 hover:bg-emerald-900/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 disabled:cursor-not-allowed disabled:opacity-50 xl:hidden"
-                    >
-                      <WandSparkles className="h-3.5 w-3.5" />
-                      <span>{isGeneratingPrompt ? translate("app.magicPromptRunning") : translate("common.magicPrompt")}</span>
-                    </button>
-                  </div>
-                  <textarea
-                    id="brief-description"
-                    className="h-9 w-full resize-none rounded-lg border border-zinc-700/90 bg-zinc-950/90 px-3 py-2 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 xl:h-auto xl:rounded-md xl:text-sm"
-                    rows={2}
-                    value={brief.description}
-                    onChange={(e) => setBrief((b) => ({ ...b, description: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="brief-preferred-tone" className="mb-1 block text-xs text-zinc-300">
-                    {translate("app.preferredTone")}
-                  </label>
-                  <input
-                    id="brief-preferred-tone"
-                    className="h-9 w-full rounded-lg border border-zinc-700/90 bg-zinc-950/90 px-3 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 xl:h-10 xl:rounded-md xl:text-sm"
-                    value={brief.preferredTone}
-                    onChange={(e) => setBrief((b) => ({ ...b, preferredTone: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="brief-contact-email" className="mb-1 block text-xs text-zinc-300">
-                    {translate("app.contactEmail")}
-                  </label>
-                  <input
-                    id="brief-contact-email"
-                    type="email"
-                    className="h-9 w-full rounded-lg border border-zinc-700/90 bg-zinc-950/90 px-3 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 xl:h-10 xl:rounded-md xl:text-sm"
-                    value={brief.contactEmail ?? ""}
-                    onChange={(e) => setBrief((b) => ({ ...b, contactEmail: e.target.value }))}
-                  />
-                </div>
+	                <div className="flex flex-wrap items-center gap-2">
+	                  <div className="inline-flex w-fit rounded-full border border-white/10 bg-black/35 p-1 backdrop-blur-xl" aria-label={translate("autopilot.modeLabel")}>
+	                    <button
+	                      type="button"
+	                      onClick={() => setStudioMode("simple")}
+	                      className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25 ${
+	                        studioMode === "simple" ? "bg-white text-black" : "text-zinc-400 hover:bg-white/5 hover:text-white"
+	                      }`}
+	                    >
+	                      {translate("autopilot.simpleMode")}
+	                    </button>
+	                    <button
+	                      type="button"
+	                      onClick={() => setStudioMode("advanced")}
+	                      className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25 ${
+	                        studioMode === "advanced" ? "bg-white text-black" : "text-zinc-400 hover:bg-white/5 hover:text-white"
+	                      }`}
+	                    >
+	                      {translate("autopilot.advancedMode")}
+	                    </button>
+	                  </div>
+	                  <div className="inline-flex w-fit rounded-full border border-white/10 bg-black/35 p-1 backdrop-blur-xl" aria-label={translate("autopilot.engineLabel")}>
+	                    <button
+	                      type="button"
+	                      onClick={() => setGenerationEngine("local")}
+	                      title={translate("autopilot.engineHintLocal")}
+	                      className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25 ${
+	                        generationEngine === "local" ? "bg-white text-black" : "text-zinc-400 hover:bg-white/5 hover:text-white"
+	                      }`}
+	                    >
+	                      {translate("autopilot.engineLocal")}
+	                    </button>
+	                    <button
+	                      type="button"
+	                      onClick={() => setGenerationEngine("architect")}
+	                      title={translate("autopilot.engineHintArchitect")}
+	                      className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25 ${
+	                        generationEngine === "architect" ? "bg-emerald-300 text-black" : "text-emerald-200 hover:bg-white/5 hover:text-white"
+	                      }`}
+	                    >
+	                      {translate("autopilot.engineArchitect")}
+	                    </button>
+	                  </div>
+	                </div>
               </div>
+
+	              {studioMode === "simple" ? (
+	                <div className="mt-4 space-y-3 xl:mt-6 xl:space-y-5">
+	                  <div className="relative overflow-hidden rounded-[1.6rem] border border-white/10 bg-black/35 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-[border-color,box-shadow] focus-within:border-white/20 focus-within:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_60px_rgba(255,255,255,0.055)] sm:p-4 xl:p-5">
+	                    <label htmlFor="autopilot-prompt" className="mb-2 block text-[10px] font-medium uppercase tracking-[0.18em] text-zinc-500 xl:mb-3 xl:text-xs">
+	                      {translate("autopilot.promptLabel")}
+	                    </label>
+	                    <div className="flex flex-col gap-2 sm:flex-row sm:items-end xl:gap-3">
+	                      <textarea
+                        id="autopilot-prompt"
+                        value={simplePrompt}
+                        onChange={(event) => setSimplePrompt(event.target.value)}
+                        rows={3}
+                        placeholder={translate("autopilot.placeholder")}
+	                        className="min-h-[64px] flex-1 resize-none bg-transparent text-lg font-semibold leading-tight tracking-tight text-white outline-none placeholder:text-zinc-700 sm:min-h-[92px] sm:text-3xl xl:min-h-[116px] xl:text-4xl"
+	                      />
+                      <button
+                        type="button"
+                        onClick={handleSimpleRun}
+	                        disabled={isRunning || isGeneratingPrompt}
+	                        className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-semibold text-black shadow-[0_18px_45px_rgba(255,255,255,0.12)] transition-colors hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 disabled:cursor-not-allowed disabled:opacity-50 xl:h-12"
+                      >
+                        <Play className="h-4 w-4" />
+	                        {isGeneratingPrompt ? translate("app.magicPromptRunning") : isRunning ? translate("common.running") : translate("autopilot.generateAll")}
+                      </button>
+                    </div>
+	                    <p className="mt-2 line-clamp-1 text-[11px] leading-relaxed text-zinc-500 sm:line-clamp-2 xl:mt-3 xl:text-xs">{translate("autopilot.helper")}</p>
+	                  </div>
+
+		                  <div className="hidden gap-3 xl:grid xl:grid-cols-[1.15fr_0.85fr]">
+		                    <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-3 xl:p-4">
+		                      <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500 xl:mb-3 xl:text-xs">{translate("autopilot.aiWillInfer")}</div>
+		                      <p className="line-clamp-2 text-xs leading-relaxed text-zinc-400 xl:line-clamp-none xl:text-sm">{translate("autopilot.internalSummary")}</p>
+		                      <div className="mt-3 flex flex-wrap gap-2 xl:mt-4">
+	                        {[projectTypeLabel, translate("autopilot.fieldStructure"), translate("autopilot.fieldTone"), translate("autopilot.seo"), translate("autopilot.fieldWordPress")].map((item) => (
+	                          <span key={item} className="rounded-full border border-white/10 bg-black/35 px-3 py-1 text-xs font-medium text-zinc-300">
+	                            {item}
+	                          </span>
+	                        ))}
+	                      </div>
+	                    </div>
+
+	                    <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-3 xl:p-4" aria-live="polite">
+	                      <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500 xl:mb-3 xl:text-xs">{translate("autopilot.workingTitle")}</div>
+	                      <div className="grid grid-cols-2 gap-1.5 xl:block xl:space-y-2">
+	                        {autopilotPhases.map((phase, index) => (
+	                          <div key={phase.label} className="flex min-w-0 items-center gap-2 text-[10px] xl:text-xs">
+                            <span
+                              className={`flex h-5 w-5 items-center justify-center rounded-full border text-[10px] transition-colors ${
+                                phase.done
+                                  ? "border-emerald-400/45 bg-emerald-400/10 text-emerald-200"
+                                  : isRunning && autopilotPhases.findIndex((item) => !item.done) === index
+                                    ? "border-white/20 bg-white/10 text-white animate-pulse"
+                                    : "border-white/10 text-zinc-600"
+                              }`}
+                            >
+                              {phase.done ? "✓" : "·"}
+                            </span>
+	                            <span className={`truncate ${phase.done ? "text-zinc-200" : "text-zinc-500"}`}>{phase.label}</span>
+	                          </div>
+	                        ))}
+	                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-5 grid grid-cols-2 gap-3 xl:gap-4">
+                  <div>
+                    <label htmlFor="brief-project-type" className="mb-1.5 block text-xs font-medium text-zinc-400">
+                      {translate("app.projectType")}
+                    </label>
+                    <ProjectTypeSelector
+                      id="brief-project-type"
+                      ariaLabel={translate("app.projectType")}
+                      value={brief.projectType as ProjectType}
+                      onChange={(projectType) => setBrief((b) => ({ ...b, projectType }))}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="brief-project-name" className="mb-1.5 block text-xs font-medium text-zinc-400">
+                      {translate("app.projectName")}
+                    </label>
+                    <input
+                      id="brief-project-name"
+                      className={FIELD_CLASS}
+                      value={brief.projectName}
+                      onChange={(e) => setBrief((b) => ({ ...b, projectName: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="brief-target-audience" className="mb-1.5 block text-xs font-medium text-zinc-400">
+                      {translate("app.targetAudience")}
+                    </label>
+                    <input
+                      id="brief-target-audience"
+                      className={FIELD_CLASS}
+                      value={brief.targetAudience}
+                      onChange={(e) => setBrief((b) => ({ ...b, targetAudience: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="brief-goal" className="mb-1.5 block text-xs font-medium text-zinc-400">
+                      {translate("app.goal")}
+                    </label>
+                    <input
+                      id="brief-goal"
+                      className={FIELD_CLASS}
+                      value={brief.goal}
+                      onChange={(e) => setBrief((b) => ({ ...b, goal: e.target.value }))}
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <div className="mb-1.5 flex items-center justify-between gap-2">
+                      <label htmlFor="brief-description" className="block text-xs font-medium text-zinc-400">
+                        {translate("app.description")}
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handleMagicPrompt}
+                        disabled={isGeneratingPrompt}
+                        aria-label={translate("common.improvePrompt")}
+                        title={translate("common.improvePrompt")}
+                        className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.055] px-2.5 py-1 text-[10px] font-medium text-zinc-200 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25 disabled:cursor-not-allowed disabled:opacity-50 xl:hidden"
+                      >
+                        <WandSparkles className="h-3.5 w-3.5" />
+                        <span>{isGeneratingPrompt ? translate("app.magicPromptRunning") : translate("common.magicPrompt")}</span>
+                      </button>
+                    </div>
+                    <textarea
+                      id="brief-description"
+                      className={`${FIELD_CLASS} min-h-11 resize-none py-2 xl:h-auto`}
+                      rows={2}
+                      value={brief.description}
+                      onChange={(e) => setBrief((b) => ({ ...b, description: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="brief-preferred-tone" className="mb-1.5 block text-xs font-medium text-zinc-400">
+                      {translate("app.preferredTone")}
+                    </label>
+                    <input
+                      id="brief-preferred-tone"
+                      className={FIELD_CLASS}
+                      value={brief.preferredTone}
+                      onChange={(e) => setBrief((b) => ({ ...b, preferredTone: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="brief-contact-email" className="mb-1.5 block text-xs font-medium text-zinc-400">
+                      {translate("app.contactEmail")}
+                    </label>
+                    <input
+                      id="brief-contact-email"
+                      type="email"
+                      className={FIELD_CLASS}
+                      value={brief.contactEmail ?? ""}
+                      onChange={(e) => setBrief((b) => ({ ...b, contactEmail: e.target.value }))}
+                    />
+                  </div>
+                </div>
+              )}
             </section>
 
-            <section className="relative flex-1 min-h-[180px] overflow-hidden rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 shadow-[0_14px_50px_rgba(0,0,0,0.35)] xl:min-h-0 xl:rounded-xl">
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(#2a2a2a_1px,transparent_1px)] [background-size:12px_12px] opacity-60 xl:hidden" />
+            <section className={`${GLASS_PANEL_SOFT} relative min-h-[260px] flex-1 overflow-hidden sm:min-h-[300px] xl:min-h-0`}>
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.09)_1px,transparent_1px)] [background-size:18px_18px] opacity-40 xl:hidden" />
               <div className="relative h-full w-full">
                 <LaunchCanvas
                   nodes={nodes as WorkflowNode[]}
@@ -642,8 +887,8 @@ function LaunchStudioInner() {
               </div>
             </section>
 
-            <section className="xl:hidden shrink-0 flex gap-3 overflow-x-auto pb-1 snap-x [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-              <article className="w-44 shrink-0 snap-start rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.28)]">
+            <section className="hidden shrink-0 gap-3 overflow-x-auto pb-1 snap-x [scrollbar-width:none] [-ms-overflow-style:none] sm:flex xl:hidden [&::-webkit-scrollbar]:hidden">
+              <article className={`${GLASS_PANEL_SOFT} w-52 shrink-0 snap-start p-4`}>
                 <h4 className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-zinc-100">
                   <Database className="h-3 w-3 text-blue-400" />
                   {translate("inspector.launchSummary")}
@@ -670,14 +915,14 @@ function LaunchStudioInner() {
                   type="button"
                   onClick={handleImportDryRun}
                   disabled={!compliancePassed || !generated}
-                  className="mt-2 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-2 py-1 text-[10px] font-medium text-zinc-300 transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="mt-3 w-full rounded-xl border border-white/10 bg-white/[0.035] px-2 py-2 text-[10px] font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {translate("app.prepareWpImport")}
                 </button>
               </article>
 
               {showJson ? (
-                <article className="flex w-44 shrink-0 snap-start flex-col justify-between rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.28)]">
+                <article className={`${GLASS_PANEL_SOFT} flex w-52 shrink-0 snap-start flex-col justify-between p-4`}>
                   <div>
                     <h4 className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-zinc-100">
                       <FileJson className="h-3 w-3 text-purple-400" />
@@ -689,14 +934,14 @@ function LaunchStudioInner() {
                     type="button"
                     onClick={handleExport}
                     disabled={!canExport}
-                    className="mt-2 w-full rounded-lg border border-zinc-700 bg-zinc-950 py-1 text-[10px] font-medium text-zinc-300 transition-colors hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="mt-3 w-full rounded-xl border border-white/10 bg-white/[0.035] py-2 text-[10px] font-medium text-zinc-300 transition-colors hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {translate("common.exportJson")}
                   </button>
                 </article>
               ) : null}
 
-              <article className="w-44 shrink-0 snap-start rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.28)]">
+              <article className={`${GLASS_PANEL_SOFT} w-52 shrink-0 snap-start p-4`}>
                 <h4 className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-zinc-100">
                   <Activity className="h-3 w-3 text-orange-400" />
                   {translate("timeline.title")}
@@ -705,7 +950,12 @@ function LaunchStudioInner() {
               </article>
             </section>
 
-            <section className="xl:hidden rounded-2xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.28)]" aria-live="polite">
+	            <section
+	              className={`${GLASS_PANEL_SOFT} max-h-28 overflow-auto p-3 xl:hidden ${
+	                generated || validationErrors.length > 0 || violations.length > 0 || importMessage ? "block" : "hidden"
+	              }`}
+	              aria-live="polite"
+	            >
               <div className="text-[10px] text-emerald-300">LIVE mode active. Real user inputs required.</div>
               {violations.length > 0 ? (
                 <div className="mt-1 text-[10px] text-rose-400">
@@ -719,16 +969,16 @@ function LaunchStudioInner() {
               ) : null}
               {importMessage ? <div className="mt-1 text-[10px] text-zinc-300">{importMessage}</div> : null}
               {generated ? (
-                <div className="mt-3 rounded-xl border border-emerald-900/50 bg-emerald-950/20 p-3 text-[10px] text-emerald-100">
+                <div className="mt-4 rounded-2xl border border-white/10 bg-black/35 p-4 text-[10px] text-zinc-300">
                   <div className="font-semibold text-emerald-200">{translate("jsonPreview.storageTitle")}</div>
-                  <p className="mt-1 text-emerald-100/80">{translate("jsonPreview.storageBody")}</p>
+                  <p className="mt-1 text-zinc-400">{translate("jsonPreview.storageBody")}</p>
                   {lastSavedAt ? (
                     <p className="mt-1 text-emerald-200">
                       {translate("jsonPreview.storageSaved")}: {lastSavedAt}
                     </p>
                   ) : null}
                   <div className="mt-2 font-semibold text-emerald-200">{translate("jsonPreview.nextTitle")}</div>
-                  <ol className="mt-1 list-decimal space-y-1 pl-4 text-emerald-100/80">
+                  <ol className="mt-1 list-decimal space-y-1 pl-4 text-zinc-400">
                     <li>{translate("jsonPreview.nextStepExport")}</li>
                     <li>{translate("jsonPreview.nextStepDryRun")}</li>
                     <li>{translate("jsonPreview.nextStepWordPress")}</li>
@@ -739,17 +989,17 @@ function LaunchStudioInner() {
           </div>
 
           <aside className="hidden min-h-0 flex-col gap-3 overflow-hidden xl:col-span-4 xl:flex">
-            <div className="min-h-[170px] overflow-auto">
+            <div className="min-h-[220px] overflow-auto">
               <NodeInspector
                 node={selectedNode}
-                projectType={brief.projectType}
+                projectType={activeBrief.projectType}
                 dryRun={false}
                 compliancePassed={compliancePassed}
                 canExport={canExport}
                 lastRunAt={lastRunAt}
               />
             </div>
-            <div className="min-h-[220px] overflow-auto">
+            <div className="min-h-[120px] overflow-auto">
               <ExecutionTimeline events={timeline} />
             </div>
             {showJson ? (
@@ -757,12 +1007,12 @@ function LaunchStudioInner() {
                 <JsonPreview data={generated} blocked={!canExport} onExport={handleExport} lastSavedAt={lastSavedAt} />
               </div>
             ) : null}
-            <div className="rounded-xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 p-4 shadow-[0_14px_40px_rgba(0,0,0,0.3)]">
+            <div className={`${GLASS_PANEL_SOFT} p-4`}>
               <button
                 type="button"
                 onClick={handleImportDryRun}
                 disabled={!compliancePassed || !generated}
-                className="w-full rounded-md border border-zinc-700 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 disabled:opacity-40"
+                className="w-full rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2 text-sm text-zinc-200 transition-colors hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25 disabled:opacity-40"
               >
                 {translate("app.prepareWpImport")}
               </button>
@@ -784,18 +1034,24 @@ function LaunchStudioInner() {
       </main>
 
       <footer
-        className="xl:hidden shrink-0 border-t border-zinc-800/80 bg-zinc-950/95 px-3 pb-[calc(env(safe-area-inset-bottom)+10px)] pt-2 backdrop-blur"
+        className="xl:hidden shrink-0 border-t border-white/10 bg-black/85 px-4 pb-[calc(env(safe-area-inset-bottom)+12px)] pt-3 backdrop-blur-2xl"
         aria-label={translate("app.mobileActionBarLabel")}
       >
         <div className="mx-auto flex max-w-3xl items-center gap-2">
           <button
             type="button"
-            onClick={handleRun}
-            disabled={isRunning}
-            className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-400 px-4 text-sm font-semibold text-zinc-950 shadow-[0_10px_30px_rgba(16,185,129,0.18)] transition-colors hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={() => {
+              if (studioMode === "simple") {
+                handleSimpleRun();
+                return;
+              }
+              void handleRun();
+            }}
+            disabled={isRunning || isGeneratingPrompt}
+            className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-zinc-50 px-4 text-sm font-semibold text-black shadow-[0_18px_45px_rgba(255,255,255,0.12)] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Play className="h-4 w-4" />
-            <span>{isRunning ? translate("common.running") : translate("common.run")}</span>
+            <span>{isGeneratingPrompt ? translate("app.magicPromptRunning") : isRunning ? translate("common.running") : translate("common.run")}</span>
           </button>
           <button
             type="button"
@@ -803,7 +1059,7 @@ function LaunchStudioInner() {
             disabled={isGeneratingPrompt}
             aria-label={translate("common.improvePrompt")}
             title={translate("common.improvePrompt")}
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-700/70 bg-emerald-950/40 text-emerald-200 transition-colors hover:border-emerald-400 hover:bg-emerald-900/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-zinc-200 transition-colors hover:bg-white/[0.09] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <WandSparkles className={isGeneratingPrompt ? "h-4 w-4 animate-pulse" : "h-4 w-4"} />
           </button>
@@ -812,7 +1068,7 @@ function LaunchStudioInner() {
             onClick={() => setShowJson((v) => !v)}
             aria-label={translate("common.preview")}
             title={translate("common.preview")}
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 transition-colors hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70"
+            className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.035] text-zinc-500 transition-colors hover:bg-white/[0.08] hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25"
           >
             <Compass className="h-4 w-4" />
           </button>
@@ -822,7 +1078,7 @@ function LaunchStudioInner() {
             disabled={!canExport}
             aria-label={translate("common.exportJson")}
             title={translate("common.exportJson")}
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 transition-colors hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.035] text-zinc-500 transition-colors hover:bg-white/[0.08] hover:text-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Share2 className="h-4 w-4" />
           </button>
