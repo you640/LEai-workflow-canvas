@@ -898,6 +898,10 @@ function LaunchStudioInner() {
                   onNodesChange={onNodesChange}
                   onEdgesChange={onEdgesChange}
                   onNodeClick={handleNodeClick}
+                  timeline={timeline}
+                  isRunning={isStudioBusy}
+                  validationErrors={validationErrors}
+                  generated={generated}
                 />
               </div>
             </section>
