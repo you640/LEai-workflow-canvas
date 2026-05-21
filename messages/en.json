@@ -47,6 +47,7 @@
     "workflowSaved": "Workflow saved.",
     "workflowLoaded": "Workflow loaded.",
     "workflowRunFailed": "Workflow run failed.",
+    "exportPrepared": "JSON export is ready. The browser saves the file to Downloads and the latest payload remains stored in this browser.",
     "customStepLabel": "Custom Step",
     "customStepDescription": "Custom planning node.",
     "magicPromptRunning": "Improving prompt…",
@@ -92,7 +93,14 @@
     "metaboxNotice": "Content-first WordPress metabox payload preview (source of truth: meta.numbers).",
     "dryRunNotice": "Output is ready for review before import. Production WordPress writes remain protected by the server guard.",
     "empty": "Run workflow to generate structured JSON.",
-    "blocked": "Export blocked by compliance."
+    "blocked": "Export blocked by compliance.",
+    "storageTitle": "Where is it stored?",
+    "storageBody": "After workflow execution, the payload is visible in JSON Preview, stored in this browser as the latest generated output, and downloaded as a file after Export JSON. It is not automatically written to WordPress production.",
+    "storageSaved": "Last local save",
+    "nextTitle": "What next after JSON?",
+    "nextStepExport": "Click Export JSON and keep the file as the client-ready output/proof.",
+    "nextStepDryRun": "Click Prepare WordPress Import (Dry-run) to validate the payload without writing to production.",
+    "nextStepWordPress": "Only after review should the payload go into WordPress import or manual deployment through the metabox/template layer."
   },
   "status": {
     "idle": "Idle",

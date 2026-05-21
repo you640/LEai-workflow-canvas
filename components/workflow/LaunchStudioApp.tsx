@@ -44,6 +44,7 @@ const PROJECT_TYPE_LABEL_KEYS: Record<ProjectType, TranslationKey> = {
 
 const MAGIC_TIMEOUT_MS = 15000;
 const MAGIC_MAX_ATTEMPTS = 2;
+const GENERATED_PAYLOAD_STORAGE_KEY = "le-studio:last-generated-payload";
 
 function cleanMagicValue(value: string): string {
   return stripHtmlForPlainText(value).replace(/\s+/g, " ").trim();
@@ -95,6 +96,32 @@ function createDeterministicMagicDraft(brief: LaunchBriefInput): Required<Pick<L
   };
 }
 
+function persistGeneratedPayload(payload: unknown): string | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const savedAt = new Date().toLocaleString();
+    window.localStorage.setItem(GENERATED_PAYLOAD_STORAGE_KEY, JSON.stringify({ savedAt, payload }));
+    return savedAt;
+  } catch {
+    return null;
+  }
+}
+
+function loadStoredGeneratedPayload(): { savedAt: string; payload: unknown } | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const raw = window.localStorage.getItem(GENERATED_PAYLOAD_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { savedAt?: unknown; payload?: unknown };
+    if (typeof parsed.savedAt !== "string" || !parsed.payload) return null;
+    return { savedAt: parsed.savedAt, payload: parsed.payload };
+  } catch {
+    return null;
+  }
+}
+
 function LaunchStudioInner() {
   const { translate } = useI18n();
 
@@ -139,6 +166,7 @@ function LaunchStudioInner() {
   const [importMessage, setImportMessage] = useState<string>("");
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<string>("");
 
   const selectedNode: WorkflowNode | null = useMemo(
     () => nodes.find((n) => n.id === selectedNodeId) ?? null,
@@ -158,6 +186,15 @@ function LaunchStudioInner() {
     const restored = loadProjectConfig();
     if (restored) {
       setBrief(restored);
+    }
+
+    const storedPayload = loadStoredGeneratedPayload();
+    if (storedPayload) {
+      const gate = validateSourceOfTruthExport(storedPayload.payload);
+      setGenerated(storedPayload.payload);
+      setLastSavedAt(storedPayload.savedAt);
+      setCompliancePassed(gate.valid);
+      setValidationErrors(gate.valid ? [] : gate.errors);
     }
   }, []);
 
@@ -197,6 +234,9 @@ function LaunchStudioInner() {
       setNodes(runData.nodes);
       setTimeline(runData.timeline);
       setGenerated(runData.generated ?? null);
+      if (runData.generated) {
+        setLastSavedAt(persistGeneratedPayload(runData.generated) ?? "");
+      }
       const runCompliancePassed = Boolean(runData.compliancePassed);
       const runViolations: string[] = Array.isArray(runData.violations) ? runData.violations : [];
       setCompliancePassed(runCompliancePassed);
@@ -217,6 +257,7 @@ function LaunchStudioInner() {
       }
       if (genRes.ok && genData?.project) {
         setGenerated(genData.project);
+        setLastSavedAt(persistGeneratedPayload(genData.project) ?? "");
         const generationCompliancePassed = Boolean(genData?.compliance?.passed);
         const generationViolations: string[] = Array.isArray(genData?.compliance?.violations) ? genData.compliance.violations : [];
         setCompliancePassed(runCompliancePassed && generationCompliancePassed);
@@ -261,6 +302,7 @@ function LaunchStudioInner() {
     setEdges(fresh.edges as Edge[]);
     setTimeline([]);
     setGenerated(null);
+    setLastSavedAt("");
     setCompliancePassed(false);
     setViolations([]);
     setImportMessage("");
@@ -268,6 +310,7 @@ function LaunchStudioInner() {
 
   const handleExport = () => {
     if (!canExport || !generated) return;
+    setLastSavedAt(persistGeneratedPayload(generated) ?? "");
     const blob = new Blob([JSON.stringify(generated, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -275,6 +318,7 @@ function LaunchStudioInner() {
     a.download = "web-do-24h-launch-pack.json";
     a.click();
     URL.revokeObjectURL(url);
+    setImportMessage(translate("app.exportPrepared"));
   };
 
   const handleImportDryRun = async () => {
@@ -693,7 +737,7 @@ function LaunchStudioInner() {
             </div>
             {showJson ? (
               <div className="min-h-[230px] overflow-auto">
-                <JsonPreview data={generated} blocked={!canExport} onExport={handleExport} />
+                <JsonPreview data={generated} blocked={!canExport} onExport={handleExport} lastSavedAt={lastSavedAt} />
               </div>
             ) : null}
             <div className="rounded-xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900 to-zinc-950 p-4 shadow-[0_14px_40px_rgba(0,0,0,0.3)]">
