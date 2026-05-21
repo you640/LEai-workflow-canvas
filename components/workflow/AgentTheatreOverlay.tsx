@@ -11,6 +11,10 @@ interface AgentTheatreOverlayProps {
   isRunning: boolean;
   validationErrors: string[];
   generated: unknown;
+  hasFreshGeneration: boolean;
+  canExport: boolean;
+  onShowJson: () => void;
+  onExport: () => void;
 }
 
 const STAGE_AGENT_IDS = ["strategy-agent", "copy-agent", "seo-agent", "wordpress-adapter", "qa-audit", "launch-pack"];
@@ -19,10 +23,22 @@ const CAPTIONS = {
   idle: "Napíš jednu vetu. Agenti čakajú na brief.",
   running: "Agenti skladajú stratégiu, copy, SEO a WordPress payload.",
   done: "Payload je pripravený na kontrolu a export.",
+  fresh: "Výstup je pripravený. Skontroluj JSON alebo exportuj balík.",
   error: "Workflow zastavený validáciou.",
 };
 
-export function AgentTheatreOverlay({ nodes, edges, timeline, isRunning, validationErrors, generated }: AgentTheatreOverlayProps) {
+export function AgentTheatreOverlay({
+  nodes,
+  edges,
+  timeline,
+  isRunning,
+  validationErrors,
+  generated,
+  hasFreshGeneration,
+  canExport,
+  onShowJson,
+  onExport,
+}: AgentTheatreOverlayProps) {
   const [stageLingerRunning, setStageLingerRunning] = useState(false);
 
   useEffect(() => {
@@ -36,7 +52,8 @@ export function AgentTheatreOverlay({ nodes, edges, timeline, isRunning, validat
 
   const hasError = validationErrors.length > 0 || nodes.some((node) => node.data.status === "failed");
   const isDone = Boolean(generated) && !hasError;
-  const stageState = hasError ? "error" : isRunning || stageLingerRunning ? "running" : isDone ? "done" : "idle";
+  const stageState = hasError ? "error" : hasFreshGeneration || isDone ? "done" : isRunning || stageLingerRunning ? "running" : "idle";
+  const stageCaption = stageState === "done" && hasFreshGeneration ? CAPTIONS.fresh : CAPTIONS[stageState];
   const activeNodeId =
     nodes.find((node) => node.data.status === "running")?.id ??
     [...timeline].reverse().find((event) => event.status === "running")?.nodeId ??
@@ -114,7 +131,29 @@ export function AgentTheatreOverlay({ nodes, edges, timeline, isRunning, validat
                 : "border-white/10 bg-black/55 text-zinc-300"
           )}
         >
-          {CAPTIONS[stageState]}
+          {stageCaption}
+          {stageState === "done" && hasFreshGeneration ? (
+            <span className="mt-2 flex justify-center gap-2">
+              <button
+                type="button"
+                onClick={onShowJson}
+                className="pointer-events-auto rounded-full border border-emerald-200/20 bg-emerald-300/15 px-3 py-1 text-[10px] font-semibold text-emerald-50 transition-colors hover:bg-emerald-300/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200/45"
+                aria-label="Zobraziť JSON"
+              >
+                Zobraziť JSON
+              </button>
+              <button
+                type="button"
+                onClick={onExport}
+                disabled={!canExport}
+                title={canExport ? "Export JSON" : "Export je dostupný po validácii payloadu."}
+                className="pointer-events-auto rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[10px] font-semibold text-white transition-colors hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 disabled:cursor-not-allowed disabled:opacity-45"
+                aria-label="Export JSON"
+              >
+                Export JSON
+              </button>
+            </span>
+          ) : null}
         </div>
       </div>
     </>

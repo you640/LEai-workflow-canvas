@@ -40,9 +40,27 @@ interface Props {
   isRunning: boolean;
   validationErrors: string[];
   generated: unknown;
+  hasFreshGeneration: boolean;
+  canExport: boolean;
+  onShowJson: () => void;
+  onExport: () => void;
 }
 
-export function LaunchCanvas({ nodes, edges, onNodesChange, onEdgesChange, onNodeClick, timeline, isRunning, validationErrors, generated }: Props) {
+export function LaunchCanvas({
+  nodes,
+  edges,
+  onNodesChange,
+  onEdgesChange,
+  onNodeClick,
+  timeline,
+  isRunning,
+  validationErrors,
+  generated,
+  hasFreshGeneration,
+  canExport,
+  onShowJson,
+  onExport,
+}: Props) {
   const themedEdges = useMemo(
     () =>
       edges.map((edge) => {
@@ -85,7 +103,18 @@ export function LaunchCanvas({ nodes, edges, onNodesChange, onEdgesChange, onNod
           className="!rounded-2xl !border-white/10 !bg-black/70 !shadow-[0_18px_55px_rgba(0,0,0,0.45)] !backdrop-blur-xl"
         />
       </ReactFlow>
-      <AgentTheatreOverlay nodes={nodes} edges={edges} timeline={timeline} isRunning={isRunning} validationErrors={validationErrors} generated={generated} />
+      <AgentTheatreOverlay
+        nodes={nodes}
+        edges={edges}
+        timeline={timeline}
+        isRunning={isRunning}
+        validationErrors={validationErrors}
+        generated={generated}
+        hasFreshGeneration={hasFreshGeneration}
+        canExport={canExport}
+        onShowJson={onShowJson}
+        onExport={onExport}
+      />
     </div>
   );
 }

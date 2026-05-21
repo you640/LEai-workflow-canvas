@@ -7,9 +7,10 @@ interface Props {
   blocked: boolean;
   onExport: () => void;
   lastSavedAt?: string;
+  highlight?: boolean;
 }
 
-export function JsonPreview({ data, blocked, onExport, lastSavedAt }: Props) {
+export function JsonPreview({ data, blocked, onExport, lastSavedAt, highlight = false }: Props) {
   const { translate } = useI18n();
   const previewPayload =
     data && typeof data === "object" && "wordpress" in (data as Record<string, unknown>)
@@ -25,7 +26,11 @@ export function JsonPreview({ data, blocked, onExport, lastSavedAt }: Props) {
       : data;
 
   return (
-    <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.035] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_20px_70px_rgba(0,0,0,0.4)] backdrop-blur-xl">
+    <div
+      className={`rounded-[1.35rem] border bg-white/[0.035] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_20px_70px_rgba(0,0,0,0.4)] backdrop-blur-xl ${
+        highlight ? "result-reveal-card border-emerald-300/40" : "border-white/10"
+      }`}
+    >
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-semibold tracking-tight text-white">{translate("jsonPreview.title")}</h3>
         <button
