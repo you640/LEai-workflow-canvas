@@ -47,6 +47,7 @@
     "workflowSaved": "Workflow uložený.",
     "workflowLoaded": "Workflow načítaný.",
     "workflowRunFailed": "Spustenie workflow zlyhalo.",
+    "exportPrepared": "JSON export je pripravený. Prehliadač uloží súbor do Downloads a posledný payload ostáva uložený v tomto prehliadači.",
     "customStepLabel": "Vlastný krok",
     "customStepDescription": "Vlastný plánovací uzol.",
     "magicPromptRunning": "Vylepšujem prompt…",
@@ -92,7 +93,14 @@
     "metaboxNotice": "Náhľad content-first WordPress metabox payloadu (source of truth: meta.numbers).",
     "dryRunNotice": "Výstup je pripravený na kontrolu pred importom. Produkčný zápis do WordPressu zostáva chránený serverovým guardom.",
     "empty": "Spusť workflow pre generovanie štruktúrovaného JSON.",
-    "blocked": "Export blokovaný kvôli compliance."
+    "blocked": "Export blokovaný kvôli compliance.",
+    "storageTitle": "Kde sa to ukladá?",
+    "storageBody": "Po spustení workflowu je payload v JSON náhľade, uložený v tomto prehliadači ako posledný vygenerovaný výstup a po kliknutí na Export JSON sa stiahne ako súbor. Automaticky sa nezapisuje do WordPress produkcie.",
+    "storageSaved": "Posledné lokálne uloženie",
+    "nextTitle": "Čo ďalej po JSON?",
+    "nextStepExport": "Klikni Export JSON a ulož súbor ako dôkaz/výstup pre klienta.",
+    "nextStepDryRun": "Klikni Pripraviť WordPress import (Dry-run), aby sa overil payload bez zápisu do produkcie.",
+    "nextStepWordPress": "Až po kontrole ide payload do WordPress importu alebo ručného nasadenia cez metabox/template vrstvu."
   },
   "status": {
     "idle": "Nečinný",
