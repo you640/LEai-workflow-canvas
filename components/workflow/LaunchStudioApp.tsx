@@ -718,6 +718,23 @@ function LaunchStudioInner() {
                 </div>
               ) : null}
               {importMessage ? <div className="mt-1 text-[10px] text-zinc-300">{importMessage}</div> : null}
+              {generated ? (
+                <div className="mt-3 rounded-xl border border-emerald-900/50 bg-emerald-950/20 p-3 text-[10px] text-emerald-100">
+                  <div className="font-semibold text-emerald-200">{translate("jsonPreview.storageTitle")}</div>
+                  <p className="mt-1 text-emerald-100/80">{translate("jsonPreview.storageBody")}</p>
+                  {lastSavedAt ? (
+                    <p className="mt-1 text-emerald-200">
+                      {translate("jsonPreview.storageSaved")}: {lastSavedAt}
+                    </p>
+                  ) : null}
+                  <div className="mt-2 font-semibold text-emerald-200">{translate("jsonPreview.nextTitle")}</div>
+                  <ol className="mt-1 list-decimal space-y-1 pl-4 text-emerald-100/80">
+                    <li>{translate("jsonPreview.nextStepExport")}</li>
+                    <li>{translate("jsonPreview.nextStepDryRun")}</li>
+                    <li>{translate("jsonPreview.nextStepWordPress")}</li>
+                  </ol>
+                </div>
+              ) : null}
             </section>
           </div>
 
