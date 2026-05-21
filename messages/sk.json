@@ -329,5 +329,32 @@
       "label": "Launch Pack",
       "description": "Priprav checklist a ďalšie kroky."
     }
+  },
+  "autopilot": {
+    "modeLabel": "Režim LE Studio",
+    "simpleMode": "Simple",
+    "advancedMode": "Advanced",
+    "promptLabel": "Jedna veta stačí",
+    "placeholder": "Napr. Chcem web do 24h pre lokálny salón krásy.",
+    "generateAll": "Vygenerovať všetko",
+    "helper": "AI z jednej vety odvodí cieľovku, cieľ, tón, štruktúru, SEO a WordPress-ready payload. Detaily môžeš upraviť v Advanced režime.",
+    "aiWillInfer": "AI si interne doplní",
+    "waiting": "Čakám na jednu vetu",
+    "workingTitle": "Štúdio pracuje",
+    "analyze": "Analyzujem brief",
+    "copy": "Píšem texty",
+    "seo": "Pripravujem SEO",
+    "payload": "Normalizujem WordPress payload",
+    "ready": "Export je pripravený",
+    "promptRequired": "Napíš aspoň jednu konkrétnu vetu o projekte.",
+    "internalSummary": "Cieľovku, cieľ a tón držíme interne. Používateľovi stačí jedna veta, štúdio doplní zvyšok bez zbytočných polí.",
+    "fieldStructure": "Štruktúra webu",
+    "fieldTone": "Tón komunikácie",
+    "fieldWordPress": "WordPress payload",
+    "engineLocal": "Local",
+    "engineArchitect": "Launch Architect AI",
+    "engineLabel": "Generovací engine",
+    "engineHintLocal": "Rýchly lokálny autopilot bez AI volania.",
+    "engineHintArchitect": "Mistral najprv rozšíri brief cez Launch Architect prompt, potom sa spustí workflow."
   }
 }

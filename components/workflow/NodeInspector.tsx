@@ -27,9 +27,9 @@ export function NodeInspector({ node, projectType, dryRun, compliancePassed, can
 
   if (!node) {
     return (
-      <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
-        <h3 className="text-sm font-semibold text-zinc-100">{translate("inspector.launchSummary")}</h3>
-        <div className="mt-3 space-y-2 text-xs text-zinc-300">
+      <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.035] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_20px_70px_rgba(0,0,0,0.4)] backdrop-blur-xl">
+        <h3 className="text-sm font-semibold tracking-tight text-white">{translate("inspector.launchSummary")}</h3>
+        <div className="mt-4 space-y-2.5 text-xs text-zinc-400">
           <div>
             {translate("inspector.projectType")}: <span className="text-zinc-100">{projectType}</span>
           </div>
@@ -51,12 +51,12 @@ export function NodeInspector({ node, projectType, dryRun, compliancePassed, can
   }
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
-      <h3 className="text-sm font-semibold text-zinc-100">{node.data.label}</h3>
-      <p className="mt-1 text-xs text-zinc-300">{node.data.description}</p>
-      <div className="mt-3 text-xs text-zinc-300">{translate("inspector.status")}: {statusLabel(node.data.status)}</div>
-      {node.data.summary ? <div className="mt-2 text-xs text-zinc-300">{translate("inspector.summary")}: {node.data.summary}</div> : null}
-      <div className="mt-3 text-xs text-zinc-400">{translate("inspector.nodeId")}: {node.id}</div>
+    <div className="rounded-[1.35rem] border border-white/10 bg-white/[0.035] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_20px_70px_rgba(0,0,0,0.4)] backdrop-blur-xl">
+      <h3 className="text-sm font-semibold tracking-tight text-white">{node.data.label}</h3>
+      <p className="mt-2 text-xs font-light leading-relaxed text-zinc-400">{node.data.description}</p>
+      <div className="mt-4 text-xs text-zinc-400">{translate("inspector.status")}: {statusLabel(node.data.status)}</div>
+      {node.data.summary ? <div className="mt-2 text-xs leading-relaxed text-zinc-400">{translate("inspector.summary")}: {node.data.summary}</div> : null}
+      <div className="mt-4 text-xs text-zinc-500">{translate("inspector.nodeId")}: {node.id}</div>
     </div>
   );
 }

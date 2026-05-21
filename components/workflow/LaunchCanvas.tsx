@@ -39,12 +39,12 @@ interface Props {
 
 export function LaunchCanvas({ nodes, edges, onNodesChange, onEdgesChange, onNodeClick }: Props) {
   const themedEdges = useMemo(
-    () => edges.map((e) => ({ ...e, animated: false, style: { stroke: "#52525b", strokeWidth: 2 } })),
+    () => edges.map((e) => ({ ...e, animated: false, style: { stroke: "rgba(255,255,255,0.2)", strokeWidth: 1.5 } })),
     [edges]
   );
 
   return (
-    <div className="h-full w-full bg-zinc-950">
+    <div className="h-full w-full bg-black">
       <ReactFlow
         nodes={nodes}
         edges={themedEdges}
@@ -54,16 +54,16 @@ export function LaunchCanvas({ nodes, edges, onNodesChange, onEdgesChange, onNod
         onNodeClick={(_, node) => onNodeClick(node.id)}
         fitView
         fitViewOptions={{ padding: 0.2 }}
-        className="bg-zinc-950"
+        className="bg-black"
       >
-        <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#1f2937" />
-        <MiniMap className="hidden md:block" nodeColor="#3f3f46" maskColor="rgba(0,0,0,0.6)" />
+        <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="rgba(255,255,255,0.08)" />
+        <MiniMap className="hidden !rounded-2xl !border !border-white/10 !bg-black/70 md:block" nodeColor="rgba(255,255,255,0.26)" maskColor="rgba(0,0,0,0.72)" />
         <Controls
           showFitView={false}
           showInteractive={false}
           position="bottom-left"
           aria-label="Workflow zoom controls"
-          className="!border-zinc-700/90 !bg-zinc-950/90 !shadow-xl"
+          className="!rounded-2xl !border-white/10 !bg-black/70 !shadow-[0_18px_55px_rgba(0,0,0,0.45)] !backdrop-blur-xl"
         />
       </ReactFlow>
     </div>
