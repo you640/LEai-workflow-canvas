@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ReactFlowProvider, useEdgesState, useNodesState, type Edge } from "@xyflow/react";
 import { Activity, Compass, Database, FileJson, Monitor, Play, Share2, WandSparkles, X } from "lucide-react";
 import { createDefaultWorkflow } from "@/lib/workflow/default-workflow";
@@ -46,6 +46,7 @@ const PROJECT_TYPE_LABEL_KEYS: Record<ProjectType, TranslationKey> = {
 const MAGIC_TIMEOUT_MS = 10000;
 const MAGIC_MAX_ATTEMPTS = 1;
 const GENERATED_PAYLOAD_STORAGE_KEY = "le-studio:last-generated-payload";
+const RESULT_REVEAL_MS = 2200;
 
 const DEFAULT_CONTACT_EMAIL = "space@rubberduck.space";
 type GenerationEngine = "local" | "architect";
@@ -262,6 +263,10 @@ function LaunchStudioInner() {
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
   const [isPreparingAutopilot, setIsPreparingAutopilot] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<string>("");
+  const [hasFreshGeneration, setHasFreshGeneration] = useState(false);
+  const resultRevealTimerRef = useRef<number | null>(null);
+  const mobileResultRef = useRef<HTMLDivElement | null>(null);
+  const desktopJsonRef = useRef<HTMLDivElement | null>(null);
 
   const [studioMode, setStudioMode] = useState<"simple" | "advanced">("simple");
   const [simplePrompt, setSimplePrompt] = useState<string>("");
@@ -314,6 +319,35 @@ function LaunchStudioInner() {
   useEffect(() => {
     saveProjectConfig(brief);
   }, [brief]);
+
+  useEffect(
+    () => () => {
+      if (resultRevealTimerRef.current) {
+        window.clearTimeout(resultRevealTimerRef.current);
+      }
+    },
+    []
+  );
+
+  const showGeneratedResult = useCallback(() => {
+    setShowJson(true);
+    setHasFreshGeneration(true);
+    setImportMessage(translate("app.resultReady"));
+
+    if (resultRevealTimerRef.current) {
+      window.clearTimeout(resultRevealTimerRef.current);
+    }
+
+    window.requestAnimationFrame(() => {
+      const target = window.matchMedia("(min-width: 1280px)").matches ? desktopJsonRef.current : mobileResultRef.current;
+      target?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+    });
+
+    resultRevealTimerRef.current = window.setTimeout(() => {
+      setHasFreshGeneration(false);
+      resultRevealTimerRef.current = null;
+    }, RESULT_REVEAL_MS);
+  }, [translate]);
 
   const generateArchitectBrief = useCallback(
     async (sourceBrief: LaunchBriefInput, overwriteInferredFields: boolean): Promise<{ brief: LaunchBriefInput; usedAi: boolean; error?: string }> => {
@@ -427,6 +461,7 @@ function LaunchStudioInner() {
       setNodes(runData.nodes);
       setTimeline(runData.timeline);
       setGenerated(runData.generated ?? null);
+      setHasFreshGeneration(false);
       if (runData.generated) {
         setLastSavedAt(persistGeneratedPayload(runData.generated) ?? "");
       }
@@ -457,6 +492,7 @@ function LaunchStudioInner() {
         setViolations(Array.from(new Set([...runViolations, ...generationViolations])));
         const gate = validateSourceOfTruthExport(genData.project);
         setValidationErrors(Array.from(new Set([...(runCompliancePassed ? [] : runViolations), ...gate.errors])));
+        showGeneratedResult();
       }
     } finally {
       setIsRunning(false);
@@ -523,6 +559,7 @@ function LaunchStudioInner() {
     setEdges(fresh.edges as Edge[]);
     setTimeline([]);
     setGenerated(null);
+    setHasFreshGeneration(false);
     setLastSavedAt("");
     setCompliancePassed(false);
     setViolations([]);
@@ -898,6 +935,14 @@ function LaunchStudioInner() {
                   onNodesChange={onNodesChange}
                   onEdgesChange={onEdgesChange}
                   onNodeClick={handleNodeClick}
+                  timeline={timeline}
+                  isRunning={isStudioBusy}
+                  validationErrors={validationErrors}
+                  generated={generated}
+                  hasFreshGeneration={hasFreshGeneration}
+                  canExport={canExport}
+                  onShowJson={() => setShowJson(true)}
+                  onExport={handleExport}
                 />
               </div>
             </section>
@@ -966,12 +1011,39 @@ function LaunchStudioInner() {
             </section>
 
 	            <section
-	              className={`${GLASS_PANEL_SOFT} max-h-28 overflow-auto p-3 xl:hidden ${
-	                generated || validationErrors.length > 0 || violations.length > 0 || importMessage ? "block" : "hidden"
-	              }`}
+                ref={mobileResultRef}
+	              className={`${GLASS_PANEL_SOFT} overflow-auto p-3 xl:hidden ${
+                  hasFreshGeneration ? "result-reveal-card max-h-52 border-emerald-300/35" : "max-h-28"
+                } ${generated || validationErrors.length > 0 || violations.length > 0 || importMessage ? "block" : "hidden"}`}
 	              aria-live="polite"
 	            >
               <div className="text-[10px] text-emerald-300">LIVE mode active. Real user inputs required.</div>
+              {hasFreshGeneration && generated ? (
+                <div className="mb-2 rounded-2xl border border-emerald-300/20 bg-emerald-300/10 p-3 text-[10px] text-emerald-50">
+                  <div className="font-semibold">{translate("app.resultRevealTitle")}</div>
+                  <p className="mt-1 text-emerald-100/80">{translate("app.resultRevealBody")}</p>
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowJson(true)}
+                      className="rounded-full border border-emerald-200/25 bg-emerald-300/15 px-3 py-1 text-[10px] font-semibold text-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200/45"
+                      aria-label={translate("app.showJson")}
+                    >
+                      {translate("app.showJson")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleExport}
+                      disabled={!canExport}
+                      className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[10px] font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 disabled:cursor-not-allowed disabled:opacity-45"
+                      aria-label={translate("common.exportJson")}
+                      title={canExport ? translate("common.exportJson") : translate("app.exportUnavailable")}
+                    >
+                      {translate("common.exportJson")}
+                    </button>
+                  </div>
+                </div>
+              ) : null}
               {violations.length > 0 ? (
                 <div className="mt-1 text-[10px] text-rose-400">
                   {translate("app.complianceViolations")}: {violations.join(", ")}
@@ -1022,8 +1094,8 @@ function LaunchStudioInner() {
               <ExecutionTimeline events={timeline} />
             </div>
             {showJson ? (
-              <div className="min-h-[230px] overflow-auto">
-                <JsonPreview data={generated} blocked={!canExport} onExport={handleExport} lastSavedAt={lastSavedAt} />
+              <div ref={desktopJsonRef} className="min-h-[230px] overflow-auto">
+                <JsonPreview data={generated} blocked={!canExport} onExport={handleExport} lastSavedAt={lastSavedAt} highlight={hasFreshGeneration} />
               </div>
             ) : null}
             <div className={`${GLASS_PANEL_SOFT} p-4`}>
@@ -1103,7 +1175,13 @@ function LaunchStudioInner() {
           </button>
         </div>
         <p className="sr-only" aria-live="polite">
-          {isGeneratingPrompt ? translate("app.magicPromptRunning") : isPreparingAutopilot ? translate("autopilot.workingTitle") : importMessage}
+          {hasFreshGeneration
+            ? translate("app.resultReadyA11y")
+            : isGeneratingPrompt
+              ? translate("app.magicPromptRunning")
+              : isPreparingAutopilot
+                ? translate("autopilot.workingTitle")
+                : importMessage}
         </p>
       </footer>
     </div>

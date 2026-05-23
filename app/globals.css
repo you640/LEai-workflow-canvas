@@ -49,6 +49,272 @@ body > div:first-child,
   overflow: hidden;
 }
 
+html:has(.launch-studio-shell),
+body:has(.launch-studio-shell) {
+  overflow: hidden;
+}
+
+@keyframes agent-stage-drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate3d(-10px, 8px, 0);
+    opacity: 0.78;
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.5;
+  }
+}
+
+@keyframes agent-center-pulse {
+  0%,
+  100% {
+    transform: translate3d(-50%, -50%, 0) scale(0.82);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translate3d(-50%, -50%, 0) scale(1.08);
+    opacity: 0.42;
+  }
+}
+
+@keyframes agent-spark-travel {
+  0% {
+    transform: translate3d(0, 0, 0) scaleX(0.25);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(calc(100vw - 12rem), 0, 0) scaleX(1);
+    opacity: 0;
+  }
+}
+
+@keyframes agent-rail-spark {
+  0% {
+    transform: translate3d(-10%, 0, 0) scaleX(0.35);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(210%, 0, 0) scaleX(0.8);
+    opacity: 0;
+  }
+}
+
+@keyframes agent-node-breathe {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.05),
+      0 22px 70px rgb(0 0 0 / 0.42),
+      0 0 0 rgb(110 231 183 / 0);
+  }
+  50% {
+    transform: translate3d(0, -1px, 0) scale(1.012);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.08),
+      0 26px 82px rgb(0 0 0 / 0.5),
+      0 0 36px rgb(110 231 183 / 0.22);
+  }
+}
+
+@keyframes agent-success-flash {
+  0% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.05),
+      0 22px 70px rgb(0 0 0 / 0.42);
+  }
+  45% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.1),
+      0 22px 70px rgb(0 0 0 / 0.42),
+      0 0 34px rgb(52 211 153 / 0.35);
+  }
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.06),
+      0 22px 70px rgb(0 0 0 / 0.42),
+      0 0 22px rgb(52 211 153 / 0.15);
+  }
+}
+
+@keyframes agent-particle-rise {
+  0% {
+    transform: translate3d(0, 16px, 0) scale(0.65);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(42px, -44px, 0) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes agent-payload-shimmer {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(12deg);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(420%, 0, 0) rotate(12deg);
+    opacity: 0;
+  }
+}
+
+@keyframes result-reveal-glow {
+  0% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.04),
+      0 20px 70px rgb(0 0 0 / 0.4),
+      0 0 0 rgb(52 211 153 / 0);
+  }
+  28% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.09),
+      0 22px 80px rgb(0 0 0 / 0.48),
+      0 0 48px rgb(52 211 153 / 0.28);
+  }
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.04),
+      0 20px 70px rgb(0 0 0 / 0.4),
+      0 0 18px rgb(52 211 153 / 0.12);
+  }
+}
+
+.agent-theatre__drift {
+  background:
+    radial-gradient(circle at 22% 30%, rgb(16 185 129 / 0.09), transparent 21%),
+    radial-gradient(circle at 78% 52%, rgb(255 255 255 / 0.055), transparent 20%),
+    radial-gradient(rgb(255 255 255 / 0.065) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 100%,
+    22px 22px;
+  animation: agent-stage-drift 11s ease-in-out infinite;
+}
+
+.agent-theatre__vignette {
+  background:
+    radial-gradient(circle at 50% 47%, transparent 0 22%, rgb(0 0 0 / 0.18) 54%, rgb(0 0 0 / 0.56) 100%),
+    linear-gradient(to bottom, rgb(0 0 0 / 0.18), transparent 34%, rgb(0 0 0 / 0.28));
+}
+
+.agent-theatre__center-pulse {
+  background: radial-gradient(circle, rgb(16 185 129 / 0.3), transparent 68%);
+  filter: blur(6px);
+  animation: agent-center-pulse 3.2s ease-in-out infinite;
+}
+
+.agent-theatre[data-state="running"] .agent-theatre__center-pulse,
+.agent-theatre[data-state="done"] .agent-theatre__center-pulse {
+  opacity: 0;
+}
+
+.agent-theatre__beacon {
+  border-color: rgb(255 255 255 / 0.16);
+  background: rgb(0 0 0 / 0.84);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.03);
+}
+
+.agent-theatre__beacon--active {
+  border-color: rgb(110 231 183 / 0.8);
+  background: rgb(52 211 153 / 0.95);
+  box-shadow:
+    0 0 0 5px rgb(16 185 129 / 0.12),
+    0 0 34px rgb(110 231 183 / 0.55);
+}
+
+.agent-theatre__beacon--done {
+  border-color: rgb(110 231 183 / 0.78);
+  background: rgb(110 231 183);
+  box-shadow: 0 0 24px rgb(52 211 153 / 0.38);
+}
+
+.agent-theatre__beacon--error {
+  border-color: rgb(251 191 36 / 0.85);
+  background: rgb(251 191 36);
+  box-shadow: 0 0 30px rgb(251 191 36 / 0.42);
+}
+
+.agent-theatre__rail {
+  background: linear-gradient(to right, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.025));
+}
+
+.agent-theatre__rail--lit {
+  background: linear-gradient(to right, rgb(52 211 153 / 0.64), rgb(16 185 129 / 0.16));
+  box-shadow: 0 0 14px rgb(52 211 153 / 0.22);
+}
+
+.agent-theatre__spark {
+  background: linear-gradient(to right, transparent, rgb(167 243 208 / 0.95), transparent);
+  filter: blur(0.5px);
+  animation: agent-rail-spark 1.25s ease-in-out infinite;
+}
+
+.agent-theatre__particle {
+  animation: agent-particle-rise 2.2s ease-in-out infinite;
+}
+
+.agent-theatre__shimmer {
+  animation: agent-payload-shimmer 1.35s ease-out both;
+}
+
+.result-reveal-card {
+  animation: result-reveal-glow 2.2s ease-out both;
+}
+
+.agent-node {
+  transition:
+    border-color 240ms ease,
+    box-shadow 240ms ease,
+    opacity 240ms ease,
+    transform 240ms ease;
+}
+
+.agent-node--running {
+  animation: agent-node-breathe 2.4s ease-in-out infinite;
+}
+
+.agent-node--success {
+  animation: agent-success-flash 900ms ease-out both;
+}
+
+.agent-node--warning,
+.agent-node--failed {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.05),
+    0 22px 70px rgb(0 0 0 / 0.42),
+    0 0 28px rgb(251 113 133 / 0.22);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-theatre__drift,
+  .agent-theatre__center-pulse,
+  .agent-theatre__spark,
+  .agent-theatre__particle,
+  .agent-theatre__shimmer,
+  .result-reveal-card,
+  .agent-node--running,
+  .agent-node--success {
+    animation: none !important;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

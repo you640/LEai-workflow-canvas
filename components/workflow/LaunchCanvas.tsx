@@ -12,7 +12,8 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { WorkflowNode as WorkflowNodeView } from "@/components/workflow/WorkflowNode";
-import type { WorkflowEdge, WorkflowNode } from "@/types/workflow";
+import { AgentTheatreOverlay } from "@/components/workflow/AgentTheatreOverlay";
+import type { TimelineEvent, WorkflowEdge, WorkflowNode } from "@/types/workflow";
 
 const nodeTypes = {
   "project-type": WorkflowNodeView,
@@ -35,16 +36,52 @@ interface Props {
   onNodesChange: OnNodesChange<WorkflowNode>;
   onEdgesChange: OnEdgesChange<WorkflowEdge>;
   onNodeClick: (nodeId: string) => void;
+  timeline: TimelineEvent[];
+  isRunning: boolean;
+  validationErrors: string[];
+  generated: unknown;
+  hasFreshGeneration: boolean;
+  canExport: boolean;
+  onShowJson: () => void;
+  onExport: () => void;
 }
 
-export function LaunchCanvas({ nodes, edges, onNodesChange, onEdgesChange, onNodeClick }: Props) {
+export function LaunchCanvas({
+  nodes,
+  edges,
+  onNodesChange,
+  onEdgesChange,
+  onNodeClick,
+  timeline,
+  isRunning,
+  validationErrors,
+  generated,
+  hasFreshGeneration,
+  canExport,
+  onShowJson,
+  onExport,
+}: Props) {
   const themedEdges = useMemo(
-    () => edges.map((e) => ({ ...e, animated: false, style: { stroke: "rgba(255,255,255,0.2)", strokeWidth: 1.5 } })),
-    [edges]
+    () =>
+      edges.map((edge) => {
+        const source = nodes.find((node) => node.id === edge.source);
+        const target = nodes.find((node) => node.id === edge.target);
+        const lit = source?.data.status === "success" || target?.data.status === "running" || target?.data.status === "success";
+        return {
+          ...edge,
+          animated: false,
+          style: {
+            stroke: lit ? "rgba(52,211,153,0.62)" : "rgba(255,255,255,0.18)",
+            strokeWidth: lit ? 2 : 1.5,
+            filter: lit ? "drop-shadow(0 0 8px rgba(52,211,153,0.34))" : "none",
+          },
+        };
+      }),
+    [edges, nodes]
   );
 
   return (
-    <div className="h-full w-full bg-black">
+    <div className="relative h-full w-full bg-black">
       <ReactFlow
         nodes={nodes}
         edges={themedEdges}
@@ -66,6 +103,18 @@ export function LaunchCanvas({ nodes, edges, onNodesChange, onEdgesChange, onNod
           className="!rounded-2xl !border-white/10 !bg-black/70 !shadow-[0_18px_55px_rgba(0,0,0,0.45)] !backdrop-blur-xl"
         />
       </ReactFlow>
+      <AgentTheatreOverlay
+        nodes={nodes}
+        edges={edges}
+        timeline={timeline}
+        isRunning={isRunning}
+        validationErrors={validationErrors}
+        generated={generated}
+        hasFreshGeneration={hasFreshGeneration}
+        canExport={canExport}
+        onShowJson={onShowJson}
+        onExport={onExport}
+      />
     </div>
   );
 }
